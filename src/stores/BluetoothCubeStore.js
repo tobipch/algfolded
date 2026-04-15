@@ -4,8 +4,6 @@ import {invertMove, moveFace, moveAmount, amountToMove, buildMoveRemap} from '@/
 import {useDisplayStore} from '@/stores/DisplayStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
 
-const oppositeFace = {R: 'L', L: 'R', U: 'D', D: 'U', F: 'B', B: 'F'}
-
 let kpuzzlePromise = null
 async function getKPuzzle() {
     if (!kpuzzlePromise) {
@@ -38,6 +36,52 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     let infoSubscription = null
     let cubePattern = null
     let solvedPattern = null
+    // expectedPatterns[k] = pattern after applying scrambleMoves[0..k-1] to solved.
+    // Used by reconcileState() to snap position/corrections to the physical cube state.
+    let expectedPatterns = []
+
+    const computeExpectedPatterns = (kpuzzle) => {
+        let p = kpuzzle.defaultPattern()
+        expectedPatterns = [p]
+        for (const m of scrambleMoves.value) {
+            try { p = p.applyMove(m) } catch (_) {}
+            expectedPatterns.push(p)
+        }
+    }
+
+    // After every physical move, check whether the cube now matches any expected
+    // scramble state near the current position. If it does, snap position and
+    // clear correction/pending state — this makes slice moves, out-of-order
+    // commuting moves, and other "noise" self-heal as soon as the cube reaches
+    // a state consistent with the scramble.
+    const reconcileState = () => {
+        if (!cubePattern || expectedPatterns.length === 0) return
+        // Fast path: already at the expected state for current position
+        if (cubePattern.isIdentical(expectedPatterns[position.value])) {
+            if (correctionMoves.value.length > 0) correctionMoves.value = []
+            if (pendingFaceTurn.value !== null) pendingFaceTurn.value = null
+            return
+        }
+        // Scan forward first (advance on matching state)
+        for (let k = position.value + 1; k < expectedPatterns.length; k++) {
+            if (cubePattern.isIdentical(expectedPatterns[k])) {
+                position.value = k
+                correctionMoves.value = []
+                pendingFaceTurn.value = null
+                if (position.value >= scrambleMoves.value.length) phase.value = 'solving'
+                return
+            }
+        }
+        // Scan backward (user undid previous moves)
+        for (let k = position.value - 1; k >= 0; k--) {
+            if (cubePattern.isIdentical(expectedPatterns[k])) {
+                position.value = k
+                correctionMoves.value = []
+                pendingFaceTurn.value = null
+                return
+            }
+        }
+    }
 
     const connect = async () => {
         const display = useDisplayStore()
@@ -118,6 +162,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         const kpuzzle = await getKPuzzle()
         solvedPattern = kpuzzle.defaultPattern()
         cubePattern = solvedPattern
+        computeExpectedPatterns(kpuzzle)
     }
 
     const resetTracking = () => {
@@ -129,6 +174,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         paused.value = false
         cubePattern = null
         solvedPattern = null
+        expectedPatterns = []
     }
 
     const pauseTracking = () => { paused.value = true }
@@ -145,6 +191,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         correctionMoves.value = []
         pendingFaceTurn.value = null
         paused.value = false
+        // Recompute expected patterns defensively, in case scrambleMoves has
+        // drifted from the original (it shouldn't, since we no longer mutate it,
+        // but this keeps the invariant airtight across resets).
+        computeExpectedPatterns(kpuzzle)
         if (scrambleMoves.value.length > 0) {
             phase.value = 'scrambling'
         }
@@ -160,18 +210,25 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const onMove = (rawMove) => {
         if (paused.value) return
 
-        // Track physical cube state for solved detection (always in standard frame)
-        if (cubePattern) {
-            try { cubePattern = cubePattern.applyMove(rawMove) } catch (_) {}
-        }
-
         // Remap move based on cube orientation setting
         const settings = useSettingsStore()
         const remap = buildMoveRemap(settings.store.cubeOrientation)
         const move = remap ? remap(rawMove) : rawMove
 
+        // Track cube state in the user/scramble frame (remapped move). Slice
+        // moves (M/S/E) and rotations are understood by cubing.js and will
+        // update the pattern correctly.
+        if (cubePattern) {
+            try { cubePattern = cubePattern.applyMove(move) } catch (_) {}
+        }
+
         if (phase.value === 'scrambling') {
             processScrambleMove(move)
+            // State-based reconciliation: if the physical cube is in a valid
+            // intermediate scramble state, snap to it and drop any noise
+            // corrections. This is what makes slice moves and out-of-order
+            // commuting moves self-heal.
+            reconcileState()
         } else if (phase.value === 'solving') {
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
                 phase.value = 'idle'
@@ -248,18 +305,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
                     moves: [move],
                     direction: 'forward'
                 }
-            } else if (position.value + 1 < scrambleMoves.value.length) {
-                const nextMove = scrambleMoves.value[position.value + 1]
-                if (oppositeFace[moveFace(expected)] === moveFace(nextMove)
-                    && moveFace(move) === moveFace(nextMove)) {
-                    scrambleMoves.value[position.value] = nextMove
-                    scrambleMoves.value[position.value + 1] = expected
-                    processScrambleMove(move)
-                    return
-                }
-                if (tryBackward(move)) return
-                correctionMoves.value.push(invertMove(move))
             } else {
+                // Out-of-order / unrelated move: record as a correction.
+                // Opposite-face swap is no longer done in-place (it mutated
+                // scrambleMoves and bled state across resetToSolved). Instead
+                // reconcileState() snaps position forward when the physical
+                // cube state matches a later expectedPattern — which covers
+                // arbitrary commuting-move reorderings, not just opposite-face
+                // adjacent swaps.
                 if (tryBackward(move)) return
                 correctionMoves.value.push(invertMove(move))
             }
