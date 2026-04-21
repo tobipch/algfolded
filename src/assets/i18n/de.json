@@ -6,9 +6,13 @@
       "n_cases": "keine Fälle ausgewählt | ein Fall ausgewählt | {count} Fälle ausgewählt",
       "n_to_recap": "{count} zum Wiederholen",
       "language": "Sprache",
-      "add_translation": "Übersetzung hinzufügen",
       "settings": "Einstellungen",
-      "toggle_night_mode": "Nachtmodus umschalten"
+      "toggle_night_mode": "Nachtmodus umschalten",
+      "bluetooth_connect": "Smart Cube verbinden",
+      "bluetooth_disconnect": "Smart Cube trennen",
+      "bluetooth_pause": "Tracking pausieren",
+      "bluetooth_resume": "Tracking fortsetzen",
+      "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen"
     },
     "select": {
       "select_intro": "Wähle Fälle zum Üben aus",
@@ -20,6 +24,7 @@
     "presets": {
       "presets": "Voreinstellungen",
       "new_preset": "Neue Voreinstellung",
+      "edit_preset": "Voreinstellung bearbeiten",
       "name_example": "zum Lernen",
       "save_btn": "Speichern",
       "apply_btn": "Anwenden",
@@ -54,7 +59,6 @@
       "light_theme": "Helles Design",
       "show_lang_button": "Sprachauswahl anzeigen",
       "are_you_sure_to_reset": "Bist du sicher?",
-      "scramble_appendix": "Scramble-Anhang",
       "timer_start_delay_ms": "Timer-Startverzögerung (ms)",
       "cube_orientation": "Würfelorientierung",
       "cube_orientation_hint": "Rotation für die Würfelanzeige, z.B. y, x2, x y (max. 2 Rotationen)",
@@ -75,12 +79,22 @@
       "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird"
     },
     "stats_card": {
-      "stats_title": "Statistiken:",
+      "stats_title": "Verlauf:",
       "n_solves": "keine Lösungen | eine Lösung | {count} Lösungen",
       "clear_btn": "löschen",
       "clear_btn_hint": "Sitzung löschen",
       "hold_spacebar_hint": "Halte die Leertaste gedrückt, um den Timer zu starten",
       "are_you_sure_to_clean": "Sitzung löschen?"
+    },
+    "summary": {
+      "title": "Zusammenfassung",
+      "solves": "Solves",
+      "cases_covered": "Fälle abgedeckt",
+      "total_solving_time": "Reine Lösungszeit",
+      "total_time": "Gesamtzeit",
+      "mean": "Mittelwert",
+      "slowest_cases": "Langsamste Fälle",
+      "practice_slow": "Langsame Fälle üben"
     },
     "result_card": {
       "result_no": "Ergebnis Nr. {count}",
@@ -107,6 +121,8 @@
       "recap": "Wiederholung aller ausgewählten Fälle starten",
       "add_to_starred": "Ausgewählten Fall zu favorisierten Voreinstellungen hinzufügen",
       "didnt_know": "Aktuellen Fall als nicht gewusst markieren",
+      "bluetooth_pause_toggle": "Smart Cube Tracking pausieren / fortsetzen",
+      "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen",
       "navigate": "Zu vorherigem / nächstem / erstem / letztem Ergebnis in den Statistiken wechseln"
     },
     "contact": {

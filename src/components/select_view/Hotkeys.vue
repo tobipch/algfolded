@@ -32,6 +32,14 @@
       <span class="expl">{{ $t("hotkeys.didnt_know") }}</span>
     </li>
     <li>
+      <kbd>Alt</kbd>+<kbd>Y</kbd>
+      <span class="expl">{{ $t("hotkeys.bluetooth_pause_toggle") }}</span>
+    </li>
+    <li>
+      <kbd>Alt</kbd>+<kbd>M</kbd>
+      <span class="expl">{{ $t("hotkeys.bluetooth_reset_to_solved") }}</span>
+    </li>
+    <li>
       <kbd>←</kbd> / <kbd>→</kbd> / <kbd>Home</kbd> / <kbd>End</kbd>
       <span class="expl">{{ $t("hotkeys.navigate") }}</span>
     </li>

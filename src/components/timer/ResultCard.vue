@@ -53,29 +53,28 @@ const starClicked = () => {
   }
 }
 
+const isOpen = ref(true)
 </script>
 
 <template>
   <div class="card">
     <div class="card-body p-2 p-sm-3">
-      <h5 class="mb-0">
-        <div class="row align-items-center">
-          <div class="col">
-            <span class="d-sm-inline-block d-none">{{$t("result_card.result_no", result["i"] + 1)}} &nbsp;</span>
-            <span class="badge bg-primary">{{ msToHumanReadable(result["ms"], settings.store.timerPrecision) }}</span>
-          </div>
-          <div class="col-auto">
-            <button
-                tabindex="-1" @keydown.space.prevent=""
-                class="btn btn-sm btn-outline-danger mx-1"
-                :title="$t('result_card.delete_btn')"
-                :disabled="sessionStore.timerState !== TimerState.NOT_RUNNING"
-                @click="onDeleteBtnClicked">
-              <i class="bi bi-trash"></i>
-            </button>
-          </div>
+      <h5 class="mb-0 clickable d-flex align-items-center" @click="isOpen = !isOpen">
+        <div class="flex-grow-1">
+          <span class="d-sm-inline-block d-none">{{$t("result_card.result_no", result["i"] + 1)}} &nbsp;</span>
+          <span class="badge bg-primary">{{ msToHumanReadable(result["ms"], settings.store.timerPrecision) }}</span>
         </div>
+        <button
+            tabindex="-1" @keydown.space.prevent=""
+            class="btn btn-sm btn-outline-danger mx-1"
+            :title="$t('result_card.delete_btn')"
+            :disabled="sessionStore.timerState !== TimerState.NOT_RUNNING"
+            @click.stop="onDeleteBtnClicked">
+          <i class="bi bi-trash"></i>
+        </button>
+        <i class="bi" :class="isOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
       </h5>
+      <div v-show="isOpen">
       <hr class="my-1 my-sm-3">
       <div class="d-flex align-items-start">
         <div class="flex-grow-1 min-width-0">
@@ -116,6 +115,7 @@ const starClicked = () => {
         <div class="cube-picture-col ms-2">
           <CubePicture :scramble="result['scramble']"/>
         </div>
+      </div>
       </div>
     </div>
   </div>

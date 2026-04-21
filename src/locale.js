@@ -1,49 +1,23 @@
 import {createI18n} from 'vue-i18n'
 
-import af from '@/assets/i18n/af.json'
-import cs from '@/assets/i18n/cs.json'
-import da from '@/assets/i18n/da.json'
 import de from '@/assets/i18n/de.json'
 import en from '@/assets/i18n/en.json'
-import es from '@/assets/i18n/es.json'
 import fr from '@/assets/i18n/fr.json'
-import he from '@/assets/i18n/he.json'
-import in_ from '@/assets/i18n/in.json'
 import it from '@/assets/i18n/it.json'
-import ja from '@/assets/i18n/ja.json'
-import ko from '@/assets/i18n/ko.json'
-import nl from '@/assets/i18n/nl.json'
-import pl from '@/assets/i18n/pl.json'
-import pt from '@/assets/i18n/pt.json'
-import ru from '@/assets/i18n/ru.json'
-import tr from '@/assets/i18n/tr.json'
-import uk from '@/assets/i18n/uk.json'
-import zh from '@/assets/i18n/zh.json'
+
+import flagDe from '@/assets/flags/de.svg'
+import flagGb from '@/assets/flags/gb.svg'
+import flagFr from '@/assets/flags/fr.svg'
+import flagIt from '@/assets/flags/it.svg'
 
 export const supportedLocales = [
-    {code: "af", messages: af, name: "Afrikaans", emoji: "🇿🇦"},
-    {code: "cs", messages: cs, name: "Čeština", emoji: "🇨🇿"},
-    {code: "da", messages: da, name: "Dansk", emoji: "🇩🇰"},
-    {code: "de", messages: de, name: "Deutsch", emoji: "🇩🇪"},
-    {code: "en", messages: en, name: "English", emoji: "🇬🇧"},
-    {code: "es", messages: es, name: "Español", emoji: "🇪🇸"},
-    {code: "fr", messages: fr, name: "Français", emoji: "🇫🇷"},
-    {code: "he", messages: he, name: "עברית", emoji: "🇮🇱"},
-    {code: "in", messages: in_, name: "Bahasa Indonesia", emoji: "🇮🇩"},
-    {code: "it", messages: it, name: "Italiano", emoji: "🇮🇹"},
-    {code: "ja", messages: ja, name: "日本語", emoji: "🇯🇵"},
-    {code: "ko", messages: ko, name: "한국어", emoji: "🇰🇷"},
-    {code: "nl", messages: nl, name: "Nederlands", emoji: "🇳🇱"},
-    {code: "pl", messages: pl, name: "Polski", emoji: "🇵🇱"},
-    {code: "pt", messages: pt, name: "Português", emoji: "🇵🇹"},
-    {code: "ru", messages: ru, name: "Русский", emoji: "🇷🇺"},
-    {code: "tr", messages: tr, name: "Türkçe", emoji: "🇹🇷"},
-    {code: "uk", messages: uk, name: "Українська", emoji: "🇺🇦"},
-    {code: "zh", messages: zh, name: "中文", emoji: "🇨🇳"},
+    {code: "de", messages: de, name: "Deutsch", flag: flagDe},
+    {code: "en", messages: en, name: "English", flag: flagGb},
+    {code: "fr", messages: fr, name: "Français", flag: flagFr},
+    {code: "it", messages: it, name: "Italiano", flag: flagIt},
 ]
 const localStorageKey = "zbll_locale"
 const defaultLocale = 'en';
-export const addTranslationUrl = "https://docs.google.com/forms/d/1rhjD0q8zQRkH6i7QiAmNGEd5W-8tyJoOK-Q2UFQx5Jc/";
 
 const supportedLocalesSet = new Set(supportedLocales.map(locale => locale.code));
 
@@ -76,4 +50,3 @@ export const setLocaleAndReload = (code) => {
     localStorage.setItem(localStorageKey, code);
     location.reload();
 }
-

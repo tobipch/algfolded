@@ -2,6 +2,7 @@
 import Scramble from "@/components/timer/Scramble.vue";
 import Timer from "@/components/timer/Timer.vue";
 import ResultCard from "@/components/timer/ResultCard.vue";
+import SummaryCard from "@/components/timer/SummaryCard.vue";
 import StatsCard from "@/components/timer/StatsCard.vue";
 import {useI18n} from 'vue-i18n'
 
@@ -10,11 +11,12 @@ const {t} = useI18n()
 import {TimerState, useSessionStore} from "@/stores/SessionStore";
 import {useRouter} from "vue-router";
 import Settings from "@/components/Settings.vue";
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useSettingsStore} from "@/stores/SettingsStore"
 import {usePresetsStore, starredName} from "@/stores/PresetStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
+import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
 
 const router = useRouter();
 const sessionStore = useSessionStore()
@@ -24,6 +26,7 @@ const showDidntKnow = computed(() =>
     timerNotRunning.value
     && sessionStore.stats().length > 0
     && settings.store.smartSelection
+    && !sessionStore.store.recapMode
 )
 
 const currentResultKey = computed(() => {
@@ -51,6 +54,32 @@ const rightColumnClass = computed(() => timerNotRunning.value ? "result_col" : "
 const selectStore = useSelectedStore()
 const presets = usePresetsStore()
 const displayStore = useDisplayStore()
+const btStore = useBluetoothCubeStore()
+
+// Bluetooth cube auto start/stop
+watch(() => btStore.phase, (phase, oldPhase) => {
+  if (oldPhase === 'scrambling' && phase === 'solving') {
+    sessionStore.startTimer()
+  }
+  if (oldPhase === 'solving' && phase === 'idle') {
+    sessionStore.stopTimer()
+    sessionStore.timerState = TimerState.NOT_RUNNING
+  }
+})
+
+// Start tracking when a new scramble appears and BT cube is connected
+watch(() => sessionStore.currentScramble, (scramble) => {
+  if (btStore.connected && scramble) {
+    btStore.startTracking(scramble)
+  }
+})
+
+// Also start tracking when BT cube connects while a scramble is already shown
+watch(() => btStore.connected, (isConnected) => {
+  if (isConnected && sessionStore.currentScramble) {
+    btStore.startTracking(sessionStore.currentScramble)
+  }
+})
 
 // global key events listener
 const onGlobalKeyDown = event => {
@@ -133,6 +162,10 @@ onMounted(() => {
   document.addEventListener('touchend', onPageTouchEnd);
   sessionStore.timerState = TimerState.NOT_RUNNING
   sessionStore.observingResult = Math.max(sessionStore.stats().length - 1, 0)
+  // Start BT tracking if cube was already connected before navigating here
+  if (btStore.connected && sessionStore.currentScramble) {
+    btStore.startTracking(sessionStore.currentScramble)
+  }
 });
 
 onUnmounted(() => {
@@ -218,13 +251,19 @@ const onPageTouchEnd = event => {
           <Settings/>
         </div>
         <div v-if="displayStore.showStatistics" class="d-sm-none d-block">
-          <StatsCard/>
+          <SummaryCard v-if="sessionStore.stats().length > 0"/>
+          <div class="mt-2">
+            <StatsCard/>
+          </div>
         </div>
       </div>
 
       <div :class="rightColumnClass">
         <div class="my-2">
           <ResultCard v-if="sessionStore.stats().length > sessionStore.observingResult"/>
+        </div>
+        <div class="my-2" v-if="sessionStore.stats().length > 0">
+          <SummaryCard/>
         </div>
         <div class="my-2 d-sm-block d-none">
           <StatsCard/>

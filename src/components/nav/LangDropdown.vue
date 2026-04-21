@@ -1,6 +1,6 @@
 <script setup>
 
-import {setLocaleAndReload, supportedLocales, addTranslationUrl} from "@/locale"
+import {setLocaleAndReload, supportedLocales} from "@/locale"
 
 </script>
 
@@ -18,13 +18,9 @@ import {setLocaleAndReload, supportedLocales, addTranslationUrl} from "@/locale"
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLang">
       <li v-for="locale in supportedLocales" :key="locale.code">
-        <a class="dropdown-item clickable" @click="setLocaleAndReload(locale.code)">
-          {{locale.emoji}} {{locale.name}}
-        </a>
-      </li>
-      <li>
-        <a class="dropdown-item" :href="addTranslationUrl" target="_blank">
-          ➕ {{$t("nav.add_translation")}}
+        <a class="dropdown-item clickable d-flex align-items-center gap-2" @click="setLocaleAndReload(locale.code)">
+          <img :src="locale.flag" :alt="locale.code" class="lang-flag">
+          {{locale.name}}
         </a>
       </li>
     </ul>
@@ -32,4 +28,11 @@ import {setLocaleAndReload, supportedLocales, addTranslationUrl} from "@/locale"
 </template>
 
 <style scoped>
+.lang-flag {
+  width: 1.4em;
+  height: 1em;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.15);
+}
 </style>

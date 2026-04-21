@@ -6,9 +6,13 @@
       "n_cases": "nessun caso selezionato | un caso selezionato | {count} casi selezionati",
       "n_to_recap": "{count} da ripassare",
       "language": "Lingua",
-      "add_translation": "Aggiungi traduzione",
       "settings": "Impostazioni",
-      "toggle_night_mode": "Attiva modalità notturna"
+      "toggle_night_mode": "Attiva modalità notturna",
+      "bluetooth_connect": "Collega smart cube",
+      "bluetooth_disconnect": "Scollega smart cube",
+      "bluetooth_pause": "Metti in pausa il tracciamento",
+      "bluetooth_resume": "Riprendi il tracciamento",
+      "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto"
     },
     "select": {
       "select_intro": "Seleziona i casi da praticare",
@@ -55,22 +59,42 @@
       "light_theme": "Tema chiaro",
       "show_lang_button": "Mostra pulsante lingua",
       "are_you_sure_to_reset": "Sei sicuro?",
-      "scramble_appendix": "Appendice scramble",
-      "timer_start_delay_ms": "Ritardo avvio timer (ms)"
+      "timer_start_delay_ms": "Ritardo avvio timer (ms)",
+      "cube_orientation": "Orientamento del cubo",
+      "cube_orientation_hint": "Rotazione applicata alla visualizzazione del cubo, es. y, x2, x y (max 2 rotazioni)",
+      "letter_scheme": "Schema delle lettere",
+      "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
+      "smart_selection": "Selezione intelligente dei casi",
+      "speed_emphasis": "Enfasi sulla velocità",
+      "speed_emphasis_hint": "Quanto dare priorità ai casi lenti (0 = ignora, 4 = massimo)",
+      "recency_emphasis": "Enfasi sulla recenza",
+      "recency_emphasis_hint": "Con quanta rapidità riproporre i casi non praticati (0 = ignora, 2 = aggressivo)"
     },
     "timer": {
       "no_scramble": "nessuna miscela disponibile",
       "scramble": "Miscela:",
       "ready": "pronto",
-      "running": "in corso"
+      "running": "in corso",
+      "didnt_know": "Non lo sapevo",
+      "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima"
     },
     "stats_card": {
-      "stats_title": "Statistiche:",
+      "stats_title": "Cronologia:",
       "n_solves": "nessuna risoluzione | una risoluzione | {count} risoluzioni",
       "clear_btn": "cancella",
       "clear_btn_hint": "Cancella sessione",
       "hold_spacebar_hint": "Tieni premuto il tasto spazio per avviare il timer",
       "are_you_sure_to_clean": "Cancellare la sessione?"
+    },
+    "summary": {
+      "title": "Riepilogo",
+      "solves": "Risoluzioni",
+      "cases_covered": "Casi coperti",
+      "total_solving_time": "Tempo totale di risoluzione",
+      "total_time": "Tempo totale",
+      "mean": "Media",
+      "slowest_cases": "Casi più lenti",
+      "practice_slow": "Pratica i casi lenti"
     },
     "result_card": {
       "result_no": "Risultato #{count}",
@@ -96,12 +120,15 @@
       "select_deselect": "Seleziona / deseleziona caso corrente",
       "recap": "Inizia a ripassare tutti i casi selezionati",
       "add_to_starred": "Aggiungi caso selezionato a preimpostazione preferita",
+      "didnt_know": "Segna il caso corrente come non saputo",
+      "bluetooth_pause_toggle": "Metti in pausa / riprendi il tracciamento dello smart cube",
+      "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto",
       "navigate": "Passa al risultato precedente / successivo / primo / ultimo nelle statistiche"
     },
     "contact": {
-      "contact": "Contatto",
-      "get_the_code": "Ottieni il codice sorgente",
-      "credits": "Credits"
+      "contact": "Info",
+      "get_the_code": "Codice sorgente",
+      "credits": "Crediti"
     }
   }
 }

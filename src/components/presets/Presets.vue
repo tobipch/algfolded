@@ -58,7 +58,7 @@ const isEditing = computed(() => presets.map.hasOwnProperty(currentPresetName.va
         :disabled="areSetsEqual(presets.getCases(name), new Set(selected.store.keys))"
         :title="$t('presets.apply_btn')"
         @click="applyPreset(name)">
-      <i class="bi bi-download"></i>
+      <i class="bi bi-check2-circle"></i>
     </button>
     <button class="btn btn-sm btn-outline-danger"
             type="button"

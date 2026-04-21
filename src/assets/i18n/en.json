@@ -6,9 +6,13 @@
       "n_cases": "no cases selected | one case selected | {count} cases selected",
       "n_to_recap": "{count} to recap",
       "language": "Language",
-      "add_translation": "Add translation",
       "settings": "Settings",
-      "toggle_night_mode": "Toggle night mode"
+      "toggle_night_mode": "Toggle night mode",
+      "bluetooth_connect": "Connect smart cube",
+      "bluetooth_disconnect": "Disconnect smart cube",
+      "bluetooth_pause": "Pause tracking",
+      "bluetooth_resume": "Resume tracking",
+      "bluetooth_reset_to_solved": "Reset virtual cube to solved"
     },
     "select": {
       "select_intro": "Select cases to practise",
@@ -55,7 +59,6 @@
       "light_theme": "Light theme",
       "show_lang_button": "Show language button",
       "are_you_sure_to_reset": "Are you sure?",
-      "scramble_appendix": "Scramble appendix",
       "timer_start_delay_ms": "Timer start delay (ms)",
       "cube_orientation": "Cube orientation",
       "cube_orientation_hint": "Rotation applied to the cube display, e.g. y, x2, x y (max 2 rotations)",
@@ -76,12 +79,22 @@
       "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner"
     },
     "stats_card": {
-      "stats_title": "Stats:",
+      "stats_title": "History:",
       "n_solves": "no solves | one solve | {count} solves",
       "clear_btn": "clear",
       "clear_btn_hint": "Clear session",
       "hold_spacebar_hint": "Hold spacebar to start the timer",
       "are_you_sure_to_clean": "Clear session?"
+    },
+    "summary": {
+      "title": "Summary",
+      "solves": "Solves",
+      "cases_covered": "Cases covered",
+      "total_solving_time": "Total solving time",
+      "total_time": "Total time",
+      "mean": "Mean",
+      "slowest_cases": "Slowest cases",
+      "practice_slow": "Practice slow cases"
     },
     "result_card": {
       "result_no": "Result #{count}",
@@ -108,6 +121,8 @@
       "recap": "Start recap all selected cases",
       "add_to_starred": "Add selected case to starred preset",
       "didnt_know": "Mark current case as didn't know",
+      "bluetooth_pause_toggle": "Pause / resume smart cube tracking",
+      "bluetooth_reset_to_solved": "Reset virtual cube to solved",
       "navigate": "Navigate to prev/next/first/last result in stats"
     },
     "contact": {

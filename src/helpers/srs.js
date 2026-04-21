@@ -31,6 +31,12 @@ export function weightedRandomPick(entries) {
     return entries[entries.length - 1].key
 }
 
+export function aoN(times, n) {
+    if (times.length < n) return null
+    const last = [...times.slice(-n)].sort((a, b) => a - b)
+    return last.slice(1, -1).reduce((s, t) => s + t, 0) / (n - 2)
+}
+
 export function median(arr) {
     if (arr.length === 0) return 1
     const sorted = [...arr].sort((a, b) => a - b)

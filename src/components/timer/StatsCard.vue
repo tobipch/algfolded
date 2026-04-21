@@ -26,28 +26,27 @@ onMounted(() => {
 
 const statClicked = i => sessionStore.observingResult = i
 
+const isOpen = ref(false)
 </script>
 
 <template>
   <div class="card">
     <div class="card-body">
-      <h5 class="mb-0">
-        <div class="row align-items-center">
-          <div class="col">
-            {{t("stats_card.stats_title")}} {{ t("stats_card.n_solves", numResults) }}
-          </div>
-          <div class="col-auto">
-            <button
-                class="btn btn-sm btn-outline-danger mx-1"
-                tabindex="-1" @keydown.space.prevent=""
-                @click="onClearBtnClick"
-                :title="t('stats_card.clear_btn_hint') + ' (Shift+Delete)'"
-                v-if="sessionStore.stats().length > 0">
-              {{t("stats_card.clear_btn")}}
-            </button>
-          </div>
-        </div>
+      <h5 class="mb-0 clickable d-flex align-items-center" @click="isOpen = !isOpen">
+        <span class="flex-grow-1">
+          {{t("stats_card.stats_title")}} {{ t("stats_card.n_solves", numResults) }}
+        </span>
+        <button
+            class="btn btn-sm btn-outline-danger mx-1"
+            tabindex="-1" @keydown.space.prevent=""
+            @click.stop="onClearBtnClick"
+            :title="t('stats_card.clear_btn_hint') + ' (Shift+Delete)'"
+            v-if="sessionStore.stats().length > 0">
+          {{t("stats_card.clear_btn")}}
+        </button>
+        <i class="bi" :class="isOpen ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
       </h5>
+      <div v-show="isOpen">
       <hr>
       <div class="stats-container" ref="statsContainer">
         <span v-for="(stat, index) in sessionStore.stats()" :key="index">
@@ -60,6 +59,7 @@ const statClicked = i => sessionStore.observingResult = i
         <div v-if="sessionStore.stats().length === 0 && sessionStore.timerState !== TimerState.RUNNING">
           {{t("stats_card.hold_spacebar_hint")}}
         </div>
+      </div>
       </div>
     </div>
   </div>
