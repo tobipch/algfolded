@@ -5,11 +5,16 @@ import en from '@/assets/i18n/en.json'
 import fr from '@/assets/i18n/fr.json'
 import it from '@/assets/i18n/it.json'
 
+import flagDe from '@/assets/flags/de.svg'
+import flagGb from '@/assets/flags/gb.svg'
+import flagFr from '@/assets/flags/fr.svg'
+import flagIt from '@/assets/flags/it.svg'
+
 export const supportedLocales = [
-    {code: "de", messages: de, name: "Deutsch", emoji: "🇩🇪"},
-    {code: "en", messages: en, name: "English", emoji: "🇬🇧"},
-    {code: "fr", messages: fr, name: "Français", emoji: "🇫🇷"},
-    {code: "it", messages: it, name: "Italiano", emoji: "🇮🇹"},
+    {code: "de", messages: de, name: "Deutsch", flag: flagDe},
+    {code: "en", messages: en, name: "English", flag: flagGb},
+    {code: "fr", messages: fr, name: "Français", flag: flagFr},
+    {code: "it", messages: it, name: "Italiano", flag: flagIt},
 ]
 const localStorageKey = "zbll_locale"
 const defaultLocale = 'en';

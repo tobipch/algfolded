@@ -113,7 +113,7 @@ onUnmounted(() => window.removeEventListener('keydown', onGlobalKeyDown))
             <i :class="bt.paused ? 'bi-play-fill' : 'bi-pause-fill'"/>
           </button>
           <i class="bi-bluetooth bt-feature-badge"/>
-          <span class="bt-feature-tooltip">{{ bt.paused ? $t('nav.bluetooth_resume') : $t('nav.bluetooth_pause') }}</span>
+          <span class="bt-feature-tooltip">{{ bt.paused ? $t('nav.bluetooth_resume') : $t('nav.bluetooth_pause') }} (Alt+Y)</span>
         </span>
         <span v-if="bt.connected" class="bt-feature-wrap" tabindex="0" @touchstart.prevent="">
           <button
@@ -123,7 +123,7 @@ onUnmounted(() => window.removeEventListener('keydown', onGlobalKeyDown))
             <i class="bi-arrow-counterclockwise"/>
           </button>
           <i class="bi-bluetooth bt-feature-badge"/>
-          <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }}</span>
+          <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }} (Alt+M)</span>
         </span>
         <button
             class="btn"
