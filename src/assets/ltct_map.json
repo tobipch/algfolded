@@ -1211,7 +1211,8 @@
   "UD LUF RDF": {
     "key": "UD LUF RDF",
     "algs": [
-      "U D2 r' U2 r D' R' U2 R' U' R2 U' D'"
+      "U D2 r' U2 r D' R' U2 R' U' R2 U' D'",
+      "U R U2 R' U2 R U R2 F' R U R U' R' F U'"
     ],
     "scrambles": [
       "B D2 U B2 U' B2 U' D2 B' U2 B' D2 B' D2 B2 U2",
@@ -2486,10 +2487,10 @@
     "algs": [
       "U' D' R2 U R' U' R' U R' U' D R' U R",
       "U R U R' U' R B2 R' U2 R U2 R B2 R2",
+      "U' R2 U R' U' R' U R' U' D R' U R D'",
       "R' D' R U R' D R2 U R2 D' r U2 r' D R U",
       "F R' F' R U' S U R' U' S' R' U R",
       "U R U2 R2 D' R U' R U R' U' R2 D R' U' R'",
-      "U' R2 U R' U' R' U R' U' D R' U R D'",
       "U2 R' D R2 U' R' U R U' R' U2 R U2 R2 D' R"
     ],
     "scrambles": [
