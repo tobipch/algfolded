@@ -21,7 +21,7 @@ import { Alg } from "cubing/alg";
 import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
 
 const SCRAMBLES_PER_CASE = 25;
-const MIN_LENGTH = 16;
+const MIN_LENGTH = 14;
 const MAX_PREMOVES = 10;
 const INITIAL_PREMOVES = 3;
 const MAP_PATH = new URL("../src/assets/ltct_map.json", import.meta.url);
@@ -61,6 +61,47 @@ function moveCount(scrambleStr) {
   return scrambleStr.trim().split(/\s+/).length;
 }
 
+function parseMoveList(str) {
+  if (!str.trim()) return [];
+  return str.trim().split(/\s+/).map(m => ({ face: m[0], suffix: m.slice(1) }));
+}
+
+function combineSuffix(a, b) {
+  const vals = { "": 1, "'": -1, "2": 2 };
+  const sum = ((vals[a] + vals[b]) % 4 + 4) % 4;
+  return sum === 0 ? null : sum === 1 ? "" : sum === 2 ? "2" : "'";
+}
+
+// Cancel moves on the same face that are separated only by moves on the opposite (parallel) face.
+// E.g. "U2 D U2" → "D", "R2 L' R" → "R' L'"
+// Runs iteratively until no more cancellations are possible.
+function cancelParallelMoves(moveStr) {
+  let moves = parseMoveList(moveStr);
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (let i = 0; i < moves.length; i++) {
+      const { face } = moves[i];
+      const oppFace = OPPOSITE[face];
+      let j = i + 1;
+      while (j < moves.length && moves[j].face === oppFace) j++;
+      if (j < moves.length && moves[j].face === face) {
+        const combined = combineSuffix(moves[i].suffix, moves[j].suffix);
+        if (combined === null) {
+          moves.splice(j, 1);
+          moves.splice(i, 1);
+        } else {
+          moves[i] = { face, suffix: combined };
+          moves.splice(j, 1);
+        }
+        changed = true;
+        break;
+      }
+    }
+  }
+  return moves.map(m => m.face + m.suffix).join(" ");
+}
+
 async function generateOneScramble(kpuzzle, inverseAlgStr, solve) {
   for (let numPremoves = INITIAL_PREMOVES; numPremoves <= MAX_PREMOVES; numPremoves++) {
     const premoves = generatePremoves(numPremoves);
@@ -77,7 +118,7 @@ async function generateOneScramble(kpuzzle, inverseAlgStr, solve) {
     // Use experimentalSimplify to cancel adjacent same-face moves, fix X2' notation
     const rawAlg = new Alg(premoves).concat(solution.invert());
     const simplified = rawAlg.experimentalSimplify({ cancel: true });
-    const scramble = normalizeNotation(simplified.toString());
+    const scramble = normalizeNotation(cancelParallelMoves(simplified.toString()));
 
     if (moveCount(scramble) >= MIN_LENGTH) {
       return scramble;
@@ -91,7 +132,7 @@ async function generateOneScramble(kpuzzle, inverseAlgStr, solve) {
   const solution = await solve(pattern);
   const rawAlg = new Alg(premoves).concat(solution.invert());
   const simplified = rawAlg.experimentalSimplify({ cancel: true });
-  return normalizeNotation(simplified.toString());
+  return normalizeNotation(cancelParallelMoves(simplified.toString()));
 }
 
 async function main() {
