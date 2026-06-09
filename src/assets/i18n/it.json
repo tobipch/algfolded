@@ -10,6 +10,7 @@
       "toggle_night_mode": "Attiva modalità notturna",
       "bluetooth_connect": "Collega smart cube",
       "bluetooth_disconnect": "Scollega smart cube",
+      "bluetooth_select_brand": "Scegli la marca del cubo",
       "bluetooth_pause": "Metti in pausa il tracciamento",
       "bluetooth_resume": "Riprendi il tracciamento",
       "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto"
@@ -62,6 +63,8 @@
       "timer_start_delay_ms": "Ritardo avvio timer (ms)",
       "cube_orientation": "Orientamento del cubo",
       "cube_orientation_hint": "Rotazione applicata alla visualizzazione del cubo, es. y, x2, x y (max 2 rotazioni)",
+      "letterpair_mode": "Modalità letterpair (smart cube)",
+      "letterpair_mode_hint": "Mostra la coppia di lettere del caso invece della miscela. Il cubo virtuale parte già mescolato, esegui solo l'LTCT e il timer si ferma quando è risolto — nessun mescolamento fisico necessario, e il cubo può restare mescolato tra un caso e l'altro.",
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
       "smart_selection": "Selezione intelligente dei casi",
@@ -73,6 +76,9 @@
     "timer": {
       "no_scramble": "nessuna miscela disponibile",
       "scramble": "Miscela:",
+      "letterpair": "Letterpair:",
+      "case_reset_toast": "Caso reimpostato — riprova",
+      "reset_hint": "Algoritmo sbagliato? Ruota lo strato inferiore di un giro completo (D D D D) per reimpostare questo caso.",
       "ready": "pronto",
       "running": "in corso",
       "didnt_know": "Non lo sapevo",

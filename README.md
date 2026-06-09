@@ -16,13 +16,14 @@ A timer-based tool for practicing **LTCT (Last Target Corner Twist)** algorithms
 
 ### Smart Cube (Bluetooth)
 
-Connect a Bluetooth smart cube for hands-free scramble tracking:
+Connect a Bluetooth smart cube for hands-free scramble tracking. Supported brands: **GAN** (Gen2/Gen3/Gen4, via `gan-web-bluetooth`) and **MoYu / QiYi** (via `btcube-web`). Click the Bluetooth button and pick your cube's brand.
 
 - **Real-time scramble tracking** — completed moves turn green, wrong moves appear in red as corrections to undo
 - **Automatic solved detection** — recognizes when the cube returns to solved after scrambling + solving
 - **State-based reconciliation** — handles slice moves (M/S/E), out-of-order commuting moves, and other noise by comparing the physical cube state against the expected scramble state
 - **Pause / resume tracking** (Alt+Y) — temporarily ignore moves, e.g. while adjusting grip
 - **Reset virtual cube** (Alt+M) — re-sync when the physical cube is back to solved
+- **Letterpair mode** — practice straight from the letter pair: instead of the scramble, the bar shows the case's letter pair (e.g. `Letterpair: BI`) so you know which LTCT to execute. The virtual cube starts already in the scrambled state, so you just do the alg and the timer stops the moment the virtual cube is solved. Only relative moves are tracked, so the physical cube can stay scrambled between cases — no re-scrambling, no doubt about whether your alg was correct. Enable it in settings.
 - **Keyboard simulator** for testing without a physical cube (`window.btSim.connect()` in the browser console)
 
 ### Smart Case Selection

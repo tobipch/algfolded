@@ -10,6 +10,7 @@
       "toggle_night_mode": "Nachtmodus umschalten",
       "bluetooth_connect": "Smart Cube verbinden",
       "bluetooth_disconnect": "Smart Cube trennen",
+      "bluetooth_select_brand": "Würfelmarke wählen",
       "bluetooth_pause": "Tracking pausieren",
       "bluetooth_resume": "Tracking fortsetzen",
       "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen"
@@ -62,6 +63,8 @@
       "timer_start_delay_ms": "Timer-Startverzögerung (ms)",
       "cube_orientation": "Würfelorientierung",
       "cube_orientation_hint": "Rotation für die Würfelanzeige, z.B. y, x2, x y (max. 2 Rotationen)",
+      "letterpair_mode": "Letterpair-Modus (Smartcube)",
+      "letterpair_mode_hint": "Zeigt das Letterpair des Falls statt der Mischung. Der virtuelle Würfel startet bereits verdreht – du führst nur den LTCT aus und der Timer stoppt, sobald er gelöst ist. Kein physisches Verwürfeln nötig, und der Würfel darf zwischen den Fällen verdreht bleiben.",
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
@@ -73,6 +76,9 @@
     "timer": {
       "no_scramble": "kein Mischvorgang verfügbar",
       "scramble": "Mischung:",
+      "letterpair": "Letterpair:",
+      "case_reset_toast": "Fall zurückgesetzt — versuch's nochmal",
+      "reset_hint": "Falscher Alg? Drehe die untere Ebene einmal komplett (D D D D), um diesen Fall zurückzusetzen.",
       "ready": "bereit",
       "running": "läuft",
       "didnt_know": "Nicht gewusst",

@@ -25,9 +25,14 @@ const initialStore = JSON.parse(localStorage.getItem(storeKey)) || {
 
     "currentScramble": null,
 
+    // lookahead queue of upcoming cases [{key, scramble}], shown as a preview
+    "upcoming": [],
+
     // array of objects: {i=index, key, scramble, ms}
     "stats": initialStats,
 }
+// Guard for stores persisted before the lookahead queue existed.
+if (!Array.isArray(initialStore.upcoming)) initialStore.upcoming = []
 
 export const TimerState = Object.freeze({
     NOT_RUNNING: 0,
@@ -77,51 +82,103 @@ export const useSessionStore = defineStore('session', () => {
         return Object.keys(store.keysCount).filter(key => store.keysCount[key] === 0)
     });
 
-    // returns key
+    // How many cases to preview ahead of the current one (next + next-next).
+    const LOOKAHEAD = 2
+
+    // Keys we must not pick again right now: the current case and anything
+    // already queued — so the preview never shows duplicates back-to-back.
+    const reservedKeys = () => {
+        const r = new Set()
+        if (store.currentKey) r.add(store.currentKey)
+        for (const u of store.upcoming) r.add(u.key)
+        return r
+    }
+
+    // Pick a single key honoring recap mode, cooldown and the `avoid` set.
+    // Returns null only when no admissible key exists (recap exhausted).
+    const chooseKey = (avoid = new Set()) => {
+        if (store.keys.length === 0) return null
+        if (store.recapMode) {
+            const zero = casesWithZeroCount.value
+            const pool = zero.filter(k => !avoid.has(k))
+            return pool.length > 0 ? random_element(pool) : null
+        }
+        const cooldown = Math.min(3, Math.floor(store.keys.length / 2))
+        const recentSet = new Set(recentCases.value.slice(-cooldown))
+        let candidates = store.keys.filter(k => !recentSet.has(k) && !avoid.has(k))
+        if (candidates.length === 0) candidates = store.keys.filter(k => !avoid.has(k))
+        if (candidates.length === 0) candidates = store.keys
+
+        const settingsStore = useSettingsStore()
+        if (settingsStore.store.smartSelection) {
+            const emas = candidates
+                .map(k => srsData[k]?.a)
+                .filter(a => a != null)
+            const med = median(emas)
+            const entries = candidates.map(key => ({
+                key,
+                weight: caseWeight(
+                    srsData[key] || { a: null, n: 0, s: 0 },
+                    med, srsCounter.value, store.keys.length,
+                    settingsStore.store
+                )
+            }))
+            return weightedRandomPick(entries)
+        }
+        if (Math.random() < 0.2) {
+            const minCount = Math.min(...Object.values(store.keysCount))
+            const least = Object.keys(store.keysCount).filter(key => store.keysCount[key] === minCount && !recentSet.has(key) && !avoid.has(key))
+            const fallback = Object.keys(store.keysCount).filter(key => store.keysCount[key] === minCount && !avoid.has(key))
+            return random_element(least.length > 0 ? least : (fallback.length > 0 ? fallback : candidates))
+        }
+        return random_element(candidates)
+    }
+
+    // Choose a key, record it for cooldown, and bundle it with a fresh scramble.
+    const commitCase = (avoid) => {
+        const key = chooseKey(avoid)
+        if (key == null) return null
+        recentCases.value.push(key)
+        if (recentCases.value.length > 3) recentCases.value.shift()
+        return { key, scramble: makeScramble(key) }
+    }
+
+    // Top the lookahead queue back up to LOOKAHEAD entries (best-effort: in recap
+    // mode near the end there may not be enough distinct cases left).
+    const refillUpcoming = () => {
+        while (store.upcoming.length < LOOKAHEAD) {
+            const next = commitCase(reservedKeys())
+            if (!next) break
+            store.upcoming.push(next)
+        }
+    }
+
+    // Advance to the next case: pull from the lookahead queue (or pick fresh) and
+    // refill the queue behind it.
     const setRandomCase = () => {
         if (store.keys.length === 0) {
-            return null;
+            store.currentKey = null
+            store.currentScramble = null
+            store.upcoming = []
+            return
         }
-        if (store.recapMode) {
-            if (casesWithZeroCount.value.length === 0) {
+        // Recap finished: drop the queue chosen under recap constraints.
+        if (store.recapMode && casesWithZeroCount.value.length === 0) {
+            store.recapMode = false
+            store.upcoming = []
+        }
+        let next = store.upcoming.shift()
+        if (!next) {
+            next = commitCase(reservedKeys())
+            if (!next) { // recap exhausted with an empty queue
                 store.recapMode = false
-                return setRandomCase() // recursively return random case with no recap mode
-            }
-            store.currentKey = random_element(casesWithZeroCount.value)
-        } else {
-            const cooldown = Math.min(3, Math.floor(store.keys.length / 2))
-            const recentSet = new Set(recentCases.value.slice(-cooldown))
-            const pool = store.keys.filter(k => !recentSet.has(k))
-            const candidates = pool.length > 0 ? pool : store.keys
-
-            const settingsStore = useSettingsStore()
-            if (settingsStore.store.smartSelection) {
-                const emas = candidates
-                    .map(k => srsData[k]?.a)
-                    .filter(a => a != null)
-                const med = median(emas)
-                const entries = candidates.map(key => ({
-                    key,
-                    weight: caseWeight(
-                        srsData[key] || { a: null, n: 0, s: 0 },
-                        med, srsCounter.value, store.keys.length,
-                        settingsStore.store
-                    )
-                }))
-                store.currentKey = weightedRandomPick(entries)
-            } else {
-                if (Math.random() < 0.2) {
-                    const minCount = Math.min(...Object.values(store.keysCount))
-                    const leastCountedKeys = Object.keys(store.keysCount).filter(key => store.keysCount[key] === minCount && !recentSet.has(key))
-                    store.currentKey = random_element(leastCountedKeys.length > 0 ? leastCountedKeys : Object.keys(store.keysCount).filter(key => store.keysCount[key] === minCount))
-                } else {
-                    store.currentKey = random_element(candidates)
-                }
+                next = commitCase(reservedKeys())
             }
         }
-        recentCases.value.push(store.currentKey)
-        if (recentCases.value.length > 3) recentCases.value.shift()
-        store.currentScramble = makeScramble(store.currentKey)
+        if (!next) return
+        store.currentKey = next.key
+        store.currentScramble = next.scramble
+        refillUpcoming()
     }
 
     const setSelectedKeys = (keys) => {
@@ -133,11 +190,13 @@ export const useSessionStore = defineStore('session', () => {
             && keys.every(k => store.keys.includes(k))
         if (sameKeys) {
             if (!store.currentScramble) setRandomCase()
+            else refillUpcoming() // ensure the preview queue is populated after a reload
             return
         }
         store.recapMode = false
         store.keys = keys
         recentCases.value = []
+        store.upcoming = []
         resetKeysCount()
         setRandomCase()
     }
@@ -208,6 +267,7 @@ export const useSessionStore = defineStore('session', () => {
     const startRecap = () => {
         resetKeysCount()
         store.recapMode = true
+        store.upcoming = [] // drop non-recap picks so the queue reflects recap order
         setRandomCase()
     }
 

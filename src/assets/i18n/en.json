@@ -10,6 +10,7 @@
       "toggle_night_mode": "Toggle night mode",
       "bluetooth_connect": "Connect smart cube",
       "bluetooth_disconnect": "Disconnect smart cube",
+      "bluetooth_select_brand": "Select cube brand",
       "bluetooth_pause": "Pause tracking",
       "bluetooth_resume": "Resume tracking",
       "bluetooth_reset_to_solved": "Reset virtual cube to solved"
@@ -62,6 +63,8 @@
       "timer_start_delay_ms": "Timer start delay (ms)",
       "cube_orientation": "Cube orientation",
       "cube_orientation_hint": "Rotation applied to the cube display, e.g. y, x2, x y (max 2 rotations)",
+      "letterpair_mode": "Letterpair mode (smart cube)",
+      "letterpair_mode_hint": "Show the case's letter pair instead of the scramble. The virtual cube starts already scrambled, so you just execute the LTCT and the timer stops when it's solved — no physical scrambling needed, and the cube can stay scrambled between cases.",
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",
@@ -73,6 +76,9 @@
     "timer": {
       "no_scramble": "no scramble available",
       "scramble": "Scramble:",
+      "letterpair": "Letterpair:",
+      "case_reset_toast": "Case reset — give it another go",
+      "reset_hint": "Wrong alg? Spin the bottom layer a full turn (D D D D) to reset this case.",
       "ready": "ready",
       "running": "running",
       "didnt_know": "Didn't know",

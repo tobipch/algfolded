@@ -18,7 +18,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const battery = ref(null)
 
     // Scramble tracking
-    const phase = ref('idle') // 'idle' | 'scrambling' | 'solving'
+    // 'idle'          : nothing to track
+    // 'scrambling'    : user is reproducing the scramble on the physical cube
+    // 'awaiting_solve': letter-pair mode — virtual cube is already scrambled,
+    //                   waiting for the first solving move (timer not started yet)
+    // 'solving'       : tracking the solution; cube returning to solved ends it
+    const phase = ref('idle')
     const scrambleMoves = ref([])
     const position = ref(0)
     const correctionMoves = ref([])
@@ -30,10 +35,18 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Paused: when true, incoming cube moves are ignored
     const paused = ref(false)
 
+    // Letter-pair mode: true when the solving cube is far from solved (likely a
+    // wrong alg), used to surface the "spin the bottom layer to reset" hint.
+    const tooFarFromSolved = ref(false)
+    // Bumped each time the user performs the reset gesture (a full 360° spin of
+    // the bottom layer), so the UI can show a toast.
+    const resetSignal = ref(0)
+
     // Internal (not exposed)
-    let cube = null
-    let moveSubscription = null
-    let infoSubscription = null
+    let cube = null               // underlying brand-specific connection object
+    let cubeDisconnect = null     // brand-specific disconnect fn
+    let gattDevice = null         // BluetoothDevice for gattserverdisconnected listener
+    let subscriptions = []        // active event subscriptions ({ unsubscribe() })
     let cubePattern = null
     let solvedPattern = null
     // expectedPatterns[k] = pattern after applying scrambleMoves[0..k-1] to solved.
@@ -47,6 +60,63 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             try { p = p.applyMove(m) } catch (_) {}
             expectedPatterns.push(p)
         }
+    }
+
+    // --- Reset gesture + "too far from solved" detection (letter-pair mode) ---
+
+    // Count how many edge/corner pieces (ignoring centers) are out of place
+    // relative to solved. 0 = solved; a wrong LTCT alg leaves at least 3 off.
+    const piecesOff = (pattern) => {
+        try {
+            const a = pattern.patternData, b = solvedPattern.patternData
+            let off = 0
+            for (const orbit in a) {
+                if (/CENTER/i.test(orbit)) continue
+                const oa = a[orbit], ob = b[orbit]
+                for (let i = 0; i < oa.pieces.length; i++) {
+                    if (oa.pieces[i] !== ob.pieces[i] || (oa.orientation[i] ?? 0) !== (ob.orientation[i] ?? 0)) off++
+                }
+            }
+            return off
+        } catch (_) {
+            return 99 // if we can't tell, assume far so the hint can still show
+        }
+    }
+
+    const FAR_IDLE_MS = 2000      // idle time before flagging a likely wrong alg
+    const FAR_PIECES_THRESHOLD = 3 // minimum misplaced pieces to count as "far"
+    let idleTimer = null
+    const clearIdleTimer = () => { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null } }
+
+    // After each solving move, (re)arm an idle check. If the user stops with the
+    // cube clearly unsolved, surface the reset hint.
+    const scheduleFarCheck = () => {
+        clearIdleTimer()
+        const settings = useSettingsStore()
+        if (!settings.store.letterPairMode) return
+        idleTimer = setTimeout(() => {
+            idleTimer = null
+            if (phase.value === 'solving' && cubePattern && solvedPattern
+                && !cubePattern.isIdentical(solvedPattern)
+                && piecesOff(cubePattern) >= FAR_PIECES_THRESHOLD) {
+                tooFarFromSolved.value = true
+            }
+        }, FAR_IDLE_MS)
+    }
+
+    // Detect a full 360° spin of the bottom layer used as a "reset this case"
+    // gesture: D D D D, D' D' D' D', or D2 D2 (all net-identity, so they never
+    // appear in real algs). Returns true once a full spin completes.
+    let resetGestureMoves = []
+    const checkResetGesture = (move) => {
+        if (moveFace(move) !== 'D') { resetGestureMoves = []; return false }
+        resetGestureMoves.push(move)
+        if (resetGestureMoves.length > 4) resetGestureMoves = resetGestureMoves.slice(-4)
+        const last4 = resetGestureMoves.slice(-4)
+        if (last4.length === 4 && (last4.every(m => m === 'D') || last4.every(m => m === "D'"))) return true
+        const last2 = resetGestureMoves.slice(-2)
+        if (last2.length === 2 && last2.every(m => m === 'D2')) return true
+        return false
     }
 
     // After every physical move, check whether the cube now matches any expected
@@ -83,37 +153,77 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }
     }
 
-    const connect = async () => {
+    const onGattDisconnect = () => {
+        const display = useDisplayStore()
+        cleanupConnection()
+        display.showToast('Smart cube disconnected', 'info')
+    }
+
+    // GAN cubes derive their encryption key from the device MAC address. The
+    // library auto-detects it from the BLE advertisement when possible; if that
+    // fails it calls this provider as a last resort, where we ask the user.
+    const ganMacProvider = async (device, isFallbackCall) => {
+        if (!isFallbackCall) return null // let the library try auto-detection first
+        const mac = window.prompt(
+            'Enter your GAN cube MAC address (e.g. AB:CD:EF:12:34:56).\n' +
+            'You can find it in the GAN / Cube Station app.'
+        )
+        const trimmed = (mac || '').trim()
+        return /^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(trimmed) ? trimmed : null
+    }
+
+    // Connect a MoYu / QiYi cube via btcube-web.
+    const connectMoyu = async (display) => {
+        const {connectSmartCube} = await import('btcube-web')
+        const c = await connectSmartCube()
+        cube = c
+        cubeDisconnect = () => { try { c.commands.disconnect() } catch (_) {} }
+        connected.value = true
+        deviceName.value = c.device?.name || 'Smart Cube'
+        subscriptions.push(c.events.moves.subscribe(event => onMove(event.move)))
+        subscriptions.push(c.events.info.subscribe(event => {
+            if ('battery' in event) battery.value = event.battery
+        }))
+        gattDevice = c.device || null
+        gattDevice?.addEventListener('gattserverdisconnected', onGattDisconnect)
+        display.showToast('Connected to ' + deviceName.value, 'success')
+    }
+
+    // Connect a GAN cube via gan-web-bluetooth.
+    const connectGan = async (display) => {
+        const {connectGanCube} = await import('gan-web-bluetooth')
+        const conn = await connectGanCube(ganMacProvider)
+        cube = conn
+        cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
+        connected.value = true
+        deviceName.value = conn.deviceName || 'GAN Smart Cube'
+        subscriptions.push(conn.events$.subscribe(event => {
+            if (event.type === 'MOVE') {
+                onMove(event.move)
+            } else if (event.type === 'BATTERY') {
+                battery.value = event.batteryLevel
+            } else if (event.type === 'DISCONNECT') {
+                onGattDisconnect()
+            }
+        }))
+        // Ask the cube to report its hardware info and battery level.
+        try { await conn.sendCubeCommand({type: 'REQUEST_HARDWARE'}) } catch (_) {}
+        try { await conn.sendCubeCommand({type: 'REQUEST_BATTERY'}) } catch (_) {}
+        display.showToast('Connected to ' + deviceName.value, 'success')
+    }
+
+    const connect = async (brand = 'moyu') => {
         const display = useDisplayStore()
         try {
             if (!navigator.bluetooth) {
                 display.showToast('Bluetooth is not supported in this browser', 'danger')
                 return
             }
-            const {connectSmartCube} = await import('btcube-web')
-            cube = await connectSmartCube()
-            connected.value = true
-            deviceName.value = cube.device?.name || 'Smart Cube'
-
-            // Listen for moves
-            moveSubscription = cube.events.moves.subscribe(event => {
-                onMove(event.move)
-            })
-
-            // Listen for battery/info
-            infoSubscription = cube.events.info.subscribe(event => {
-                if ('battery' in event) {
-                    battery.value = event.battery
-                }
-            })
-
-            // Handle disconnect
-            cube.device?.addEventListener('gattserverdisconnected', () => {
-                cleanupConnection()
-                display.showToast('Smart cube disconnected', 'info')
-            })
-
-            display.showToast('Connected to ' + deviceName.value, 'success')
+            if (brand === 'gan') {
+                await connectGan(display)
+            } else {
+                await connectMoyu(display)
+            }
         } catch (e) {
             console.error('Bluetooth connect failed:', e)
             cleanupConnection()
@@ -132,37 +242,61 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             display.showToast('Keyboard simulator disconnected', 'info')
             return
         }
-        if (cube) {
-            try { cube.commands.disconnect() } catch (_) {}
-        }
+        if (cubeDisconnect) cubeDisconnect()
         cleanupConnection()
         display.showToast('Smart cube disconnected', 'info')
     }
 
     const cleanupConnection = () => {
-        if (moveSubscription) { moveSubscription.unsubscribe(); moveSubscription = null }
-        if (infoSubscription) { infoSubscription.unsubscribe(); infoSubscription = null }
+        for (const s of subscriptions) { try { s.unsubscribe() } catch (_) {} }
+        subscriptions = []
+        if (gattDevice) {
+            try { gattDevice.removeEventListener('gattserverdisconnected', onGattDisconnect) } catch (_) {}
+            gattDevice = null
+        }
         cube = null
+        cubeDisconnect = null
         connected.value = false
         deviceName.value = null
         battery.value = null
         resetTracking()
     }
 
+    // Set up the virtual cube for the current scrambleMoves. In normal mode the
+    // virtual cube starts solved and the user reproduces the scramble; in
+    // letter-pair mode the virtual cube is set directly to the scrambled state so
+    // the user can execute the solution immediately (the physical cube can be in
+    // any state — we only ever track relative moves).
+    const initVirtualState = (kpuzzle) => {
+        const settings = useSettingsStore()
+        solvedPattern = kpuzzle.defaultPattern()
+        correctionMoves.value = []
+        pendingFaceTurn.value = null
+        tooFarFromSolved.value = false
+        resetGestureMoves = []
+        clearIdleTimer()
+        computeExpectedPatterns(kpuzzle)
+
+        if (settings.store.letterPairMode && scrambleMoves.value.length > 0) {
+            // Jump the virtual cube straight to the fully-scrambled state.
+            cubePattern = expectedPatterns[expectedPatterns.length - 1]
+            position.value = scrambleMoves.value.length
+            phase.value = 'awaiting_solve'
+        } else {
+            cubePattern = solvedPattern
+            position.value = 0
+            phase.value = scrambleMoves.value.length > 0 ? 'scrambling' : 'idle'
+        }
+    }
+
     const startTracking = async (scrambleString) => {
         if (!scrambleString) return
         scrambleMoves.value = scrambleString.split(' ').filter(m => m.length > 0)
-        position.value = 0
-        correctionMoves.value = []
-        pendingFaceTurn.value = null
-        phase.value = 'scrambling'
-
-        // Track physical cube state from solved; solved detection triggers
-        // when the cube returns to solved after scrambling + solving
+        // Track physical cube state; solved detection triggers when the cube
+        // returns to solved after scrambling + solving (normal mode) or after
+        // executing the solution (letter-pair mode).
         const kpuzzle = await getKPuzzle()
-        solvedPattern = kpuzzle.defaultPattern()
-        cubePattern = solvedPattern
-        computeExpectedPatterns(kpuzzle)
+        initVirtualState(kpuzzle)
     }
 
     const resetTracking = () => {
@@ -172,6 +306,9 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         correctionMoves.value = []
         pendingFaceTurn.value = null
         paused.value = false
+        tooFarFromSolved.value = false
+        resetGestureMoves = []
+        clearIdleTimer()
         cubePattern = null
         solvedPattern = null
         expectedPatterns = []
@@ -180,24 +317,15 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const pauseTracking = () => { paused.value = true }
     const resumeTracking = () => { paused.value = false }
 
-    // Reset the virtual cube to its solved state and restart scramble tracking
-    // from the beginning. Useful after the user did random moves (e.g. while paused)
-    // and manually solved the cube again.
+    // Re-arm tracking for the current case from the beginning. In normal mode
+    // this resets the virtual cube to solved (re-sync after the physical cube is
+    // back to solved); in letter-pair mode it re-scrambles the virtual cube so the
+    // case can be attempted again. Useful after the user did random moves (e.g.
+    // while paused).
     const resetToSolved = async () => {
         const kpuzzle = await getKPuzzle()
-        solvedPattern = kpuzzle.defaultPattern()
-        cubePattern = solvedPattern
-        position.value = 0
-        correctionMoves.value = []
-        pendingFaceTurn.value = null
         paused.value = false
-        // Recompute expected patterns defensively, in case scrambleMoves has
-        // drifted from the original (it shouldn't, since we no longer mutate it,
-        // but this keeps the invariant airtight across resets).
-        computeExpectedPatterns(kpuzzle)
-        if (scrambleMoves.value.length > 0) {
-            phase.value = 'scrambling'
-        }
+        initVirtualState(kpuzzle)
     }
 
     const advancePosition = () => {
@@ -222,6 +350,15 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             try { cubePattern = cubePattern.applyMove(move) } catch (_) {}
         }
 
+        // Reset gesture: a full 360° spin of the bottom layer re-arms the case.
+        // It's net-identity, so the cube state is unchanged before we re-init.
+        if (checkResetGesture(move)) {
+            resetGestureMoves = []
+            resetSignal.value++
+            resetToSolved()
+            return
+        }
+
         if (phase.value === 'scrambling') {
             processScrambleMove(move)
             // State-based reconciliation: if the physical cube is in a valid
@@ -229,11 +366,24 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             // corrections. This is what makes slice moves and out-of-order
             // commuting moves self-heal.
             reconcileState()
+        } else if (phase.value === 'awaiting_solve') {
+            // Letter-pair mode: the first move begins the solution. Switch to
+            // 'solving' (which starts the timer) and immediately check for the
+            // (degenerate) case where one move already solves it.
+            phase.value = 'solving'
+            if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
+                phase.value = 'idle'
+            }
         } else if (phase.value === 'solving') {
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
                 phase.value = 'idle'
             }
         }
+
+        // Refresh the "too far from solved" hint: any move clears it and re-arms
+        // the idle check (which only fires while still solving and unsolved).
+        tooFarFromSolved.value = false
+        scheduleFarCheck()
     }
 
     const processScrambleMove = (move) => {
@@ -362,7 +512,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             } else {
                 move = keyMap[e.key]
             }
-            if (move && (phase.value === 'scrambling' || phase.value === 'solving')) {
+            if (move && (phase.value === 'scrambling' || phase.value === 'awaiting_solve' || phase.value === 'solving')) {
                 e.preventDefault()
                 e.stopPropagation()
                 onMove(move)
@@ -396,6 +546,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     return {
         connected, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
+        tooFarFromSolved, resetSignal,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals
     }

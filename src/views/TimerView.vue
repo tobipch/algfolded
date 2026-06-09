@@ -58,13 +58,27 @@ const btStore = useBluetoothCubeStore()
 
 // Bluetooth cube auto start/stop
 watch(() => btStore.phase, (phase, oldPhase) => {
-  if (oldPhase === 'scrambling' && phase === 'solving') {
+  // Timer starts when scrambling finishes (normal mode) or when the first
+  // solving move is made (letter-pair mode).
+  if ((oldPhase === 'scrambling' || oldPhase === 'awaiting_solve') && phase === 'solving') {
     sessionStore.startTimer()
   }
   if (oldPhase === 'solving' && phase === 'idle') {
     sessionStore.stopTimer()
     sessionStore.timerState = TimerState.NOT_RUNNING
   }
+  // Mid-solve reset (gesture or Alt+M): abort the running attempt without
+  // recording a time so the case can be retried cleanly.
+  if (oldPhase === 'solving' && (phase === 'awaiting_solve' || phase === 'scrambling')) {
+    if (sessionStore.timerState === TimerState.RUNNING || sessionStore.timerState === TimerState.READY) {
+      sessionStore.timerState = TimerState.NOT_RUNNING
+    }
+  }
+})
+
+// Reset gesture (360° bottom-layer spin): notify the user with a toast.
+watch(() => btStore.resetSignal, (val) => {
+  if (val) displayStore.showToast(t('timer.case_reset_toast'), 'info')
 })
 
 // Start tracking when a new scramble appears and BT cube is connected
@@ -77,6 +91,15 @@ watch(() => sessionStore.currentScramble, (scramble) => {
 // Also start tracking when BT cube connects while a scramble is already shown
 watch(() => btStore.connected, (isConnected) => {
   if (isConnected && sessionStore.currentScramble) {
+    btStore.startTracking(sessionStore.currentScramble)
+  }
+})
+
+// Re-arm tracking when letter-pair mode is toggled mid-session so it takes
+// effect on the current case instead of only the next one.
+watch(() => settings.store.letterPairMode, () => {
+  if (btStore.connected && sessionStore.currentScramble
+      && sessionStore.timerState === TimerState.NOT_RUNNING) {
     btStore.startTracking(sessionStore.currentScramble)
   }
 })

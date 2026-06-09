@@ -4,7 +4,7 @@ import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
 import {useRouter, useRoute} from "vue-router";
-import {computed, onMounted, onUnmounted} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
 import {useI18n} from 'vue-i18n'
@@ -14,7 +14,23 @@ const selected = useSelectedStore();
 const session = useSessionStore()
 const bt = useBluetoothCubeStore()
 
-const toggleBluetooth = () => bt.connected ? bt.disconnect() : bt.connect()
+// When connected the button disconnects; when disconnected it opens a small
+// menu to pick the cube brand (different libraries handle GAN vs MoYu/QiYi).
+const showConnectMenu = ref(false)
+const btConnectWrap = ref(null)
+const onBluetoothClick = () => {
+  if (bt.connected) { bt.disconnect(); return }
+  showConnectMenu.value = !showConnectMenu.value
+}
+const connectBrand = (brand) => {
+  showConnectMenu.value = false
+  bt.connect(brand)
+}
+const onDocClick = (e) => {
+  if (showConnectMenu.value && btConnectWrap.value && !btConnectWrap.value.contains(e.target)) {
+    showConnectMenu.value = false
+  }
+}
 const btBtnClass = computed(() => bt.connected ? 'btn-info' : 'btn-outline-secondary')
 const btTooltip = computed(() => bt.connected
     ? t('nav.bluetooth_disconnect') + (bt.deviceName ? ` (${bt.deviceName})` : '')
@@ -42,8 +58,14 @@ const onGlobalKeyDown = (e) => {
     e.preventDefault()
   }
 }
-onMounted(() => window.addEventListener('keydown', onGlobalKeyDown))
-onUnmounted(() => window.removeEventListener('keydown', onGlobalKeyDown))
+onMounted(() => {
+  window.addEventListener('keydown', onGlobalKeyDown)
+  document.addEventListener('click', onDocClick)
+})
+onUnmounted(() => {
+  window.removeEventListener('keydown', onGlobalKeyDown)
+  document.removeEventListener('click', onDocClick)
+})
 </script>
 
 <template>
@@ -80,14 +102,21 @@ onUnmounted(() => window.removeEventListener('keydown', onGlobalKeyDown))
       </div>
       <div class="d-flex align-items-center justify-content-end p-0 gap-1">
         <LangDropdown/>
-        <button
-            class="btn"
-            tabindex="-1" @keydown.space.prevent=""
-            :class="btBtnClass"
-            @click="toggleBluetooth"
-            :title="btTooltip">
-          <i class="bi-bluetooth"/>
-        </button>
+        <span ref="btConnectWrap" class="bt-connect-wrap">
+          <button
+              class="btn"
+              tabindex="-1" @keydown.space.prevent=""
+              :class="btBtnClass"
+              @click.stop="onBluetoothClick"
+              :title="btTooltip">
+            <i class="bi-bluetooth"/>
+          </button>
+          <div v-if="showConnectMenu && !bt.connected" class="bt-connect-menu">
+            <div class="bt-connect-menu-title">{{ $t('nav.bluetooth_select_brand') }}</div>
+            <button class="bt-connect-item" @click.stop="connectBrand('gan')">GAN</button>
+            <button class="bt-connect-item" @click.stop="connectBrand('moyu')">MoYu / QiYi</button>
+          </div>
+        </span>
         <span v-if="bt.connected && bt.battery !== null" class="bt-battery-wrap d-flex align-items-center"
               tabindex="0" @touchstart.prevent="">
           <svg width="20" height="10" viewBox="0 0 20 10">
@@ -142,6 +171,44 @@ onUnmounted(() => window.removeEventListener('keydown', onGlobalKeyDown))
 <style scoped>
 .logoText {
   font-weight: 900;
+}
+.bt-connect-wrap {
+  position: relative;
+  display: inline-block;
+}
+.bt-connect-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 1050;
+  min-width: 160px;
+  padding: 4px;
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.15));
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.bt-connect-menu-title {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  opacity: 0.6;
+  padding: 4px 10px 2px;
+}
+.bt-connect-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--bs-body-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.bt-connect-item:hover {
+  background: var(--bs-primary);
+  color: #fff;
 }
 .navbar-inner {
   max-width: 1500px;
