@@ -20,7 +20,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Scramble tracking
     // 'idle'          : nothing to track
     // 'scrambling'    : user is reproducing the scramble on the physical cube
-    // 'awaiting_solve': solve-only mode — virtual cube is already scrambled,
+    // 'awaiting_solve': letter-pair mode — virtual cube is already scrambled,
     //                   waiting for the first solving move (timer not started yet)
     // 'solving'       : tracking the solution; cube returning to solved ends it
     const phase = ref('idle')
@@ -156,7 +156,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
 
     // Set up the virtual cube for the current scrambleMoves. In normal mode the
     // virtual cube starts solved and the user reproduces the scramble; in
-    // solve-only mode the virtual cube is set directly to the scrambled state so
+    // letter-pair mode the virtual cube is set directly to the scrambled state so
     // the user can execute the solution immediately (the physical cube can be in
     // any state — we only ever track relative moves).
     const initVirtualState = (kpuzzle) => {
@@ -166,7 +166,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         pendingFaceTurn.value = null
         computeExpectedPatterns(kpuzzle)
 
-        if (settings.store.solveOnlyMode && scrambleMoves.value.length > 0) {
+        if (settings.store.letterPairMode && scrambleMoves.value.length > 0) {
             // Jump the virtual cube straight to the fully-scrambled state.
             cubePattern = expectedPatterns[expectedPatterns.length - 1]
             position.value = scrambleMoves.value.length
@@ -183,7 +183,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         scrambleMoves.value = scrambleString.split(' ').filter(m => m.length > 0)
         // Track physical cube state; solved detection triggers when the cube
         // returns to solved after scrambling + solving (normal mode) or after
-        // executing the solution (solve-only mode).
+        // executing the solution (letter-pair mode).
         const kpuzzle = await getKPuzzle()
         initVirtualState(kpuzzle)
     }
@@ -205,7 +205,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
 
     // Re-arm tracking for the current case from the beginning. In normal mode
     // this resets the virtual cube to solved (re-sync after the physical cube is
-    // back to solved); in solve-only mode it re-scrambles the virtual cube so the
+    // back to solved); in letter-pair mode it re-scrambles the virtual cube so the
     // case can be attempted again. Useful after the user did random moves (e.g.
     // while paused).
     const resetToSolved = async () => {
@@ -244,7 +244,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             // commuting moves self-heal.
             reconcileState()
         } else if (phase.value === 'awaiting_solve') {
-            // Solve-only mode: the first move begins the solution. Switch to
+            // Letter-pair mode: the first move begins the solution. Switch to
             // 'solving' (which starts the timer) and immediately check for the
             // (degenerate) case where one move already solves it.
             phase.value = 'solving'

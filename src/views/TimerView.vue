@@ -59,7 +59,7 @@ const btStore = useBluetoothCubeStore()
 // Bluetooth cube auto start/stop
 watch(() => btStore.phase, (phase, oldPhase) => {
   // Timer starts when scrambling finishes (normal mode) or when the first
-  // solving move is made (solve-only mode).
+  // solving move is made (letter-pair mode).
   if ((oldPhase === 'scrambling' || oldPhase === 'awaiting_solve') && phase === 'solving') {
     sessionStore.startTimer()
   }
@@ -83,9 +83,9 @@ watch(() => btStore.connected, (isConnected) => {
   }
 })
 
-// Re-arm tracking when solve-only mode is toggled mid-session so it takes
+// Re-arm tracking when letter-pair mode is toggled mid-session so it takes
 // effect on the current case instead of only the next one.
-watch(() => settings.store.solveOnlyMode, () => {
+watch(() => settings.store.letterPairMode, () => {
   if (btStore.connected && sessionStore.currentScramble
       && sessionStore.timerState === TimerState.NOT_RUNNING) {
     btStore.startTracking(sessionStore.currentScramble)

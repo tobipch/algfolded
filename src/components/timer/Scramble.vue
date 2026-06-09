@@ -2,21 +2,31 @@
 
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
+import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
 import {computed} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {moveFace, moveAmount, amountToMove} from "@/helpers/scramble_utils";
+import {parseLtctKey} from "@/helpers/helpers";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const session = useSessionStore()
 const settings = useSettingsStore()
 const bt = useBluetoothCubeStore()
+const ls = useLetterSchemeStore()
 const scramble = computed(() => session.currentScramble ?? t("timer.no_scramble"))
 
+// Letter-pair mode hides the scramble and shows the case's letter pair instead,
+// so the user knows which LTCT to execute without ever scrambling physically.
+const letterPairMode = computed(() => settings.store.letterPairMode)
+const letterPair = computed(() => {
+  const key = session.store.currentKey
+  return key ? parseLtctKey(key, ls.toLetter).letters : ''
+})
+
 // The green move-by-move overlay only applies to the physical scramble flow.
-// In solve-only mode there is nothing to scramble, so the plain scramble text
-// is shown instead.
-const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !settings.store.solveOnlyMode)
+// In letter-pair mode there is nothing to scramble, so it is suppressed.
+const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !letterPairMode.value)
 
 // Simplify a list of {text, type} by merging adjacent same-face moves
 function simplifyMoves(items) {
@@ -77,9 +87,14 @@ const displayMoves = computed(() => {
 
 <template>
   <h3 class="border-bottom scramble-bar">
-    <span class="opacity-50 d-none d-sm-inline-block">{{$t("timer.scramble") + '&nbsp;'}} </span>
+    <span class="opacity-50 d-none d-sm-inline-block">
+      {{ (letterPairMode ? $t("timer.letterpair") : $t("timer.scramble")) + '&nbsp;' }}
+    </span>
     <span :style="{ fontSize: settings.store.scrambleFontSize + 'px' }">
-      <template v-if="isTracking">
+      <template v-if="letterPairMode">
+        <span class="fw-bold">{{ letterPair }}</span>
+      </template>
+      <template v-else-if="isTracking">
         <span v-for="(m, i) in displayMoves" :key="i"
               class="bt-move"
               :class="{
