@@ -76,6 +76,8 @@
       "no_scramble": "no scramble available",
       "scramble": "Scramble:",
       "letterpair": "Letterpair:",
+      "case_reset_toast": "Case reset — give it another go",
+      "reset_hint": "Wrong alg? Spin the bottom layer a full turn (D D D D) to reset this case.",
       "ready": "ready",
       "running": "running",
       "didnt_know": "Didn't know",

@@ -76,6 +76,8 @@
       "no_scramble": "aucun mélange disponible",
       "scramble": "Mélange :",
       "letterpair": "Letterpair :",
+      "case_reset_toast": "Cas réinitialisé — réessayez",
+      "reset_hint": "Mauvais algo ? Faites un tour complet de la couche du bas (D D D D) pour réinitialiser ce cas.",
       "ready": "prêt",
       "running": "en cours",
       "didnt_know": "Je ne savais pas",

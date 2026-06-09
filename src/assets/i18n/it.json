@@ -76,6 +76,8 @@
       "no_scramble": "nessuna miscela disponibile",
       "scramble": "Miscela:",
       "letterpair": "Letterpair:",
+      "case_reset_toast": "Caso reimpostato — riprova",
+      "reset_hint": "Algoritmo sbagliato? Ruota lo strato inferiore di un giro completo (D D D D) per reimpostare questo caso.",
       "ready": "pronto",
       "running": "in corso",
       "didnt_know": "Non lo sapevo",

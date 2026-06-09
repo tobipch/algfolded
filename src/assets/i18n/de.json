@@ -76,6 +76,8 @@
       "no_scramble": "kein Mischvorgang verfügbar",
       "scramble": "Mischung:",
       "letterpair": "Letterpair:",
+      "case_reset_toast": "Fall zurückgesetzt — versuch's nochmal",
+      "reset_hint": "Falscher Alg? Drehe die untere Ebene einmal komplett (D D D D), um diesen Fall zurückzusetzen.",
       "ready": "bereit",
       "running": "läuft",
       "didnt_know": "Nicht gewusst",

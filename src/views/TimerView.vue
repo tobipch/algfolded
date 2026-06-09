@@ -67,6 +67,18 @@ watch(() => btStore.phase, (phase, oldPhase) => {
     sessionStore.stopTimer()
     sessionStore.timerState = TimerState.NOT_RUNNING
   }
+  // Mid-solve reset (gesture or Alt+M): abort the running attempt without
+  // recording a time so the case can be retried cleanly.
+  if (oldPhase === 'solving' && (phase === 'awaiting_solve' || phase === 'scrambling')) {
+    if (sessionStore.timerState === TimerState.RUNNING || sessionStore.timerState === TimerState.READY) {
+      sessionStore.timerState = TimerState.NOT_RUNNING
+    }
+  }
+})
+
+// Reset gesture (360° bottom-layer spin): notify the user with a toast.
+watch(() => btStore.resetSignal, (val) => {
+  if (val) displayStore.showToast(t('timer.case_reset_toast'), 'info')
 })
 
 // Start tracking when a new scramble appears and BT cube is connected

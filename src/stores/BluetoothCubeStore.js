@@ -35,6 +35,13 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Paused: when true, incoming cube moves are ignored
     const paused = ref(false)
 
+    // Letter-pair mode: true when the solving cube is far from solved (likely a
+    // wrong alg), used to surface the "spin the bottom layer to reset" hint.
+    const tooFarFromSolved = ref(false)
+    // Bumped each time the user performs the reset gesture (a full 360° spin of
+    // the bottom layer), so the UI can show a toast.
+    const resetSignal = ref(0)
+
     // Internal (not exposed)
     let cube = null
     let moveSubscription = null
@@ -52,6 +59,63 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             try { p = p.applyMove(m) } catch (_) {}
             expectedPatterns.push(p)
         }
+    }
+
+    // --- Reset gesture + "too far from solved" detection (letter-pair mode) ---
+
+    // Count how many edge/corner pieces (ignoring centers) are out of place
+    // relative to solved. 0 = solved; a wrong LTCT alg leaves at least 3 off.
+    const piecesOff = (pattern) => {
+        try {
+            const a = pattern.patternData, b = solvedPattern.patternData
+            let off = 0
+            for (const orbit in a) {
+                if (/CENTER/i.test(orbit)) continue
+                const oa = a[orbit], ob = b[orbit]
+                for (let i = 0; i < oa.pieces.length; i++) {
+                    if (oa.pieces[i] !== ob.pieces[i] || (oa.orientation[i] ?? 0) !== (ob.orientation[i] ?? 0)) off++
+                }
+            }
+            return off
+        } catch (_) {
+            return 99 // if we can't tell, assume far so the hint can still show
+        }
+    }
+
+    const FAR_IDLE_MS = 2000      // idle time before flagging a likely wrong alg
+    const FAR_PIECES_THRESHOLD = 3 // minimum misplaced pieces to count as "far"
+    let idleTimer = null
+    const clearIdleTimer = () => { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null } }
+
+    // After each solving move, (re)arm an idle check. If the user stops with the
+    // cube clearly unsolved, surface the reset hint.
+    const scheduleFarCheck = () => {
+        clearIdleTimer()
+        const settings = useSettingsStore()
+        if (!settings.store.letterPairMode) return
+        idleTimer = setTimeout(() => {
+            idleTimer = null
+            if (phase.value === 'solving' && cubePattern && solvedPattern
+                && !cubePattern.isIdentical(solvedPattern)
+                && piecesOff(cubePattern) >= FAR_PIECES_THRESHOLD) {
+                tooFarFromSolved.value = true
+            }
+        }, FAR_IDLE_MS)
+    }
+
+    // Detect a full 360° spin of the bottom layer used as a "reset this case"
+    // gesture: D D D D, D' D' D' D', or D2 D2 (all net-identity, so they never
+    // appear in real algs). Returns true once a full spin completes.
+    let resetGestureMoves = []
+    const checkResetGesture = (move) => {
+        if (moveFace(move) !== 'D') { resetGestureMoves = []; return false }
+        resetGestureMoves.push(move)
+        if (resetGestureMoves.length > 4) resetGestureMoves = resetGestureMoves.slice(-4)
+        const last4 = resetGestureMoves.slice(-4)
+        if (last4.length === 4 && (last4.every(m => m === 'D') || last4.every(m => m === "D'"))) return true
+        const last2 = resetGestureMoves.slice(-2)
+        if (last2.length === 2 && last2.every(m => m === 'D2')) return true
+        return false
     }
 
     // After every physical move, check whether the cube now matches any expected
@@ -164,6 +228,9 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         solvedPattern = kpuzzle.defaultPattern()
         correctionMoves.value = []
         pendingFaceTurn.value = null
+        tooFarFromSolved.value = false
+        resetGestureMoves = []
+        clearIdleTimer()
         computeExpectedPatterns(kpuzzle)
 
         if (settings.store.letterPairMode && scrambleMoves.value.length > 0) {
@@ -195,6 +262,9 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         correctionMoves.value = []
         pendingFaceTurn.value = null
         paused.value = false
+        tooFarFromSolved.value = false
+        resetGestureMoves = []
+        clearIdleTimer()
         cubePattern = null
         solvedPattern = null
         expectedPatterns = []
@@ -236,6 +306,15 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             try { cubePattern = cubePattern.applyMove(move) } catch (_) {}
         }
 
+        // Reset gesture: a full 360° spin of the bottom layer re-arms the case.
+        // It's net-identity, so the cube state is unchanged before we re-init.
+        if (checkResetGesture(move)) {
+            resetGestureMoves = []
+            resetSignal.value++
+            resetToSolved()
+            return
+        }
+
         if (phase.value === 'scrambling') {
             processScrambleMove(move)
             // State-based reconciliation: if the physical cube is in a valid
@@ -256,6 +335,11 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
                 phase.value = 'idle'
             }
         }
+
+        // Refresh the "too far from solved" hint: any move clears it and re-arms
+        // the idle check (which only fires while still solving and unsolved).
+        tooFarFromSolved.value = false
+        scheduleFarCheck()
     }
 
     const processScrambleMove = (move) => {
@@ -418,6 +502,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     return {
         connected, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
+        tooFarFromSolved, resetSignal,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals
     }

@@ -24,6 +24,11 @@ const letterPair = computed(() => {
   return key ? parseLtctKey(key, ls.toLetter).letters : ''
 })
 
+// Hint shown in letter-pair mode when the cube looks far from solved (likely a
+// wrong alg): tells the user to spin the bottom layer 360° to reset the case.
+const showResetHint = computed(() =>
+    letterPairMode.value && bt.connected && !bt.paused && bt.tooFarFromSolved)
+
 // The green move-by-move overlay only applies to the physical scramble flow.
 // In letter-pair mode there is nothing to scramble, so it is suppressed.
 const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !letterPairMode.value)
@@ -107,6 +112,9 @@ const displayMoves = computed(() => {
       <template v-else>{{ scramble }}</template>
     </span>
   </h3>
+  <div v-if="showResetHint" class="reset-hint text-warning small mt-1">
+    <i class="bi bi-arrow-repeat"></i> {{ $t("timer.reset_hint") }}
+  </div>
 </template>
 
 <style scoped>
