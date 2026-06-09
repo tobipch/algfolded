@@ -10,6 +10,7 @@
       "toggle_night_mode": "Basculer en mode nuit",
       "bluetooth_connect": "Connecter le smart cube",
       "bluetooth_disconnect": "Déconnecter le smart cube",
+      "bluetooth_select_brand": "Choisir la marque du cube",
       "bluetooth_pause": "Mettre en pause le suivi",
       "bluetooth_resume": "Reprendre le suivi",
       "bluetooth_reset_to_solved": "Réinitialiser le cube virtuel à l'état résolu"

@@ -43,9 +43,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const resetSignal = ref(0)
 
     // Internal (not exposed)
-    let cube = null
-    let moveSubscription = null
-    let infoSubscription = null
+    let cube = null               // underlying brand-specific connection object
+    let cubeDisconnect = null     // brand-specific disconnect fn
+    let gattDevice = null         // BluetoothDevice for gattserverdisconnected listener
+    let subscriptions = []        // active event subscriptions ({ unsubscribe() })
     let cubePattern = null
     let solvedPattern = null
     // expectedPatterns[k] = pattern after applying scrambleMoves[0..k-1] to solved.
@@ -152,37 +153,77 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }
     }
 
-    const connect = async () => {
+    const onGattDisconnect = () => {
+        const display = useDisplayStore()
+        cleanupConnection()
+        display.showToast('Smart cube disconnected', 'info')
+    }
+
+    // GAN cubes derive their encryption key from the device MAC address. The
+    // library auto-detects it from the BLE advertisement when possible; if that
+    // fails it calls this provider as a last resort, where we ask the user.
+    const ganMacProvider = async (device, isFallbackCall) => {
+        if (!isFallbackCall) return null // let the library try auto-detection first
+        const mac = window.prompt(
+            'Enter your GAN cube MAC address (e.g. AB:CD:EF:12:34:56).\n' +
+            'You can find it in the GAN / Cube Station app.'
+        )
+        const trimmed = (mac || '').trim()
+        return /^([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$/.test(trimmed) ? trimmed : null
+    }
+
+    // Connect a MoYu / QiYi cube via btcube-web.
+    const connectMoyu = async (display) => {
+        const {connectSmartCube} = await import('btcube-web')
+        const c = await connectSmartCube()
+        cube = c
+        cubeDisconnect = () => { try { c.commands.disconnect() } catch (_) {} }
+        connected.value = true
+        deviceName.value = c.device?.name || 'Smart Cube'
+        subscriptions.push(c.events.moves.subscribe(event => onMove(event.move)))
+        subscriptions.push(c.events.info.subscribe(event => {
+            if ('battery' in event) battery.value = event.battery
+        }))
+        gattDevice = c.device || null
+        gattDevice?.addEventListener('gattserverdisconnected', onGattDisconnect)
+        display.showToast('Connected to ' + deviceName.value, 'success')
+    }
+
+    // Connect a GAN cube via gan-web-bluetooth.
+    const connectGan = async (display) => {
+        const {connectGanCube} = await import('gan-web-bluetooth')
+        const conn = await connectGanCube(ganMacProvider)
+        cube = conn
+        cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
+        connected.value = true
+        deviceName.value = conn.deviceName || 'GAN Smart Cube'
+        subscriptions.push(conn.events$.subscribe(event => {
+            if (event.type === 'MOVE') {
+                onMove(event.move)
+            } else if (event.type === 'BATTERY') {
+                battery.value = event.batteryLevel
+            } else if (event.type === 'DISCONNECT') {
+                onGattDisconnect()
+            }
+        }))
+        // Ask the cube to report its hardware info and battery level.
+        try { await conn.sendCubeCommand({type: 'REQUEST_HARDWARE'}) } catch (_) {}
+        try { await conn.sendCubeCommand({type: 'REQUEST_BATTERY'}) } catch (_) {}
+        display.showToast('Connected to ' + deviceName.value, 'success')
+    }
+
+    const connect = async (brand = 'moyu') => {
         const display = useDisplayStore()
         try {
             if (!navigator.bluetooth) {
                 display.showToast('Bluetooth is not supported in this browser', 'danger')
                 return
             }
-            const {connectSmartCube} = await import('btcube-web')
-            cube = await connectSmartCube()
-            connected.value = true
-            deviceName.value = cube.device?.name || 'Smart Cube'
-
-            // Listen for moves
-            moveSubscription = cube.events.moves.subscribe(event => {
-                onMove(event.move)
-            })
-
-            // Listen for battery/info
-            infoSubscription = cube.events.info.subscribe(event => {
-                if ('battery' in event) {
-                    battery.value = event.battery
-                }
-            })
-
-            // Handle disconnect
-            cube.device?.addEventListener('gattserverdisconnected', () => {
-                cleanupConnection()
-                display.showToast('Smart cube disconnected', 'info')
-            })
-
-            display.showToast('Connected to ' + deviceName.value, 'success')
+            if (brand === 'gan') {
+                await connectGan(display)
+            } else {
+                await connectMoyu(display)
+            }
         } catch (e) {
             console.error('Bluetooth connect failed:', e)
             cleanupConnection()
@@ -201,17 +242,20 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             display.showToast('Keyboard simulator disconnected', 'info')
             return
         }
-        if (cube) {
-            try { cube.commands.disconnect() } catch (_) {}
-        }
+        if (cubeDisconnect) cubeDisconnect()
         cleanupConnection()
         display.showToast('Smart cube disconnected', 'info')
     }
 
     const cleanupConnection = () => {
-        if (moveSubscription) { moveSubscription.unsubscribe(); moveSubscription = null }
-        if (infoSubscription) { infoSubscription.unsubscribe(); infoSubscription = null }
+        for (const s of subscriptions) { try { s.unsubscribe() } catch (_) {} }
+        subscriptions = []
+        if (gattDevice) {
+            try { gattDevice.removeEventListener('gattserverdisconnected', onGattDisconnect) } catch (_) {}
+            gattDevice = null
+        }
         cube = null
+        cubeDisconnect = null
         connected.value = false
         deviceName.value = null
         battery.value = null

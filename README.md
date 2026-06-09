@@ -16,7 +16,7 @@ A timer-based tool for practicing **LTCT (Last Target Corner Twist)** algorithms
 
 ### Smart Cube (Bluetooth)
 
-Connect a Bluetooth smart cube for hands-free scramble tracking:
+Connect a Bluetooth smart cube for hands-free scramble tracking. Supported brands: **GAN** (Gen2/Gen3/Gen4, via `gan-web-bluetooth`) and **MoYu / QiYi** (via `btcube-web`). Click the Bluetooth button and pick your cube's brand.
 
 - **Real-time scramble tracking** — completed moves turn green, wrong moves appear in red as corrections to undo
 - **Automatic solved detection** — recognizes when the cube returns to solved after scrambling + solving

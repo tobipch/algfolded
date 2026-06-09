@@ -10,6 +10,7 @@
       "toggle_night_mode": "Nachtmodus umschalten",
       "bluetooth_connect": "Smart Cube verbinden",
       "bluetooth_disconnect": "Smart Cube trennen",
+      "bluetooth_select_brand": "Würfelmarke wählen",
       "bluetooth_pause": "Tracking pausieren",
       "bluetooth_resume": "Tracking fortsetzen",
       "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen"
