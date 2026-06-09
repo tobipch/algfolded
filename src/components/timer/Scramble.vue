@@ -24,6 +24,11 @@ const letterPair = computed(() => {
   return key ? parseLtctKey(key, ls.toLetter).letters : ''
 })
 
+// Preview of the next and next-next cases, to keep the solving flow going.
+const upcomingPairs = computed(() =>
+    (session.store.upcoming || []).slice(0, 2).map(u => parseLtctKey(u.key, ls.toLetter).letters)
+)
+
 // Hint shown in letter-pair mode when the cube looks far from solved (likely a
 // wrong alg): tells the user to spin the bottom layer 360° to reset the case.
 const showResetHint = computed(() =>
@@ -98,6 +103,8 @@ const displayMoves = computed(() => {
     <span :style="{ fontSize: settings.store.scrambleFontSize + 'px' }">
       <template v-if="letterPairMode">
         <span class="fw-bold">{{ letterPair }}</span>
+        <span v-if="upcomingPairs[0]" class="lp-next">{{ upcomingPairs[0] }}</span>
+        <span v-if="upcomingPairs[1]" class="lp-next-next">{{ upcomingPairs[1] }}</span>
       </template>
       <template v-else-if="isTracking">
         <span v-for="(m, i) in displayMoves" :key="i"
@@ -124,5 +131,20 @@ const displayMoves = computed(() => {
 }
 .bt-move {
   margin-right: 0.35em;
+}
+/* Upcoming-case preview: next is smaller and a bit faded; next-next is the
+   same size but fainter still. */
+.lp-next,
+.lp-next-next {
+  font-size: 0.5em;
+  font-weight: 700;
+  margin-left: 0.6em;
+  vertical-align: middle;
+}
+.lp-next {
+  opacity: 0.55;
+}
+.lp-next-next {
+  opacity: 0.3;
 }
 </style>
