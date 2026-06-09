@@ -13,6 +13,7 @@ const defaultSettings = {
     showHowTo: true,
     timerStartDelayMs: 0,
     cubeOrientation: "",
+    solveOnlyMode: false,
     smartSelection: true,
     slownessPower: 2,
     recencyDecay: 0.5,

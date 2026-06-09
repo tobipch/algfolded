@@ -62,6 +62,8 @@
       "timer_start_delay_ms": "Timer start delay (ms)",
       "cube_orientation": "Cube orientation",
       "cube_orientation_hint": "Rotation applied to the cube display, e.g. y, x2, x y (max 2 rotations)",
+      "solve_only_mode": "Solve-only mode (smart cube)",
+      "solve_only_mode_hint": "Skip physical scrambling: the virtual cube starts already scrambled, so you just execute the solution and the timer stops when it's solved. The physical cube can stay scrambled between cases.",
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",

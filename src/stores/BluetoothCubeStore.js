@@ -18,7 +18,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const battery = ref(null)
 
     // Scramble tracking
-    const phase = ref('idle') // 'idle' | 'scrambling' | 'solving'
+    // 'idle'          : nothing to track
+    // 'scrambling'    : user is reproducing the scramble on the physical cube
+    // 'awaiting_solve': solve-only mode — virtual cube is already scrambled,
+    //                   waiting for the first solving move (timer not started yet)
+    // 'solving'       : tracking the solution; cube returning to solved ends it
+    const phase = ref('idle')
     const scrambleMoves = ref([])
     const position = ref(0)
     const correctionMoves = ref([])
@@ -149,20 +154,38 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         resetTracking()
     }
 
+    // Set up the virtual cube for the current scrambleMoves. In normal mode the
+    // virtual cube starts solved and the user reproduces the scramble; in
+    // solve-only mode the virtual cube is set directly to the scrambled state so
+    // the user can execute the solution immediately (the physical cube can be in
+    // any state — we only ever track relative moves).
+    const initVirtualState = (kpuzzle) => {
+        const settings = useSettingsStore()
+        solvedPattern = kpuzzle.defaultPattern()
+        correctionMoves.value = []
+        pendingFaceTurn.value = null
+        computeExpectedPatterns(kpuzzle)
+
+        if (settings.store.solveOnlyMode && scrambleMoves.value.length > 0) {
+            // Jump the virtual cube straight to the fully-scrambled state.
+            cubePattern = expectedPatterns[expectedPatterns.length - 1]
+            position.value = scrambleMoves.value.length
+            phase.value = 'awaiting_solve'
+        } else {
+            cubePattern = solvedPattern
+            position.value = 0
+            phase.value = scrambleMoves.value.length > 0 ? 'scrambling' : 'idle'
+        }
+    }
+
     const startTracking = async (scrambleString) => {
         if (!scrambleString) return
         scrambleMoves.value = scrambleString.split(' ').filter(m => m.length > 0)
-        position.value = 0
-        correctionMoves.value = []
-        pendingFaceTurn.value = null
-        phase.value = 'scrambling'
-
-        // Track physical cube state from solved; solved detection triggers
-        // when the cube returns to solved after scrambling + solving
+        // Track physical cube state; solved detection triggers when the cube
+        // returns to solved after scrambling + solving (normal mode) or after
+        // executing the solution (solve-only mode).
         const kpuzzle = await getKPuzzle()
-        solvedPattern = kpuzzle.defaultPattern()
-        cubePattern = solvedPattern
-        computeExpectedPatterns(kpuzzle)
+        initVirtualState(kpuzzle)
     }
 
     const resetTracking = () => {
@@ -180,24 +203,15 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const pauseTracking = () => { paused.value = true }
     const resumeTracking = () => { paused.value = false }
 
-    // Reset the virtual cube to its solved state and restart scramble tracking
-    // from the beginning. Useful after the user did random moves (e.g. while paused)
-    // and manually solved the cube again.
+    // Re-arm tracking for the current case from the beginning. In normal mode
+    // this resets the virtual cube to solved (re-sync after the physical cube is
+    // back to solved); in solve-only mode it re-scrambles the virtual cube so the
+    // case can be attempted again. Useful after the user did random moves (e.g.
+    // while paused).
     const resetToSolved = async () => {
         const kpuzzle = await getKPuzzle()
-        solvedPattern = kpuzzle.defaultPattern()
-        cubePattern = solvedPattern
-        position.value = 0
-        correctionMoves.value = []
-        pendingFaceTurn.value = null
         paused.value = false
-        // Recompute expected patterns defensively, in case scrambleMoves has
-        // drifted from the original (it shouldn't, since we no longer mutate it,
-        // but this keeps the invariant airtight across resets).
-        computeExpectedPatterns(kpuzzle)
-        if (scrambleMoves.value.length > 0) {
-            phase.value = 'scrambling'
-        }
+        initVirtualState(kpuzzle)
     }
 
     const advancePosition = () => {
@@ -229,6 +243,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             // corrections. This is what makes slice moves and out-of-order
             // commuting moves self-heal.
             reconcileState()
+        } else if (phase.value === 'awaiting_solve') {
+            // Solve-only mode: the first move begins the solution. Switch to
+            // 'solving' (which starts the timer) and immediately check for the
+            // (degenerate) case where one move already solves it.
+            phase.value = 'solving'
+            if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
+                phase.value = 'idle'
+            }
         } else if (phase.value === 'solving') {
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
                 phase.value = 'idle'
@@ -362,7 +384,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             } else {
                 move = keyMap[e.key]
             }
-            if (move && (phase.value === 'scrambling' || phase.value === 'solving')) {
+            if (move && (phase.value === 'scrambling' || phase.value === 'awaiting_solve' || phase.value === 'solving')) {
                 e.preventDefault()
                 e.stopPropagation()
                 onMove(move)

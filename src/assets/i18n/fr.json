@@ -62,6 +62,8 @@
       "timer_start_delay_ms": "Délai de démarrage du minuteur (ms)",
       "cube_orientation": "Orientation du cube",
       "cube_orientation_hint": "Rotation appliquée à l'affichage du cube, p. ex. y, x2, x y (max 2 rotations)",
+      "solve_only_mode": "Mode résolution seule (smart cube)",
+      "solve_only_mode_hint": "Sans mélange physique : le cube virtuel démarre déjà mélangé, vous exécutez simplement la solution et le chrono s'arrête une fois résolu. Le cube physique peut rester mélangé entre les cas.",
       "letter_scheme": "Schéma des lettres",
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
       "smart_selection": "Sélection intelligente des cas",

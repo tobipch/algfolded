@@ -118,6 +118,16 @@ const onResetBtnClicked = () => {
       </div>
 
       <div class="mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch"
+                 v-model="settings.store.solveOnlyMode" id="solveOnlyMode"
+                 tabindex="-1" @keydown.space.prevent="">
+          <label class="form-check-label" for="solveOnlyMode">{{ $t("settings.solve_only_mode") }}</label>
+        </div>
+        <small class="text-muted d-block mt-1">{{ $t("settings.solve_only_mode_hint") }}</small>
+      </div>
+
+      <div class="mb-3">
         <label class="form-label fw-bold">{{ $t("settings.letter_scheme") }}</label>
         <LetterSchemeEditor />
       </div>

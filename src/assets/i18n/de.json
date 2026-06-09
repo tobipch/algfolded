@@ -62,6 +62,8 @@
       "timer_start_delay_ms": "Timer-Startverzögerung (ms)",
       "cube_orientation": "Würfelorientierung",
       "cube_orientation_hint": "Rotation für die Würfelanzeige, z.B. y, x2, x y (max. 2 Rotationen)",
+      "solve_only_mode": "Nur-Lösen-Modus (Smartcube)",
+      "solve_only_mode_hint": "Kein physisches Verwürfeln: Der virtuelle Würfel startet bereits verdreht – du führst nur die Lösung aus und der Timer stoppt, sobald er gelöst ist. Der physische Würfel darf zwischen den Fällen verdreht bleiben.",
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",

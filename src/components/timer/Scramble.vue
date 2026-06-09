@@ -13,7 +13,10 @@ const settings = useSettingsStore()
 const bt = useBluetoothCubeStore()
 const scramble = computed(() => session.currentScramble ?? t("timer.no_scramble"))
 
-const isTracking = computed(() => bt.connected && bt.phase !== 'idle')
+// The green move-by-move overlay only applies to the physical scramble flow.
+// In solve-only mode there is nothing to scramble, so the plain scramble text
+// is shown instead.
+const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !settings.store.solveOnlyMode)
 
 // Simplify a list of {text, type} by merging adjacent same-face moves
 function simplifyMoves(items) {

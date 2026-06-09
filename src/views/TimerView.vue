@@ -58,7 +58,9 @@ const btStore = useBluetoothCubeStore()
 
 // Bluetooth cube auto start/stop
 watch(() => btStore.phase, (phase, oldPhase) => {
-  if (oldPhase === 'scrambling' && phase === 'solving') {
+  // Timer starts when scrambling finishes (normal mode) or when the first
+  // solving move is made (solve-only mode).
+  if ((oldPhase === 'scrambling' || oldPhase === 'awaiting_solve') && phase === 'solving') {
     sessionStore.startTimer()
   }
   if (oldPhase === 'solving' && phase === 'idle') {
@@ -77,6 +79,15 @@ watch(() => sessionStore.currentScramble, (scramble) => {
 // Also start tracking when BT cube connects while a scramble is already shown
 watch(() => btStore.connected, (isConnected) => {
   if (isConnected && sessionStore.currentScramble) {
+    btStore.startTracking(sessionStore.currentScramble)
+  }
+})
+
+// Re-arm tracking when solve-only mode is toggled mid-session so it takes
+// effect on the current case instead of only the next one.
+watch(() => settings.store.solveOnlyMode, () => {
+  if (btStore.connected && sessionStore.currentScramble
+      && sessionStore.timerState === TimerState.NOT_RUNNING) {
     btStore.startTracking(sessionStore.currentScramble)
   }
 })

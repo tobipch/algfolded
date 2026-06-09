@@ -23,6 +23,7 @@ Connect a Bluetooth smart cube for hands-free scramble tracking:
 - **State-based reconciliation** — handles slice moves (M/S/E), out-of-order commuting moves, and other noise by comparing the physical cube state against the expected scramble state
 - **Pause / resume tracking** (Alt+Y) — temporarily ignore moves, e.g. while adjusting grip
 - **Reset virtual cube** (Alt+M) — re-sync when the physical cube is back to solved
+- **Solve-only mode** — skip physical scrambling entirely: the virtual cube starts already in the scrambled state, so you just execute the solution and the timer stops the moment the virtual cube is solved. Only relative moves are tracked, so the physical cube can stay scrambled between cases — no re-scrambling, no doubt about whether your alg was correct. Enable it in settings.
 - **Keyboard simulator** for testing without a physical cube (`window.btSim.connect()` in the browser console)
 
 ### Smart Case Selection
