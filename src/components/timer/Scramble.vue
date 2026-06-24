@@ -30,7 +30,7 @@ const upcomingPairs = computed(() =>
 )
 
 // Hint shown in letter-pair mode when the cube looks far from solved (likely a
-// wrong alg): tells the user to spin the bottom layer 360° to reset the case.
+// wrong alg): tells the user to spin the bottom or top layer 360° to reset the case.
 const showResetHint = computed(() =>
     letterPairMode.value && bt.connected && !bt.paused && bt.tooFarFromSolved)
 

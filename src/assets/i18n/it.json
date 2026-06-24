@@ -78,7 +78,7 @@
       "scramble": "Miscela:",
       "letterpair": "Letterpair:",
       "case_reset_toast": "Caso reimpostato — riprova",
-      "reset_hint": "Algoritmo sbagliato? Ruota lo strato inferiore di un giro completo (D D D D) per reimpostare questo caso.",
+      "reset_hint": "Algoritmo sbagliato? Ruota lo strato inferiore o superiore di un giro completo (D D D D o U U U U) per reimpostare questo caso.",
       "ready": "pronto",
       "running": "in corso",
       "didnt_know": "Non lo sapevo",
