@@ -104,13 +104,13 @@ onMounted(() => {
   background-color: rgba(var(--bs-primary-rgb), 0.03);
 }
 
-/* 4 cases per row on wide screens, 2 per row below 1024px */
+/* 4 cases per row on wide screens, 2 per row below 1280px */
 .case-col {
   flex: 0 0 auto;
   width: 25%;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   .case-col {
     width: 50%;
   }
