@@ -104,18 +104,25 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }, FAR_IDLE_MS)
     }
 
-    // Detect a full 360° spin of the bottom layer used as a "reset this case"
-    // gesture: D D D D, D' D' D' D', or D2 D2 (all net-identity, so they never
-    // appear in real algs). Returns true once a full spin completes.
+    // Detect a full 360° spin of the bottom (D) or top (U) layer used as a
+    // "reset this case" gesture: e.g. D D D D, D' D' D' D', D2 D2 (or the same
+    // with U). These are all net-identity, so they never appear in real algs.
+    // Returns true once a full spin completes. The buffer only ever holds moves
+    // of a single face — switching faces (D→U or vice versa) starts over.
     let resetGestureMoves = []
     const checkResetGesture = (move) => {
-        if (moveFace(move) !== 'D') { resetGestureMoves = []; return false }
+        const face = moveFace(move)
+        if (face !== 'D' && face !== 'U') { resetGestureMoves = []; return false }
+        // Switching reset face starts the gesture over.
+        if (resetGestureMoves.length > 0 && moveFace(resetGestureMoves[0]) !== face) {
+            resetGestureMoves = []
+        }
         resetGestureMoves.push(move)
         if (resetGestureMoves.length > 4) resetGestureMoves = resetGestureMoves.slice(-4)
         const last4 = resetGestureMoves.slice(-4)
-        if (last4.length === 4 && (last4.every(m => m === 'D') || last4.every(m => m === "D'"))) return true
+        if (last4.length === 4 && (last4.every(m => m === face) || last4.every(m => m === face + "'"))) return true
         const last2 = resetGestureMoves.slice(-2)
-        if (last2.length === 2 && last2.every(m => m === 'D2')) return true
+        if (last2.length === 2 && last2.every(m => m === face + '2')) return true
         return false
     }
 
@@ -359,6 +366,8 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             return
         }
 
+        const wasScrambling = phase.value === 'scrambling'
+
         if (phase.value === 'scrambling') {
             processScrambleMove(move)
             // State-based reconciliation: if the physical cube is in a valid
@@ -378,6 +387,17 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
                 phase.value = 'idle'
             }
+        }
+
+        // When the scramble just completed and we've entered the solving phase,
+        // drop the reset-gesture buffer. Otherwise D-layer moves at the end of
+        // the scramble would carry over and combine with the first moves of the
+        // user's algorithm (e.g. a scramble ending in D2 and an alg starting with
+        // D2 would look like a D2 D2 reset gesture). Resetting after the scramble
+        // therefore requires a fresh full spin (D4/U4), while resetting *during*
+        // the scramble keeps working.
+        if (wasScrambling && phase.value === 'solving') {
+            resetGestureMoves = []
         }
 
         // Refresh the "too far from solved" hint: any move clears it and re-arms
