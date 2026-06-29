@@ -83,7 +83,7 @@ onMounted(() => {
 
 /* Indented "well" holding the subgroups, with a soft primary left rail */
 .subgroup-well {
-  margin: 0.5rem 0 0.25rem 0.5rem;
+  margin: 0.5rem 0 0.25rem;
   padding: 0.1rem 0.3rem 0.35rem 0.6rem;
   border-left: 3px solid rgba(var(--bs-primary-rgb), 0.35);
   border-radius: 0 0.375rem 0.375rem 0;
