@@ -51,8 +51,6 @@
       "timer_update_off": "Off",
       "timer_update_seconds": "Seconds only",
       "timer_precision": "Timer precision",
-      "dark_theme": "Dark theme",
-      "light_theme": "Light theme",
       "show_lang_button": "Show language button",
       "are_you_sure_to_reset": "Are you sure?",
       "timer_start_delay_ms": "Timer start delay (ms)",

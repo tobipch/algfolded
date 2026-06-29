@@ -51,8 +51,6 @@
       "timer_update_off": "Disattivo",
       "timer_update_seconds": "Solo secondi",
       "timer_precision": "Precisione timer",
-      "dark_theme": "Tema scuro",
-      "light_theme": "Tema chiaro",
       "show_lang_button": "Mostra pulsante lingua",
       "are_you_sure_to_reset": "Sei sicuro?",
       "timer_start_delay_ms": "Ritardo avvio timer (ms)",

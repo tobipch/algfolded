@@ -1,13 +1,10 @@
 <script setup>
 import {useSettingsStore, fontsList} from "@/stores/SettingsStore";
-import ThemesSelect from "@/components/ThemesSelect.vue";
 import LetterSchemeEditor from "@/components/LetterSchemeEditor.vue";
-import {defaultDarkName, defaultLightName, useThemeStore} from "@/stores/ThemeStore";
 import {useI18n} from 'vue-i18n'
 import {useDisplayStore} from "@/stores/DisplayStore";
 
 const {t} = useI18n()
-const themes = useThemeStore();
 const settings = useSettingsStore()
 const displayStore = useDisplayStore()
 
@@ -15,8 +12,6 @@ const onResetBtnClicked = () => {
   if (confirm(t("settings.are_you_sure_to_reset"))) {
     settings.resetDefaults()
     displayStore.showSettings = false
-    themes.setLightTheme(defaultLightName)
-    themes.setDarkTheme(defaultDarkName)
   }
 }
 </script>
@@ -162,18 +157,6 @@ const onResetBtnClicked = () => {
                v-model.number="settings.store.recencyDecay"
                tabindex="-1" @keydown.space.prevent="">
         <small class="text-muted">{{ $t("settings.recency_emphasis_hint") }}</small>
-      </div>
-
-      <hr>
-
-      <div class="mb-2">
-        <label for="DarkTheme" class="form-label">{{ $t("settings.dark_theme") }}</label>
-        <ThemesSelect selectId="DarkTheme" is-dark="true"/>
-      </div>
-
-      <div class="mb-2">
-        <label for="LightTheme" class="form-label">{{ $t("settings.light_theme") }}</label>
-        <ThemesSelect selectId="LightTheme" is-dark="false"/>
       </div>
 
     </form>

@@ -51,8 +51,6 @@
       "timer_update_off": "Désactivé",
       "timer_update_seconds": "Secondes uniquement",
       "timer_precision": "Précision du chronomètre",
-      "dark_theme": "Thème sombre",
-      "light_theme": "Thème clair",
       "show_lang_button": "Afficher le bouton de langue",
       "are_you_sure_to_reset": "Êtes-vous sûr ?",
       "timer_start_delay_ms": "Délai de démarrage du minuteur (ms)",

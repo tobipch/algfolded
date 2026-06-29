@@ -5,6 +5,10 @@ html, body {
 .clickable {
     cursor: pointer;
 }
+/* keep bootstrap-icons (rendered on <i>) upright, never italic */
+i[class^="bi-"], i[class*=" bi-"], .bi {
+    font-style: normal;
+}
 .font_bigger {
     font-size: 1.5rem;
 }
