@@ -1,12 +1,15 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
-import { TwistyPlayer } from "cubing/twisty";
 
 const props = defineProps(['scramble'])
 const settings = useSettingsStore()
 const containerDiv = ref(null)
 let player = null
+
+// Load the (heavy) 3D engine only when a cube is actually rendered.
+let TwistyPlayerClass = null
+let createToken = 0
 
 const windowWidth = ref(window.innerWidth || document.documentElement.clientWidth)
 const windowHeight = ref(window.innerHeight || document.documentElement.clientHeight)
@@ -33,7 +36,8 @@ const cubePictureSize = computed(() => {
   return 250;
 })
 
-const createPlayer = () => {
+const createPlayer = async () => {
+  const myToken = ++createToken
   if (player) {
     player.remove()
     player = null
@@ -41,10 +45,16 @@ const createPlayer = () => {
 
   if (!props.scramble || !containerDiv.value) return
 
+  if (!TwistyPlayerClass) {
+    TwistyPlayerClass = (await import("cubing/twisty")).TwistyPlayer
+  }
+  // a newer createPlayer() ran while the engine was loading -> abort this one
+  if (myToken !== createToken || !props.scramble || !containerDiv.value) return
+
   const orient = (settings.store.cubeOrientation || "").trim()
   const alg = orient ? orient + " " + props.scramble : props.scramble
 
-  player = new TwistyPlayer({
+  player = new TwistyPlayerClass({
     puzzle: "3x3x3",
     alg: alg,
     visualization: "3D",

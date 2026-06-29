@@ -10,16 +10,18 @@
 import {computed, ref} from 'vue'
 import { defineStore } from 'pinia'
 import {migrateLocalStorageKey} from '@/helpers/helpers'
+// Reference the two bases explicitly (not via a `${name}` glob) so Vite only
+// emits these two stylesheets instead of every file in bootstrap_themes/.
+import flatlyUrl from '@/assets/bootstrap_themes/flatly.min.css?url'
+import darklyUrl from '@/assets/bootstrap_themes/darkly.min.css?url'
+import overridesCssUrl from '@/assets/theme.css?url'
 
 const isDarkKey = "ltct_theme.is_dark";
 migrateLocalStorageKey("zbll_theme.is_dark", isDarkKey)
 
-const BASE_BY_MODE = { light: "flatly", dark: "darkly" };
+const BASE_URL_BY_MODE = { light: flatlyUrl, dark: darklyUrl };
 
 const getInitialIsDark = () => !!localStorage && localStorage.getItem(isDarkKey) === "true";
-
-const baseCssUrl = name => new URL(`../assets/bootstrap_themes/${name}.min.css`, import.meta.url).href
-const overridesCssUrl = new URL(`../assets/theme.css`, import.meta.url).href
 
 // create the <link> if missing, set its href, optionally move it to the end of <head>
 const ensureLink = (id, href, moveToEnd = false) => {
@@ -42,7 +44,7 @@ export const useThemeStore = defineStore('theme', () => {
   function applyCurrentTheme() {
     const mode = isDark.value ? 'dark' : 'light';
     document.documentElement.dataset.mode = mode;
-    ensureLink("bootstrap_stylesheet", baseCssUrl(BASE_BY_MODE[mode]));
+    ensureLink("bootstrap_stylesheet", BASE_URL_BY_MODE[mode]);
     // overrides must stay after the base theme in the cascade
     ensureLink("theme_overrides", overridesCssUrl, true);
   }
