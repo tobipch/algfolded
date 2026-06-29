@@ -30,8 +30,9 @@ const card_bg_class = computed(() => {
 const groupCardRef = ref(null)
 const isCollapsed = ref(true)
 onMounted(() => {
-  groupCardRef.value.addEventListener('show.bs.collapse', () => isCollapsed.value = false);
-  groupCardRef.value.addEventListener('hide.bs.collapse', () => isCollapsed.value = true);
+  // guard against bubbled events from nested (subgroup/case) collapses
+  groupCardRef.value.addEventListener('show.bs.collapse', e => { if (e.target === groupCardRef.value) isCollapsed.value = false });
+  groupCardRef.value.addEventListener('hide.bs.collapse', e => { if (e.target === groupCardRef.value) isCollapsed.value = true });
 })
 
 </script>
@@ -77,15 +78,15 @@ onMounted(() => {
 /* Tinted header bar for the group level (only when no cases are selected,
    so it never fights the yellow/green selection colours) */
 .no_cases_selected > .header {
-  background-color: rgba(var(--bs-primary-rgb), 0.13);
+  background-color: rgba(var(--bs-primary-rgb), 0.08);
 }
 
-/* Indented "well" holding the subgroups, with a primary left rail */
+/* Indented "well" holding the subgroups, with a soft primary left rail */
 .subgroup-well {
   margin: 0.5rem 0 0.25rem 0.5rem;
   padding: 0.1rem 0.3rem 0.35rem 0.6rem;
-  border-left: 3px solid var(--bs-primary);
+  border-left: 3px solid rgba(var(--bs-primary-rgb), 0.35);
   border-radius: 0 0.375rem 0.375rem 0;
-  background-color: rgba(var(--bs-primary-rgb), 0.05);
+  background-color: rgba(var(--bs-primary-rgb), 0.04);
 }
 </style>

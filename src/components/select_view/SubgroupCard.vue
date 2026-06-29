@@ -36,8 +36,9 @@ const collapseId = `collapsed-cases-${group}-${subgroup}`
 const subgroupCardRef = ref(null)
 const isCollapsed = ref(true)
 onMounted(() => {
-  subgroupCardRef.value.addEventListener('show.bs.collapse', () => isCollapsed.value = false);
-  subgroupCardRef.value.addEventListener('hide.bs.collapse', () => isCollapsed.value = true);
+  // guard against bubbled events from nested (case) collapses
+  subgroupCardRef.value.addEventListener('show.bs.collapse', e => { if (e.target === subgroupCardRef.value) isCollapsed.value = false });
+  subgroupCardRef.value.addEventListener('hide.bs.collapse', e => { if (e.target === subgroupCardRef.value) isCollapsed.value = true });
 })
 </script>
 
@@ -91,16 +92,16 @@ onMounted(() => {
 /* Tinted header bar for the subgroup level (lighter than the group's,
    only when no cases are selected so it never fights the selection colours) */
 .no_cases_selected > .header {
-  background-color: rgba(var(--bs-primary-rgb), 0.07);
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
 
 /* Indented "well" holding the cases, with a lighter left rail than the group's */
 .case-well {
   margin: 0.4rem 0 0.15rem 0.4rem;
   padding: 0.1rem 0.25rem 0.25rem 0.5rem;
-  border-left: 3px solid rgba(var(--bs-primary-rgb), 0.45);
+  border-left: 3px solid rgba(var(--bs-primary-rgb), 0.2);
   border-radius: 0 0.375rem 0.375rem 0;
-  background-color: rgba(var(--bs-primary-rgb), 0.04);
+  background-color: rgba(var(--bs-primary-rgb), 0.03);
 }
 
 /* 4 cases per row on wide screens, 2 per row below 1024px */
