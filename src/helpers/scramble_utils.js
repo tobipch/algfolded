@@ -1,9 +1,9 @@
 import {random_element} from "@/helpers/helpers";
 import ltct_map from "@/assets/ltct_map.json"
 
-export const makeScramble = (zbllKey) => {
-  if (!zbllKey) return ""
-  const entry = ltct_map[zbllKey]
+export const makeScramble = (caseKey) => {
+  if (!caseKey) return ""
+  const entry = ltct_map[caseKey]
   const scrambles = entry["scrambles"]
 
   if (!scrambles || scrambles.length === 0) {

@@ -1,7 +1,7 @@
 {
   "fr": {
     "nav": {
-      "zbll_trainer": "LTCT Trainer",
+      "trainer_title": "LTCT Trainer",
       "select_btn": "sélectionner",
       "n_cases": "aucun cas sélectionné | un cas sélectionné | {count} cas sélectionnés",
       "n_to_recap": "{count} à réviser",
@@ -38,11 +38,6 @@
       "howto_2": "\uD83D\uDD3D Cliquez sur l'en-tête de l'élément pour développer / réduire le groupe",
       "howto_3": "\uD83D\uDFE2 La couleur verte signifie que tous les cas du groupe sont sélectionnés ; \uD83D\uDFE1 jaune - certains cas sont sélectionnés ; ⚪ blanc - aucun cas sélectionné",
       "howto_4": "✅ Lorsque des cas sont sélectionnés, cliquez sur \"démarrer\""
-    },
-    "zbll_select_card": {
-      "all": "Tout",
-      "none": "Aucun",
-      "done": "Terminé"
     },
     "settings": {
       "settings_title": "Paramètres",

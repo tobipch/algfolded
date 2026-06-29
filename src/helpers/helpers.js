@@ -12,7 +12,7 @@ export const shuffle = arr => {
 }
 
 // "UU UFL LUB" -> "UU-UFL LUB"
-export const formatZbllKey = key => {
+export const formatCaseKey = key => {
     const [group, target, twist] = key.split(' ');
     return `${group}-${target} ${twist}`;
 }

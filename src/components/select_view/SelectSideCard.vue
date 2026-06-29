@@ -8,7 +8,7 @@ import SideAccordion from "@/components/select_view/SideAccordion.vue";
 const router = useRouter();
 const selected = useSelectedStore();
 const session = useSessionStore()
-const btnDisabled = computed(() => selected.totalZbllsSelected() === 0)
+const btnDisabled = computed(() => selected.totalCasesSelected() === 0)
 
 const startPractice = () => {
   session.store.recapMode = false

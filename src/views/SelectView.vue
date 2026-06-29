@@ -1,5 +1,5 @@
 <script setup>
-import MainZbllGrid from "@/components/select_view/MainZbllGrid.vue";
+import MainCaseGrid from "@/components/select_view/MainCaseGrid.vue";
 import SelectSideCard from "@/components/select_view/SelectSideCard.vue";
 import Settings from "@/components/Settings.vue";
 import {useRouter} from "vue-router";
@@ -29,7 +29,7 @@ onMounted(() => {
   <div class="card mt-2 mb-2">
     <div class="card-body">
       <p class="text-muted mb-2">{{ $t("select.select_intro") }}</p>
-      <MainZbllGrid/>
+      <MainCaseGrid/>
     </div>
   </div>
 </template>

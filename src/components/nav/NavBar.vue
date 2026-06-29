@@ -44,8 +44,8 @@ const isTimerView = computed(() => route.fullPath.endsWith("timer"))
 const settingsBtnClass = computed(() => displayStore.showSettings ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
-      ? (session.casesWithZeroCount.length + '/' + selected.totalZbllsSelected())
-      : selected.totalZbllsSelected()
+      ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
+      : selected.totalCasesSelected()
 })
 
 const onGlobalKeyDown = (e) => {
@@ -91,10 +91,10 @@ onUnmounted(() => {
           <i class="bi bi-list-columns"></i>
         </button>
         <span v-else class="mx-3 logoText">
-          {{ $t("nav.zbll_trainer") }}
+          {{ $t("nav.trainer_title") }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block">
-          {{ $t("nav.n_cases", selected.totalZbllsSelected()) }}
+          {{ $t("nav.n_cases", selected.totalCasesSelected()) }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block" v-if="isTimerView && session.store.recapMode">
           {{ $t("nav.n_to_recap", session.casesWithZeroCount.length) }}

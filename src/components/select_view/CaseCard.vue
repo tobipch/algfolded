@@ -3,20 +3,20 @@
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
 import {computed, ref} from "vue";
-import ZbllCaseInfoModal from "@/components/select_view/ZbllCaseInfoModal.vue";
+import CaseInfoModal from "@/components/select_view/CaseInfoModal.vue";
 
-const props = defineProps(['zbllKey']);
-const key = props.zbllKey
+const props = defineProps(['caseKey']);
+const key = props.caseKey
 const selected = useSelectedStore();
 const ls = useLetterSchemeStore();
 
 const twist = key.split(' ')[2]
 const twistLetter = computed(() => ls.toLetter(twist))
 
-const is_selected = computed(() => selected.isZbllSelected(key));
+const is_selected = computed(() => selected.isCaseSelected(key));
 
 const onCardClicked = () => {
-  const action = is_selected.value ? selected.removeZbll : selected.addZbll
+  const action = is_selected.value ? selected.removeCase : selected.addCase
   action(key);
 }
 
@@ -37,7 +37,7 @@ const infoShown = ref(false)
       <span class="fs-5 fw-bold">{{ twistLetter }}</span>
     </div>
   </div>
-  <ZbllCaseInfoModal v-if="infoShown" :zbllKey="key" :closeCallback="() => infoShown=false"/>
+  <CaseInfoModal v-if="infoShown" :caseKey="key" :closeCallback="() => infoShown=false"/>
 </template>
 
 <style scoped>

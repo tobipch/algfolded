@@ -1,7 +1,7 @@
 {
   "de": {
     "nav": {
-      "zbll_trainer": "LTCT Trainer",
+      "trainer_title": "LTCT Trainer",
       "select_btn": "auswählen",
       "n_cases": "keine Fälle ausgewählt | ein Fall ausgewählt | {count} Fälle ausgewählt",
       "n_to_recap": "{count} zum Wiederholen",
@@ -38,11 +38,6 @@
       "howto_2": "\uD83D\uDD3D Klicke auf die Überschrift, um die Gruppe zu erweitern / zusammenzufalten",
       "howto_3": "\uD83D\uDFE2 Grüne Farbe bedeutet, dass alle Fälle in der Gruppe ausgewählt sind; \uD83D\uDFE1 Gelb - einige Fälle sind ausgewählt; ⚪ Weiß - keine Fälle ausgewählt",
       "howto_4": "✅ Wenn Fälle ausgewählt sind, klicke auf \"starten\""
-    },
-    "zbll_select_card": {
-      "all": "Alle",
-      "none": "Keine",
-      "done": "Fertig"
     },
     "settings": {
       "settings_title": "Einstellungen",

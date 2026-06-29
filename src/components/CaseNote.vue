@@ -4,8 +4,8 @@ import {computed, ref} from "vue";
 
 const notes = useNotesStore()
 
-const props = defineProps(['zbllKey']);
-const key = computed(() => props.zbllKey ? props.zbllKey : "")
+const props = defineProps(['caseKey']);
+const key = computed(() => props.caseKey ? props.caseKey : "")
 
 const isEditing = ref(false)
 const noteInput = ref(null)

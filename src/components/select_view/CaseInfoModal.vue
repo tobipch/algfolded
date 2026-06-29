@@ -3,11 +3,11 @@ import {computed, onMounted, ref} from "vue";
 import {Modal} from 'bootstrap'
 import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
 import {parseLtctKey} from "@/helpers/helpers";
-import ZbllCaseInfo from "@/components/select_view/ZbllCaseInfo.vue";
+import CaseInfo from "@/components/select_view/CaseInfo.vue";
 
-const props = defineProps(['zbllKey', 'closeCallback']);
+const props = defineProps(['caseKey', 'closeCallback']);
 const ls = useLetterSchemeStore();
-const parsed = computed(() => parseLtctKey(props.zbllKey, ls.toLetter));
+const parsed = computed(() => parseLtctKey(props.caseKey, ls.toLetter));
 
 const infoModal = ref(null)
 
@@ -28,7 +28,7 @@ onMounted(() => {
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <ZbllCaseInfo :zbllKey="props.zbllKey"/>
+          <CaseInfo :caseKey="props.caseKey"/>
         </div>
       </div>
     </div>

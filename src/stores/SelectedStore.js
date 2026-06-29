@@ -29,7 +29,7 @@ function compareKeys(a, b) {
 }
 
 export const useSelectedStore = defineStore('selected', () => {
-  const allZbllKeysArray = Object.keys(ltct_map).sort(compareKeys)
+  const allCaseKeysArray = Object.keys(ltct_map).sort(compareKeys)
 
   const store = reactive({
     keys: loadedArray,
@@ -37,50 +37,50 @@ export const useSelectedStore = defineStore('selected', () => {
 
   const applyFromPreset = presetKeysSet => store.keys = [...presetKeysSet]
 
-  const removeOll = oll => {
-    store.keys = store.keys.filter(key => !key.startsWith(`${oll} `))
+  const removeGroup = group => {
+    store.keys = store.keys.filter(key => !key.startsWith(`${group} `))
   }
 
   // this may lead to duplicate store.keys, use with caution
-  const addOll = oll => {
-    store.keys = [...store.keys, ...allZbllKeysArray.filter(key => key.startsWith(`${oll} `))]
+  const addGroup = group => {
+    store.keys = [...store.keys, ...allCaseKeysArray.filter(key => key.startsWith(`${group} `))]
   }
 
   // this may lead to duplicate store.keys, use with caution
-  const addColl = (oll, coll) => {
-    store.keys = [...store.keys, ...allZbllKeysArray.filter(key => key.startsWith(`${oll} ${coll} `))]
+  const addSubgroup = (group, subgroup) => {
+    store.keys = [...store.keys, ...allCaseKeysArray.filter(key => key.startsWith(`${group} ${subgroup} `))]
   }
 
-  const addZbll = key => {
+  const addCase = key => {
     store.keys = [...store.keys, key] // if you just .push(), then freakin' VueJS won't track it
   }
 
-  // remove all coll cases
-  const removeColl = (oll, coll) => {
-    store.keys = store.keys.filter(key => !key.startsWith(`${oll} ${coll} `))
+  // remove all cases of the subgroup
+  const removeSubgroup = (group, subgroup) => {
+    store.keys = store.keys.filter(key => !key.startsWith(`${group} ${subgroup} `))
   }
 
-  const removeZbll = key => store.keys = store.keys.filter(k => k !== key)
+  const removeCase = key => store.keys = store.keys.filter(k => k !== key)
 
-  const isZbllSelected = key => store.keys.includes(key)
+  const isCaseSelected = key => store.keys.includes(key)
 
-  const numZbllsInCollSelected = (oll, coll) => store.keys.filter(key => key.startsWith(`${oll} ${coll} `)).length
+  const numCasesInSubgroupSelected = (group, subgroup) => store.keys.filter(key => key.startsWith(`${group} ${subgroup} `)).length
 
-  const numZbllsInOllSelected = (oll) => store.keys.filter(key => key.startsWith(`${oll} `)).length
+  const numCasesInGroupSelected = (group) => store.keys.filter(key => key.startsWith(`${group} `)).length
 
-  const totalZbllsSelected = () => store.keys.length
+  const totalCasesSelected = () => store.keys.length
 
   const toggleSelected = result => {
     if (!result) return
-    const action = isZbllSelected(result.oll, result.coll, result.zbll) ? removeZbll : addZbll
-    action(result.oll, result.coll, result.zbll)
+    const action = isCaseSelected(result.key) ? removeCase : addCase
+    action(result.key)
   }
 
   watch(() => store.keys, () => {
     localStorage.setItem(localStoreKey, JSON.stringify(store.keys))
   })
 
-  return {store, allZbllKeysArray, addOll, addColl, addZbll,
-    removeOll, removeColl, removeZbll, toggleSelected,
-    isZbllSelected, numZbllsInCollSelected, numZbllsInOllSelected, totalZbllsSelected, applyFromPreset}
+  return {store, allCaseKeysArray, addGroup, addSubgroup, addCase,
+    removeGroup, removeSubgroup, removeCase, toggleSelected,
+    isCaseSelected, numCasesInSubgroupSelected, numCasesInGroupSelected, totalCasesSelected, applyFromPreset}
 });
