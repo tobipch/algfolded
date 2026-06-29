@@ -42,7 +42,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="border rounded-1" :class="card_bg_class">
+  <div class="border rounded-1 subgroup-card" :class="card_bg_class">
     <div
         class="header p-1 clickable border-bottom d-flex justify-content-between align-items-center"
         data-bs-toggle="collapse"
@@ -63,7 +63,7 @@ onMounted(() => {
     </div>
   </div>
   <div
-      class="collapse multi-collapse"
+      class="collapse multi-collapse case-well"
       ref="subgroupCardRef"
       :id="collapseId">
     <div class="row gx-0">
@@ -81,6 +81,26 @@ onMounted(() => {
 
 .upside_down {
   transform: rotate(180deg);
+}
+
+/* Separate consecutive subgroups from each other */
+.subgroup-card {
+  margin-top: 0.4rem;
+}
+
+/* Tinted header bar for the subgroup level (lighter than the group's,
+   only when no cases are selected so it never fights the selection colours) */
+.no_cases_selected > .header {
+  background-color: rgba(var(--bs-primary-rgb), 0.07);
+}
+
+/* Indented "well" holding the cases, with a lighter left rail than the group's */
+.case-well {
+  margin: 0.4rem 0 0.15rem 0.4rem;
+  padding: 0.1rem 0.25rem 0.25rem 0.5rem;
+  border-left: 3px solid rgba(var(--bs-primary-rgb), 0.45);
+  border-radius: 0 0.375rem 0.375rem 0;
+  background-color: rgba(var(--bs-primary-rgb), 0.04);
 }
 
 /* 4 cases per row on wide screens, 2 per row below 1024px */
