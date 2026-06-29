@@ -1,17 +1,16 @@
 <script setup>
-import {useSettingsStore, fontsList} from "@/stores/SettingsStore";
+import {useSettingsStore} from "@/stores/SettingsStore";
 import LetterSchemeEditor from "@/components/LetterSchemeEditor.vue";
 import {useI18n} from 'vue-i18n'
-import {useDisplayStore} from "@/stores/DisplayStore";
+import {useRouter} from "vue-router";
 
 const {t} = useI18n()
 const settings = useSettingsStore()
-const displayStore = useDisplayStore()
+const router = useRouter()
 
 const onResetBtnClicked = () => {
   if (confirm(t("settings.are_you_sure_to_reset"))) {
     settings.resetDefaults()
-    displayStore.showSettings = false
   }
 }
 </script>
@@ -22,7 +21,7 @@ const onResetBtnClicked = () => {
       <span class="h2 flex-grow-1">{{ $t("settings.settings_title") }}</span>
       <div class="d-lg-none d-block"><br></div>
       <button class="mx-2 btn btn-warning" @click="onResetBtnClicked">{{ $t("settings.reset_btn") }}</button>
-      <button class="mx-2 btn btn-success" @click="displayStore.showSettings = false">{{ $t("settings.done_btn") }}
+      <button class="mx-2 btn btn-success" @click="router.push('select')">{{ $t("settings.done_btn") }}
       </button>
     </div>
     <hr>
@@ -45,22 +44,6 @@ const onResetBtnClicked = () => {
             class="mx-2" tabindex="-1" @keydown.space.prevent=""
             v-model.number="settings.store.timerFontSize" id="timerFontSize"/>
       </div>
-
-      <div class="mb-2">
-        <label for="timerFont" class="form-label">{{ $t("settings.timer_font") }}</label>
-        <select
-            v-model="settings.store.timerFont"
-            class="mx-2"
-            tabindex="-1" @keydown.space.prevent=""
-            id="timerFont">
-          <option
-              v-for="font in fontsList" :value="font" :key="font"
-              :style="{ fontFamily: font, fontWeight : 700 }">
-            {{ font }}
-          </option>
-        </select>
-      </div>
-
 
       <div class="mb-2">
         <label for="timerUpdate" class="form-label">{{ $t("settings.timer_update") }}</label>
@@ -135,28 +118,6 @@ const onResetBtnClicked = () => {
                  tabindex="-1" @keydown.space.prevent="">
           <label class="form-check-label" for="smartSelection">{{ $t("settings.smart_selection") }}</label>
         </div>
-      </div>
-
-      <div v-if="settings.store.smartSelection" class="mb-3 ms-1">
-        <label for="slownessPower" class="form-label">
-          {{ $t("settings.speed_emphasis") }}: {{ settings.store.slownessPower }}
-        </label>
-        <input type="range" class="form-range" id="slownessPower"
-               min="0" max="4" step="0.5"
-               v-model.number="settings.store.slownessPower"
-               tabindex="-1" @keydown.space.prevent="">
-        <small class="text-muted">{{ $t("settings.speed_emphasis_hint") }}</small>
-      </div>
-
-      <div v-if="settings.store.smartSelection" class="mb-3 ms-1">
-        <label for="recencyDecay" class="form-label">
-          {{ $t("settings.recency_emphasis") }}: {{ settings.store.recencyDecay }}
-        </label>
-        <input type="range" class="form-range" id="recencyDecay"
-               min="0" max="2" step="0.1"
-               v-model.number="settings.store.recencyDecay"
-               tabindex="-1" @keydown.space.prevent="">
-        <small class="text-muted">{{ $t("settings.recency_emphasis_hint") }}</small>
       </div>
 
     </form>

@@ -45,7 +45,6 @@
       "done_btn": "Fertig",
       "scramble_size": "Mischgröße",
       "timer_size": "Timergröße",
-      "timer_font": "Timer-Schriftart",
       "timer_update": "Timer-Aktualisierung",
       "timer_update_on": "Ein",
       "timer_update_off": "Aus",
@@ -60,11 +59,7 @@
       "letterpair_mode_hint": "Zeigt das Letterpair des Falls statt der Mischung. Der virtuelle Würfel startet bereits verdreht – du führst nur den LTCT aus und der Timer stoppt, sobald er gelöst ist. Kein physisches Verwürfeln nötig, und der Würfel darf zwischen den Fällen verdreht bleiben.",
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
-      "smart_selection": "Intelligente Fallauswahl",
-      "speed_emphasis": "Geschwindigkeitsgewichtung",
-      "speed_emphasis_hint": "Wie stark langsame Fälle bevorzugt werden (0 = ignorieren, 4 = stark)",
-      "recency_emphasis": "Aktualitätsgewichtung",
-      "recency_emphasis_hint": "Wie schnell nicht geübte Fälle wieder auftauchen (0 = ignorieren, 2 = aggressiv)"
+      "smart_selection": "Intelligente Fallauswahl"
     },
     "timer": {
       "no_scramble": "kein Mischvorgang verfügbar",

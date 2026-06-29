@@ -89,4 +89,12 @@ onMounted(() => {
   border-radius: 0 0.375rem 0.375rem 0;
   background-color: rgba(var(--bs-primary-rgb), 0.04);
 }
+
+/* dark mode: stronger tints so the levels stand out against the dark surfaces */
+:root[data-mode="dark"] .no_cases_selected > .header {
+  background-color: rgba(var(--bs-primary-rgb), 0.20);
+}
+:root[data-mode="dark"] .subgroup-well {
+  background-color: rgba(var(--bs-primary-rgb), 0.08);
+}
 </style>

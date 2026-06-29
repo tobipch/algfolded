@@ -45,7 +45,6 @@
       "done_btn": "Fatto",
       "scramble_size": "Dimensione miscela",
       "timer_size": "Dimensione timer",
-      "timer_font": "Carattere timer",
       "timer_update": "Aggiornamento timer",
       "timer_update_on": "Attivo",
       "timer_update_off": "Disattivo",
@@ -60,11 +59,7 @@
       "letterpair_mode_hint": "Mostra la coppia di lettere del caso invece della miscela. Il cubo virtuale parte già mescolato, esegui solo l'LTCT e il timer si ferma quando è risolto — nessun mescolamento fisico necessario, e il cubo può restare mescolato tra un caso e l'altro.",
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
-      "smart_selection": "Selezione intelligente dei casi",
-      "speed_emphasis": "Enfasi sulla velocità",
-      "speed_emphasis_hint": "Quanto dare priorità ai casi lenti (0 = ignora, 4 = massimo)",
-      "recency_emphasis": "Enfasi sulla recenza",
-      "recency_emphasis_hint": "Con quanta rapidità riproporre i casi non praticati (0 = ignora, 2 = aggressivo)"
+      "smart_selection": "Selezione intelligente dei casi"
     },
     "timer": {
       "no_scramble": "nessuna miscela disponibile",

@@ -41,7 +41,8 @@ const route = useRoute()
 const displayStore = useDisplayStore()
 
 const isTimerView = computed(() => route.fullPath.endsWith("timer"))
-const settingsBtnClass = computed(() => displayStore.showSettings ? 'btn-info' : 'btn-outline-info')
+const isSettingsView = computed(() => route.name === 'settings')
+const settingsBtnClass = computed(() => isSettingsView.value ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
       ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
@@ -90,7 +91,7 @@ onUnmounted(() => {
             class="mx-2 btn d-inline-block d-sm-none m-0">
           <i class="bi bi-list-columns"></i>
         </button>
-        <span v-else class="mx-3 logoText">
+        <span v-else class="mx-3 logoText clickable" @click="router.push('select')">
           {{ $t("nav.trainer_title") }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block">
@@ -158,7 +159,7 @@ onUnmounted(() => {
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
             :class="settingsBtnClass"
-            @click="displayStore.showSettings = !displayStore.showSettings"
+            @click="isSettingsView ? router.push('select') : router.push('settings')"
             :title="$t('nav.settings')">
           <i class="bi-wrench"/>
         </button>

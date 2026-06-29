@@ -45,7 +45,6 @@
       "done_btn": "Terminé",
       "scramble_size": "Taille du mélange",
       "timer_size": "Taille du chronomètre",
-      "timer_font": "Police du chronomètre",
       "timer_update": "Mise à jour du chronomètre",
       "timer_update_on": "Activé",
       "timer_update_off": "Désactivé",
@@ -60,11 +59,7 @@
       "letterpair_mode_hint": "Affiche la paire de lettres du cas au lieu du mélange. Le cube virtuel démarre déjà mélangé, vous exécutez simplement le LTCT et le chrono s'arrête une fois résolu — aucun mélange physique nécessaire, et le cube peut rester mélangé entre les cas.",
       "letter_scheme": "Schéma des lettres",
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
-      "smart_selection": "Sélection intelligente des cas",
-      "speed_emphasis": "Priorité à la vitesse",
-      "speed_emphasis_hint": "À quel point prioriser les cas lents (0 = ignorer, 4 = élevé)",
-      "recency_emphasis": "Priorité à la récence",
-      "recency_emphasis_hint": "À quelle vitesse refaire apparaître les cas non pratiqués (0 = ignorer, 2 = agressif)"
+      "smart_selection": "Sélection intelligente des cas"
     },
     "timer": {
       "no_scramble": "aucun mélange disponible",

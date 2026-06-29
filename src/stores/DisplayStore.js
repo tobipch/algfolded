@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 
 
 export const useDisplayStore = defineStore('display', () => {
-  const showSettings = ref(false)
   const showStatistics = ref(false)
 
   // Toast notifications
@@ -20,5 +19,5 @@ export const useDisplayStore = defineStore('display', () => {
     toastTimer = setTimeout(() => { toastVisible.value = false }, 4000)
   }
 
-  return {showSettings, showStatistics, toastMessage, toastType, toastVisible, showToast}
+  return {showStatistics, toastMessage, toastType, toastVisible, showToast}
 });

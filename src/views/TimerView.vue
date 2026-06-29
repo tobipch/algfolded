@@ -10,7 +10,6 @@ const {t} = useI18n()
 
 import {TimerState, useSessionStore} from "@/stores/SessionStore";
 import {useRouter} from "vue-router";
-import Settings from "@/components/Settings.vue";
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useSettingsStore} from "@/stores/SettingsStore"
@@ -269,9 +268,6 @@ const onPageTouchEnd = event => {
             </span>
           </div>
           <Timer/>
-        </div>
-        <div v-if="displayStore.showSettings" class="mt-2">
-          <Settings/>
         </div>
         <div v-if="displayStore.showStatistics" class="d-sm-none d-block">
           <SummaryCard v-if="sessionStore.stats().length > 0"/>

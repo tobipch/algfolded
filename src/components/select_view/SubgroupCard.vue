@@ -104,6 +104,14 @@ onMounted(() => {
   background-color: rgba(var(--bs-primary-rgb), 0.03);
 }
 
+/* dark mode: stronger tints so the levels stand out against the dark surfaces */
+:root[data-mode="dark"] .no_cases_selected > .header {
+  background-color: rgba(var(--bs-primary-rgb), 0.13);
+}
+:root[data-mode="dark"] .case-well {
+  background-color: rgba(var(--bs-primary-rgb), 0.06);
+}
+
 /* 4 cases per row on wide screens, 2 per row below 1280px */
 .case-col {
   flex: 0 0 auto;
