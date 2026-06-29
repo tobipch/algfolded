@@ -1,7 +1,9 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
 
-const localStoreKey = "zbll2_presets_arrays";
+const localStoreKey = "ltct_presets_arrays";
+migrateLocalStorageKey("zbll2_presets_arrays", localStoreKey)
 export const starredName = "⭐" // do not make it locale-based!
 
 const loadFromLocalStorage = () => {

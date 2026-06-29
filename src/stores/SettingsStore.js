@@ -1,5 +1,6 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
 
 export const fontsList = ["Roboto Mono", "Courier New", "Ubuntu Mono", "Arial", "Helvetica",
     "sans-serif", "Times", "serif",]
@@ -19,7 +20,8 @@ const defaultSettings = {
     recencyDecay: 0.5,
 }
 
-const localStorageKey = "zbllTrainerSettings"
+const localStorageKey = "ltctTrainerSettings"
+migrateLocalStorageKey("zbllTrainerSettings", localStorageKey)
 
 export const useSettingsStore = defineStore('settings', () => {
     const store = reactive(

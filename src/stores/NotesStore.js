@@ -1,7 +1,9 @@
 import {reactive, ref, watch} from 'vue'
 import { defineStore } from 'pinia'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
 
-const localStorageKey = "zbllTrainerNotes"
+const localStorageKey = "ltctTrainerNotes"
+migrateLocalStorageKey("zbllTrainerNotes", localStorageKey)
 
 export const useNotesStore = defineStore('notes', () => {
   const store = reactive(

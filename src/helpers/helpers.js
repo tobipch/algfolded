@@ -29,3 +29,15 @@ export const parseLtctKey = (key, toLetter) => {
 export function areSetsEqual(setA, setB) {
     return setA.size === setB.size && [...setA].every(item => setB.has(item));
 }
+
+// One-time migration of a renamed localStorage key (oldKey -> newKey).
+// Copies the old value to the new key if the new key isn't set yet, then drops the old key.
+export const migrateLocalStorageKey = (oldKey, newKey) => {
+    if (typeof localStorage === 'undefined' || !localStorage) return
+    const oldVal = localStorage.getItem(oldKey)
+    if (oldVal === null) return
+    if (localStorage.getItem(newKey) === null) {
+        localStorage.setItem(newKey, oldVal)
+    }
+    localStorage.removeItem(oldKey)
+}

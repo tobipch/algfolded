@@ -12,11 +12,15 @@
 */
 import {computed, ref} from 'vue'
 import { defineStore } from 'pinia'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
 
 // local storage keys
-const isDarkKey = "zbll_theme.is_dark";
-const darkNameKey = "zbll_theme.dark_name";
-const lightNameKey = "zbll_theme.light_name";
+const isDarkKey = "ltct_theme.is_dark";
+const darkNameKey = "ltct_theme.dark_name";
+const lightNameKey = "ltct_theme.light_name";
+migrateLocalStorageKey("zbll_theme.is_dark", isDarkKey)
+migrateLocalStorageKey("zbll_theme.dark_name", darkNameKey)
+migrateLocalStorageKey("zbll_theme.light_name", lightNameKey)
 
 // defaults
 const defaultIsDark = false;

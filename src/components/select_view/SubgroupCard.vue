@@ -89,7 +89,7 @@ onMounted(() => {
   width: 25%;
 }
 
-@media (max-width: 1023.98px) {
+@media (max-width: 1023px) {
   .case-col {
     width: 50%;
   }

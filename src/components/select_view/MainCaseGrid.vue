@@ -30,9 +30,17 @@ const groups = select.allCaseKeysArray
   min-width: 0;
 }
 
-@media (max-width: 480px) {
+/* 2 columns below 600px */
+@media (max-width: 599px) {
   .group-grid-item {
     flex: 0 0 calc(50% - 6px);
+  }
+}
+
+/* 1 column below 380px */
+@media (max-width: 379px) {
+  .group-grid-item {
+    flex: 0 0 100%;
   }
 }
 </style>

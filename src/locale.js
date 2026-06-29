@@ -1,4 +1,5 @@
 import {createI18n} from 'vue-i18n'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
 
 import de from '@/assets/i18n/de.json'
 import en from '@/assets/i18n/en.json'
@@ -16,7 +17,8 @@ export const supportedLocales = [
     {code: "fr", messages: fr, name: "Français", flag: flagFr},
     {code: "it", messages: it, name: "Italiano", flag: flagIt},
 ]
-const localStorageKey = "zbll_locale"
+const localStorageKey = "ltct_locale"
+migrateLocalStorageKey("zbll_locale", localStorageKey)
 const defaultLocale = 'en';
 
 const supportedLocalesSet = new Set(supportedLocales.map(locale => locale.code));
