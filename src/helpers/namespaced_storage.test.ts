@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import {
   readNamespaced, writeNamespaced, migrateToNamespaced,
   isFlatArray, isFlatStringMap, isFlatArrayMap,
+  isFlatSession, isFlatSrs, isFlatNumber,
 } from './namespaced_storage'
 
 // in-memory localStorage for the node test env
@@ -60,5 +61,32 @@ describe('namespaced storage', () => {
     expect(isFlatStringMap({ ltct: { x: 'y' } })).toBe(false)
     expect(isFlatArrayMap({ '⭐': [] })).toBe(true)
     expect(isFlatArrayMap({ ltct: { '⭐': [] } })).toBe(false)
+  })
+
+  it('session/srs/counter predicates distinguish old vs namespaced shapes', () => {
+    // session: flat run carries a `keys` array; namespaced is keyed by algsetId
+    expect(isFlatSession({ keys: ['a'], stats: [] })).toBe(true)
+    expect(isFlatSession({ ltct: { keys: ['a'], stats: [] } })).toBe(false)
+    // srs: flat values carry a/n/s; namespaced wraps a level deeper
+    expect(isFlatSrs({ 'UU UFL LUB': { a: 1.2, n: 3, s: 5 } })).toBe(true)
+    expect(isFlatSrs({ ltct: { 'UU UFL LUB': { a: 1.2, n: 3, s: 5 } } })).toBe(false)
+    expect(isFlatSrs({})).toBe(false)
+    // counter: flat is a bare number; namespaced is an object
+    expect(isFlatNumber(7)).toBe(true)
+    expect(isFlatNumber({ ltct: 7 })).toBe(false)
+  })
+
+  it('migrates legacy session, srs and counter into the namespace', () => {
+    localStorage.setItem('store', JSON.stringify({ keys: ['a'], stats: [], upcoming: [] }))
+    migrateToNamespaced('store', 'ltct', isFlatSession)
+    expect(JSON.parse(localStorage.getItem('store')!)).toEqual({ ltct: { keys: ['a'], stats: [], upcoming: [] } })
+
+    localStorage.setItem('srs', JSON.stringify({ 'UU UFL LUB': { a: 1, n: 2, s: 3 } }))
+    migrateToNamespaced('srs', 'ltct', isFlatSrs)
+    expect(JSON.parse(localStorage.getItem('srs')!)).toEqual({ ltct: { 'UU UFL LUB': { a: 1, n: 2, s: 3 } } })
+
+    localStorage.setItem('cnt', JSON.stringify(42))
+    migrateToNamespaced('cnt', 'ltct', isFlatNumber)
+    expect(JSON.parse(localStorage.getItem('cnt')!)).toEqual({ ltct: 42 })
   })
 })

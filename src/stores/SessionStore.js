@@ -5,14 +5,17 @@ import {makeScramble} from "@/helpers/scramble_utils"
 import {updateEma, caseWeight, weightedRandomPick, median} from "@/helpers/srs"
 import {useSettingsStore} from "@/stores/SettingsStore"
 import {useAlgsetStore} from "@/stores/AlgsetStore"
+import {DEFAULT_ALGSET_ID} from "@/algsets/registry"
+import {readNamespaced, writeNamespaced, migrateToNamespaced,
+    isFlatSession, isFlatSrs, isFlatNumber} from "@/helpers/namespaced_storage"
 
 const statsKey = 'ltct_stats_array';
-const initialStats = JSON.parse(localStorage.getItem(statsKey)) || []
 const storeKey = 'ltct_store';
 const srsKey = 'ltct_srs';
 const srsCounterKey = 'ltct_srs_counter';
 
-const initialStore = JSON.parse(localStorage.getItem(storeKey)) || {
+// A fresh, empty run.
+const makeDefaultStore = () => ({
     // array of keys selected
     "keys": [],
 
@@ -30,10 +33,29 @@ const initialStore = JSON.parse(localStorage.getItem(storeKey)) || {
     "upcoming": [],
 
     // array of objects: {i=index, key, scramble, ms}
-    "stats": initialStats,
+    "stats": [],
+})
+
+// Legacy: stats once lived in their own key; fold them into the flat store
+// once, before it gets namespaced below.
+const legacyStats = JSON.parse(localStorage.getItem(statsKey) || 'null')
+if (Array.isArray(legacyStats) && localStorage.getItem(storeKey) == null) {
+    localStorage.setItem(storeKey, JSON.stringify({...makeDefaultStore(), stats: legacyStats}))
 }
-// Guard for stores persisted before the lookahead queue existed.
-if (!Array.isArray(initialStore.upcoming)) initialStore.upcoming = []
+
+// Per-algset namespacing: lift any pre-multi-algset flat data into the
+// default set's slot, so each set keeps its own run / SRS history.
+migrateToNamespaced(storeKey, DEFAULT_ALGSET_ID, isFlatSession)
+migrateToNamespaced(srsKey, DEFAULT_ALGSET_ID, isFlatSrs)
+migrateToNamespaced(srsCounterKey, DEFAULT_ALGSET_ID, isFlatNumber)
+
+// Read a set's run slot, defaulting to an empty run and guarding old shapes.
+const loadStore = (id) => {
+    const s = readNamespaced(storeKey, id, makeDefaultStore())
+    if (!Array.isArray(s.upcoming)) s.upcoming = [] // pre-lookahead persisted runs
+    if (!Array.isArray(s.stats)) s.stats = []
+    return s
+}
 
 export const TimerState = Object.freeze({
     NOT_RUNNING: 0,
@@ -46,9 +68,9 @@ export const TimerState = Object.freeze({
 // store for current case/scramble and stats
 export const useSessionStore = defineStore('session', () => {
     const algset = useAlgsetStore()
-    const store = reactive(initialStore)
-    const srsData = reactive(JSON.parse(localStorage.getItem(srsKey)) || {})
-    const srsCounter = ref(parseInt(localStorage.getItem(srsCounterKey)) || 0)
+    const store = reactive(loadStore(algset.activeId))
+    const srsData = reactive(readNamespaced(srsKey, algset.activeId, {}))
+    const srsCounter = ref(readNamespaced(srsCounterKey, algset.activeId, 0))
     const recentCases = ref([])
     const sessionStartedAt = ref(0)
 
@@ -209,8 +231,25 @@ export const useSessionStore = defineStore('session', () => {
         sessionStartedAt.value = 0
     }
 
-    // switching algset -> the current run belongs to the old set; clear it
-    watch(() => algset.activeId, () => clearSession())
+    // Switching algset: persist the run/SRS we're leaving and load the one we're
+    // entering, so each set keeps its own session and spaced-repetition history.
+    watch(() => algset.activeId, (newId, oldId) => {
+        if (oldId) {
+            writeNamespaced(storeKey, oldId, store)
+            writeNamespaced(srsKey, oldId, srsData)
+            writeNamespaced(srsCounterKey, oldId, srsCounter.value)
+        }
+        const fresh = loadStore(newId)
+        for (const k of Object.keys(store)) delete store[k]
+        Object.assign(store, fresh)
+        for (const k of Object.keys(srsData)) delete srsData[k]
+        Object.assign(srsData, readNamespaced(srsKey, newId, {}))
+        srsCounter.value = readNamespaced(srsCounterKey, newId, 0)
+        recentCases.value = []
+        for (const k of Object.keys(didntKnowMap)) delete didntKnowMap[k]
+        observingResult.value = Math.max(0, store.stats.length - 1)
+        timerState.value = TimerState.NOT_RUNNING
+    })
 
     // when the competitor places his hands on the timer (aka holds spacebar)
     const getTimerReady = (timerStartDelayMs) => {
@@ -259,15 +298,15 @@ export const useSessionStore = defineStore('session', () => {
                 n: old.n + 1,
                 s: srsCounter.value
             }
-            localStorage.setItem(srsKey, JSON.stringify(srsData))
-            localStorage.setItem(srsCounterKey, srsCounter.value)
+            writeNamespaced(srsKey, algset.activeId, srsData)
+            writeNamespaced(srsCounterKey, algset.activeId, srsCounter.value)
         }
         setRandomCase()
         timerState.value = TimerState.STOPPING;
         observingResult.value = index
     }
 
-    watch(store, () => { localStorage.setItem(storeKey, JSON.stringify(store)) })
+    watch(store, () => { writeNamespaced(storeKey, algset.activeId, store) })
 
     const startRecap = () => {
         resetKeysCount()
@@ -284,14 +323,14 @@ export const useSessionStore = defineStore('session', () => {
         if (!srsData[key]) srsData[key] = { a: null, n: 0, s: 0 }
         didntKnowMap[key] = srsData[key].a
         srsData[key].a = med * 5
-        localStorage.setItem(srsKey, JSON.stringify(srsData))
+        writeNamespaced(srsKey, algset.activeId, srsData)
     }
 
     const unflagDidntKnow = (key) => {
         if (key in didntKnowMap) {
             if (srsData[key]) srsData[key].a = didntKnowMap[key]
             delete didntKnowMap[key]
-            localStorage.setItem(srsKey, JSON.stringify(srsData))
+            writeNamespaced(srsKey, algset.activeId, srsData)
         }
     }
 

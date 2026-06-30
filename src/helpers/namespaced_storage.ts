@@ -51,3 +51,19 @@ export const isFlatStringMap = (parsed: unknown): boolean =>
 // presets: old = a flat map presetName -> array of case ids
 export const isFlatArrayMap = (parsed: unknown): boolean =>
   isPlainObject(parsed) && Object.values(parsed).some((v) => Array.isArray(v))
+
+// session: old = the run object itself (carries a `keys` array); namespaced
+// data is keyed by algsetId, so its top level has no `keys` field.
+export const isFlatSession = (parsed: unknown): boolean =>
+  isPlainObject(parsed) && Array.isArray((parsed as Record<string, unknown>).keys)
+
+// srs: old = a flat map caseId -> { a, n, s }; namespacing wraps that one level
+// deeper, so only a flat map's values carry the a/n/s fields directly.
+export const isFlatSrs = (parsed: unknown): boolean =>
+  isPlainObject(parsed) &&
+  Object.values(parsed).some(
+    (v) => isPlainObject(v) && ('a' in v || 'n' in v || 's' in v),
+  )
+
+// srs counter: old = a bare number
+export const isFlatNumber = (parsed: unknown): boolean => typeof parsed === 'number'
