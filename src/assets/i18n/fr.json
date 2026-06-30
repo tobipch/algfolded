@@ -61,7 +61,9 @@
       "letterpair_mode_hint": "Affiche la paire de lettres du cas au lieu du mélange. Le cube virtuel démarre déjà mélangé, vous exécutez simplement le LTCT et le chrono s'arrête une fois résolu — aucun mélange physique nécessaire, et le cube peut rester mélangé entre les cas.",
       "letter_scheme": "Schéma des lettres",
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
-      "smart_selection": "Sélection intelligente des cas"
+      "smart_selection": "Sélection intelligente des cas",
+      "buffer_order": "Ordre des buffers (3-twists)",
+      "buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu 3-twists)."
     },
     "timer": {
       "no_scramble": "aucun mélange disponible",

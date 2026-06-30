@@ -61,7 +61,9 @@
       "letterpair_mode_hint": "Zeigt das Letterpair des Falls statt der Mischung. Der virtuelle Würfel startet bereits verdreht – du führst nur den LTCT aus und der Timer stoppt, sobald er gelöst ist. Kein physisches Verwürfeln nötig, und der Würfel darf zwischen den Fällen verdreht bleiben.",
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
-      "smart_selection": "Intelligente Fallauswahl"
+      "smart_selection": "Intelligente Fallauswahl",
+      "buffer_order": "3-Twists Buffer-Reihenfolge",
+      "buffer_order_hint": "Reihenfolge, in der Buffer einen Twist besitzen (gruppiert das 3-Twists-Set neu)."
     },
     "timer": {
       "no_scramble": "kein Mischvorgang verfügbar",

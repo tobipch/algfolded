@@ -61,7 +61,9 @@
       "letterpair_mode_hint": "Mostra la coppia di lettere del caso invece della miscela. Il cubo virtuale parte già mescolato, esegui solo l'LTCT e il timer si ferma quando è risolto — nessun mescolamento fisico necessario, e il cubo può restare mescolato tra un caso e l'altro.",
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
-      "smart_selection": "Selezione intelligente dei casi"
+      "smart_selection": "Selezione intelligente dei casi",
+      "buffer_order": "Ordine dei buffer (3-twists)",
+      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set 3-twists)."
     },
     "timer": {
       "no_scramble": "nessuna miscela disponibile",

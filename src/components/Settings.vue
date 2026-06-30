@@ -1,6 +1,7 @@
 <script setup>
 import {useSettingsStore} from "@/stores/SettingsStore";
 import LetterSchemeEditor from "@/components/LetterSchemeEditor.vue";
+import BufferOrderEditor from "@/components/BufferOrderEditor.vue";
 import {useI18n} from 'vue-i18n'
 import {useRouter} from "vue-router";
 
@@ -108,6 +109,12 @@ const onResetBtnClicked = () => {
       <div class="mb-3">
         <label class="form-label fw-bold">{{ $t("settings.letter_scheme") }}</label>
         <LetterSchemeEditor />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">{{ $t("settings.buffer_order") }}</label>
+        <small class="text-muted d-block mb-1">{{ $t("settings.buffer_order_hint") }}</small>
+        <BufferOrderEditor />
       </div>
       <hr>
 

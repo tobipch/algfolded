@@ -61,7 +61,9 @@
       "letterpair_mode_hint": "Show the case's letter pair instead of the scramble. The virtual cube starts already scrambled, so you just execute the LTCT and the timer stops when it's solved — no physical scrambling needed, and the cube can stay scrambled between cases.",
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
-      "smart_selection": "Smart case selection"
+      "smart_selection": "Smart case selection",
+      "buffer_order": "3-twists buffer order",
+      "buffer_order_hint": "Order in which buffers own a twist (re-groups the 3-twists set)."
     },
     "timer": {
       "no_scramble": "no scramble available",
