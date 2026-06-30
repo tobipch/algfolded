@@ -1,13 +1,10 @@
 <script setup>
-import {computed} from "vue";
 import SetupAndAlgs from "@/components/timer/SetupAndAlgs.vue";
 import CaseNote from "@/components/CaseNote.vue";
-import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
-import {parseLtctKey} from "@/helpers/helpers";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 
 const props = defineProps(['caseKey']);
-const ls = useLetterSchemeStore();
-const parsed = computed(() => parseLtctKey(props.caseKey, ls.toLetter));
+const algset = useAlgsetStore();
 </script>
 
 <template>
@@ -15,7 +12,7 @@ const parsed = computed(() => parseLtctKey(props.caseKey, ls.toLetter));
   <div class="row mx-1">
     <div class="col col-auto leftCol">
       <div class="fs-7 fst-italic">{{ props.caseKey }}</div>
-      <span class="fs-4 fw-bold">{{ parsed.letters }}</span>
+      <span class="fs-4 fw-bold">{{ algset.caseLabel(props.caseKey) }}</span>
     </div>
     <div class="col text-start">
       <CaseNote :caseKey="props.caseKey"/>

@@ -1,13 +1,11 @@
 <script setup>
-import {computed, onMounted, ref} from "vue";
+import {onMounted, ref} from "vue";
 import {Modal} from 'bootstrap'
-import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
-import {parseLtctKey} from "@/helpers/helpers";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import CaseInfo from "@/components/select_view/CaseInfo.vue";
 
 const props = defineProps(['caseKey', 'closeCallback']);
-const ls = useLetterSchemeStore();
-const parsed = computed(() => parseLtctKey(props.caseKey, ls.toLetter));
+const algset = useAlgsetStore();
 
 const infoModal = ref(null)
 
@@ -24,7 +22,7 @@ onMounted(() => {
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ parsed.letters }}</h5>
+          <h5 class="modal-title">{{ algset.caseLabel(props.caseKey) }}</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
