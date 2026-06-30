@@ -8,6 +8,7 @@
       "@/*": ["./src/*"]
     },
     "types": ["node"],
+    "resolveJsonModule": true,
     // Incremental migration: JS files are allowed and resolvable, but not
     // type-checked yet. New .ts / <script setup lang="ts"> files are checked
     // (strict comes from @vue/tsconfig). Convert file by file over time.
