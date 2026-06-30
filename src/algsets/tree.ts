@@ -14,6 +14,19 @@ const sortValues = (values: string[], order?: string[]): string[] => {
   return [...values].sort((a, b) => (idx.get(a) ?? 1e9) - (idx.get(b) ?? 1e9))
 }
 
+// Case ids of all leaves in traversal order (same order the tree renders).
+export const flattenLeaves = (nodes: TreeNode[]): string[] => {
+  const out: string[] = []
+  const walk = (ns: TreeNode[]): void => {
+    for (const n of ns) {
+      if (n.caseId !== undefined) out.push(n.caseId)
+      else walk(n.children)
+    }
+  }
+  walk(nodes)
+  return out
+}
+
 // Build the nested tree from flat cases, using each level's optional `order`.
 // Assumes case.path.length === levels.length.
 export const buildTree = (cases: AlgCase[], levels: AlgsetLevel[]): TreeNode[] => {

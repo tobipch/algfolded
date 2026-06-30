@@ -16,8 +16,16 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 // i18n
 import {i18n} from "@/locale"
 
-createApp(App)
-  .use(router)
-  .use(createPinia())
-  .use(i18n)
-  .mount('#app')
+import {useAlgsetStore} from "@/stores/AlgsetStore"
+
+const app = createApp(App)
+const pinia = createPinia()
+app.use(router)
+app.use(pinia)
+app.use(i18n)
+
+// Load the active algset's cases before the first render so the select view
+// has its data up front. (Per-set lazy loading on switch + a reactive UI come
+// with the later phases; for now exactly one set is loaded at startup.)
+const algset = useAlgsetStore(pinia)
+algset.activate(algset.activeId).finally(() => app.mount('#app'))
