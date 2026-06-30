@@ -24,8 +24,9 @@ app.use(router)
 app.use(pinia)
 app.use(i18n)
 
-// Load the active algset's cases before the first render so the select view
-// has its data up front. (Per-set lazy loading on switch + a reactive UI come
-// with the later phases; for now exactly one set is loaded at startup.)
+// Mount immediately so the app shell paints right away, then load the active
+// algset's cases in the background. The select view shows a loading state and
+// fills in reactively when the data (a lazy chunk) arrives.
+app.mount('#app')
 const algset = useAlgsetStore(pinia)
-algset.activate(algset.activeId).finally(() => app.mount('#app'))
+algset.activate(algset.activeId).catch(err => console.error('algset load failed', err))

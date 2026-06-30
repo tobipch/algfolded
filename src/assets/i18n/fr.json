@@ -17,6 +17,7 @@
     },
     "select": {
       "select_intro": "Sélectionnez les cas à pratiquer",
+      "loading": "Chargement des cas…",
       "practice_btn_title": "Pratiquer les cas de manière aléatoire",
       "recap_btn_title": "Parcourir chaque cas une fois",
       "practice": "démarrer",

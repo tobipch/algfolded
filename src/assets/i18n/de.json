@@ -17,6 +17,7 @@
     },
     "select": {
       "select_intro": "Wähle Fälle zum Üben aus",
+      "loading": "Fälle werden geladen…",
       "practice_btn_title": "Fälle zufällig üben",
       "recap_btn_title": "Gehe jeden Fall einmal durch",
       "practice": "starten",

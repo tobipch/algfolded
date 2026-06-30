@@ -17,6 +17,7 @@
     },
     "select": {
       "select_intro": "Select cases to practise",
+      "loading": "Loading cases…",
       "practice_btn_title": "Practice cases randomly",
       "recap_btn_title": "Go through each case once",
       "practice": "start",

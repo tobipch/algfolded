@@ -17,6 +17,7 @@
     },
     "select": {
       "select_intro": "Seleziona i casi da praticare",
+      "loading": "Caricamento dei casi…",
       "practice_btn_title": "Pratica i casi in modo casuale",
       "recap_btn_title": "Ripassa ogni caso una volta",
       "practice": "inizia",

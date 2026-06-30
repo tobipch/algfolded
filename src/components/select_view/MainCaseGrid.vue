@@ -7,7 +7,10 @@ const algset = useAlgsetStore()
 </script>
 
 <template>
-  <div class="group-grid">
+  <div v-if="!algset.loaded" class="text-center text-muted py-4">
+    <span class="spinner-border spinner-border-sm me-2" role="status"></span>{{ $t("select.loading") }}
+  </div>
+  <div v-else class="group-grid">
     <div v-for="node in algset.tree" :key="node.value" class="group-grid-item">
       <GroupCard :node="node"/>
     </div>
