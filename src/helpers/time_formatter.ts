@@ -1,5 +1,5 @@
 // ms - total milliseconds
-export const msToHumanReadable = (ms, numDigitsMs = 2, displayMs = true) => {
+export const msToHumanReadable = (ms: number, numDigitsMs = 2, displayMs = true): string => {
   if (!Number.isFinite(ms) || ms < 0) {
     ms = 0
   }
@@ -10,8 +10,8 @@ export const msToHumanReadable = (ms, numDigitsMs = 2, displayMs = true) => {
   const minutes = Math.floor(ms / (1000 * 60)) % 60;
   const hours = Math.floor(ms / (1000 * 60 * 60)) % 24;
 
-  const pad = num => (num < 10 ? "0" : "") + num;
-  const padMs = num => `${num}`.padStart(numDigitsMs, "0")
+  const pad = (num: number): string => (num < 10 ? "0" : "") + num;
+  const padMs = (num: number): string => `${num}`.padStart(numDigitsMs, "0")
 
   const hoursString = hours === 0 ? "" : hours + ":";
   const minutesString = minutes === 0 ? "" : (hours === 0 ? minutes : pad(minutes)) + ":";
