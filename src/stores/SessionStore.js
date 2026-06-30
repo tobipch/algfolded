@@ -4,6 +4,7 @@ import {random_element} from "@/helpers/helpers";
 import {makeScramble} from "@/helpers/scramble_utils"
 import {updateEma, caseWeight, weightedRandomPick, median} from "@/helpers/srs"
 import {useSettingsStore} from "@/stores/SettingsStore"
+import {useAlgsetStore} from "@/stores/AlgsetStore"
 
 const statsKey = 'ltct_stats_array';
 const initialStats = JSON.parse(localStorage.getItem(statsKey)) || []
@@ -44,6 +45,7 @@ export const TimerState = Object.freeze({
 
 // store for current case/scramble and stats
 export const useSessionStore = defineStore('session', () => {
+    const algset = useAlgsetStore()
     const store = reactive(initialStore)
     const srsData = reactive(JSON.parse(localStorage.getItem(srsKey)) || {})
     const srsCounter = ref(parseInt(localStorage.getItem(srsCounterKey)) || 0)
@@ -140,7 +142,7 @@ export const useSessionStore = defineStore('session', () => {
         if (key == null) return null
         recentCases.value.push(key)
         if (recentCases.value.length > 3) recentCases.value.shift()
-        return { key, scramble: makeScramble(key) }
+        return { key, scramble: makeScramble(algset.byId[key]) }
     }
 
     // Top the lookahead queue back up to LOOKAHEAD entries (best-effort: in recap

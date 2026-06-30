@@ -1,13 +1,13 @@
 import {random_element} from "@/helpers/helpers";
-import ltct_map from "@/assets/ltct_map.json"
 
-export const makeScramble = (caseKey) => {
-  if (!caseKey) return ""
-  const entry = ltct_map[caseKey]
-  const scrambles = entry["scrambles"]
+// Make a scramble for a case (an AlgCase from the active algset). Falls back to
+// the inverse of the first alg when no precomputed scrambles are available.
+export const makeScramble = (algCase) => {
+  if (!algCase) return ""
+  const scrambles = algCase.scrambles
 
   if (!scrambles || scrambles.length === 0) {
-    const algs = entry["algs"]
+    const algs = algCase.algs
     if (!algs || algs.length === 0) return ""
     return inverseScramble(algs[0])
   }
