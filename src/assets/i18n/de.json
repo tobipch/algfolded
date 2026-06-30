@@ -63,7 +63,8 @@
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
       "buffer_order": "3-Twists Buffer-Reihenfolge",
-      "buffer_order_hint": "Reihenfolge, in der Buffer einen Twist besitzen (gruppiert das 3-Twists-Set neu)."
+      "buffer_order_hint": "Reihenfolge, in der Buffer einen Twist besitzen (gruppiert das 3-Twists-Set neu).",
+      "buffer_order_drag": "Zum Sortieren ziehen"
     },
     "timer": {
       "no_scramble": "kein Mischvorgang verfügbar",

@@ -1,4 +1,5 @@
 import type { AlgCase, Algset } from '@/algsets/types'
+import type { ToLetter } from '@/helpers/helpers'
 
 // A raw 3-twist from three_twists.json: 3 corners all twisted the same
 // direction. The grouping (buffer / first / second twist) is derived at
@@ -11,28 +12,45 @@ export interface RawTwist {
   scrambles: string[]
 }
 
-// Buffer name (tracked sticker) -> its corner + Speffz identity letter.
-const BUFFERS: Record<string, { corner: string; letter: string }> = {
-  UFR: { corner: 'UFR', letter: 'C' },
-  UFL: { corner: 'UFL', letter: 'D' },
-  UBR: { corner: 'UBR', letter: 'B' },
-  UBL: { corner: 'UBL', letter: 'A' },
-  RDF: { corner: 'DFR', letter: 'P' },
-  FDL: { corner: 'DFL', letter: 'L' },
+// Buffer name (its tracked sticker position) -> the corner it lives on.
+const BUFFERS: Record<string, { corner: string; sticker: string }> = {
+  UFR: { corner: 'UFR', sticker: 'UFR' },
+  UFL: { corner: 'UFL', sticker: 'UFL' },
+  UBR: { corner: 'UBR', sticker: 'UBR' },
+  UBL: { corner: 'UBL', sticker: 'UBL' },
+  RDF: { corner: 'DFR', sticker: 'RDF' },
+  FDL: { corner: 'DFL', sticker: 'FDL' },
 }
-const LETTER_TO_BUFFER: Record<string, string> = Object.fromEntries(
-  Object.entries(BUFFERS).map(([name, b]) => [b.letter, name]),
-)
 
 export const DEFAULT_BUFFER_ORDER = ['UFR', 'UFL', 'UBR', 'UBL', 'RDF', 'FDL']
 
-// Per-corner twist letter (the sticker the U/D facelet lands on), validated
-// against the source CSV.
-const CW: Record<string, string> = { UBL: 'R', UBR: 'N', UFL: 'F', UFR: 'M', DFR: 'P', DFL: 'L', DBR: 'T', DBL: 'H' }
-const CCW: Record<string, string> = { UBL: 'E', UBR: 'Q', UFL: 'I', UFR: 'J', DFR: 'K', DFL: 'G', DBR: 'O', DBL: 'S' }
+// The sticker a twisted corner's U/D facelet lands on. We store stickers (not
+// letters) in the path so the displayed letters follow the user's letter
+// scheme; `toLetter` is applied at render time. Validated against the source CSV.
+const CW: Record<string, string> = { UBL: 'BUL', UBR: 'RUB', UFL: 'LUF', UFR: 'RUF', DFR: 'RDF', DFL: 'FDL', DBR: 'BDR', DBL: 'LDB' }
+const CCW: Record<string, string> = { UBL: 'LUB', UBR: 'BUR', UFL: 'FUL', UFR: 'FUR', DFR: 'FDR', DFL: 'LDF', DBR: 'RDB', DBL: 'BDL' }
 
-// Speffz U/D identity letter of a corner, used only to order the two targets.
+// Corner U/D identity letter, used only to order the two targets canonically.
 const IDENTITY: Record<string, string> = { UBL: 'A', UBR: 'B', UFR: 'C', UFL: 'D', DFL: 'U', DFR: 'V', DBR: 'W', DBL: 'X' }
+
+// Default (Speffz) letter of a sticker, used only for scheme-independent
+// stable sorting of the displayed cases.
+const SPEFFZ: Record<string, string> = {
+  UBL: 'A', UBR: 'B', UFR: 'C', UFL: 'D',
+  LUB: 'E', LUF: 'F', LDF: 'G', LDB: 'H',
+  FUL: 'I', FUR: 'J', FDR: 'K', FDL: 'L',
+  RUF: 'M', RUB: 'N', RDB: 'O', RDF: 'P',
+  BUR: 'Q', BUL: 'R', BDL: 'S', BDR: 'T',
+  DFL: 'U', DFR: 'V', DBR: 'W', DBL: 'X',
+}
+
+// Path segments are sticker positions joined by this separator (e.g.
+// "UFR·RUF·RUB"), so each piece can be translated independently.
+const SEP = '·'
+
+// Translate a "sticker·sticker·…" path segment to its letters (e.g. "CRN").
+const lettersOf = (segment: string, toLetter: ToLetter): string =>
+  segment.split(SEP).map(toLetter).join('')
 
 // Partition raw twists into displayed cases (buffer -> first twist -> case),
 // assigning each twist to the highest-priority buffer in its triple.
@@ -56,19 +74,19 @@ export const partition = (twists: RawTwist[], bufferOrder: string[]): AlgCase[] 
     }
     if (bufferCorner === null) continue // every triple has >=1 buffer corner
 
-    const bLetter = Object.values(BUFFERS).find((b) => b.corner === bufferCorner)!.letter
+    const bSticker = Object.values(BUFFERS).find((b) => b.corner === bufferCorner)!.sticker
     const targets = t.corners.filter((c) => c !== bufferCorner)
     targets.sort((a, b) => IDENTITY[a].localeCompare(IDENTITY[b]))
     const table = t.dir === 'cw' ? CW : CCW
-    const l1 = table[targets[0]]
-    const l2 = table[targets[1]]
+    const s1 = table[targets[0]]
+    const s2 = table[targets[1]]
 
     out.push({
       id: t.id,
-      path: [bLetter, bLetter + l1, bLetter + l1 + l2],
+      path: [bSticker, bSticker + SEP + s1, bSticker + SEP + s1 + SEP + s2],
       algs: t.algs,
       scrambles: t.scrambles,
-      _sort: [bufferIdx, l1, l2],
+      _sort: [bufferIdx, SPEFFZ[s1], SPEFFZ[s2]],
     })
   }
 
@@ -83,15 +101,16 @@ export const partition = (twists: RawTwist[], bufferOrder: string[]): AlgCase[] 
 export const threeTwists: Algset = {
   id: 'twists3',
   name: 'algset.twists3',
-  usesLetterScheme: false, // twist letters are encoded directly (Speffz)
+  usesLetterScheme: true, // twist letters follow the configured letter scheme
   levels: [
-    { id: 'buffer', display: (v) => ({ primary: v, secondary: LETTER_TO_BUFFER[v] }) },
-    { id: 'firstTwist', display: (v) => ({ primary: v }) },
-    { id: 'case', display: (v) => ({ primary: v }) },
+    { id: 'buffer', display: (v, ctx) => ({ primary: ctx.toLetter(v), secondary: v }) },
+    { id: 'firstTwist', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
+    { id: 'case', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
   ],
   load: () =>
     import('@/assets/three_twists.json').then(
       (m) => Object.values((m.default as unknown) as Record<string, RawTwist>),
     ),
   derive: (raw, deps) => partition(raw as RawTwist[], deps.bufferOrder),
+  caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),
 }

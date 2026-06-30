@@ -63,7 +63,8 @@
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
       "smart_selection": "Sélection intelligente des cas",
       "buffer_order": "Ordre des buffers (3-twists)",
-      "buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu 3-twists)."
+      "buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu 3-twists).",
+      "buffer_order_drag": "Glisser pour réorganiser"
     },
     "timer": {
       "no_scramble": "aucun mélange disponible",

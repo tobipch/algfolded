@@ -1,4 +1,5 @@
 import type { AlgCase, Algset } from '@/algsets/types'
+import { parseLtctKey } from '@/helpers/helpers'
 
 // Shape of an entry in the (legacy) ltct_map.json data file.
 interface RawEntry {
@@ -43,4 +44,5 @@ export const ltct: Algset = {
     ),
   // LTCT's cases are static (paths already baked in); nothing to derive.
   derive: (raw) => raw as AlgCase[],
+  caseLabel: (c, toLetter) => parseLtctKey(c.id, toLetter).letters,
 }

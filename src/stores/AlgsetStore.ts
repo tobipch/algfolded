@@ -5,7 +5,6 @@ import { ALGSETS, DEFAULT_ALGSET_ID, getAlgset } from '@/algsets/registry'
 import { buildTree } from '@/algsets/tree'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
-import { parseLtctKey } from '@/helpers/helpers'
 
 const activeIdKey = 'ltct_active_algset'
 
@@ -42,13 +41,12 @@ export const useAlgsetStore = defineStore('algset', () => {
 
   const tree = computed(() => buildTree(cases.value, active.value.levels))
 
-  // Human-readable label for a case id. Sets that bake letters into the path
-  // (e.g. 3-twists "CEG") use the deepest path segment; LTCT uses its
-  // letter-scheme letters.
+  // Human-readable label for a case id, delegated to the active algset so each
+  // set controls its own format (both translate stickers through the scheme).
   const caseLabel = (id: string): string => {
     const c = byId.value[id]
-    if (c && !active.value.usesLetterScheme) return c.path[c.path.length - 1]
-    return parseLtctKey(id, ls.toLetter).letters
+    if (!c) return id
+    return active.value.caseLabel(c, ls.toLetter)
   }
 
   async function activate(id: string): Promise<void> {

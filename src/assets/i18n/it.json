@@ -63,7 +63,8 @@
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
       "smart_selection": "Selezione intelligente dei casi",
       "buffer_order": "Ordine dei buffer (3-twists)",
-      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set 3-twists)."
+      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set 3-twists).",
+      "buffer_order_drag": "Trascina per riordinare"
     },
     "timer": {
       "no_scramble": "nessuna miscela disponibile",

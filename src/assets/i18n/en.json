@@ -63,7 +63,8 @@
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",
       "buffer_order": "3-twists buffer order",
-      "buffer_order_hint": "Order in which buffers own a twist (re-groups the 3-twists set)."
+      "buffer_order_hint": "Order in which buffers own a twist (re-groups the 3-twists set).",
+      "buffer_order_drag": "Drag to reorder"
     },
     "timer": {
       "no_scramble": "no scramble available",

@@ -42,4 +42,7 @@ export interface Algset {
   usesLetterScheme: boolean
   load: () => Promise<unknown>
   derive: (raw: unknown, deps: DeriveDeps) => AlgCase[]
+  // Human-readable label for a case (e.g. "CRN" / "AB"), translated through the
+  // active letter scheme.
+  caseLabel: (c: AlgCase, toLetter: ToLetter) => string
 }
