@@ -21,7 +21,8 @@
       "practice_btn_title": "Practice cases randomly",
       "recap_btn_title": "Go through each case once",
       "practice": "start",
-      "recap": "recap each case once"
+      "recap": "recap each case once",
+      "algset": "Algset"
     },
     "presets": {
       "presets": "Presets",
@@ -35,9 +36,9 @@
     "howto": {
       "how_to_use": "How to use",
       "dismiss_label": "dismiss this section",
-      "howto_1": "\uD83D\uDDB1️ Click on the picture to select / deselect all cases in the group",
-      "howto_2": "\uD83D\uDD3D Click on the item header to expand / collapse the group",
-      "howto_3": "\uD83D\uDFE2 Green color means all cases in the group are selected; \uD83D\uDFE1 yellow - some cases are selected; ⚪ white - no cases selected",
+      "howto_1": "🖱️ Click on the picture to select / deselect all cases in the group",
+      "howto_2": "🔽 Click on the item header to expand / collapse the group",
+      "howto_3": "🟢 Green color means all cases in the group are selected; 🟡 yellow - some cases are selected; ⚪ white - no cases selected",
       "howto_4": "✅ When cases are selected, click \"start\""
     },
     "settings": {
@@ -124,6 +125,10 @@
       "contact": "About",
       "get_the_code": "Source code",
       "credits": "Credits"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }

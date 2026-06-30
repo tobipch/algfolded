@@ -1,6 +1,7 @@
 <script setup>
 import MainCaseGrid from "@/components/select_view/MainCaseGrid.vue";
 import SelectSideCard from "@/components/select_view/SelectSideCard.vue";
+import AlgsetPicker from "@/components/select_view/AlgsetPicker.vue";
 import {useRouter} from "vue-router";
 import {onMounted} from "vue";
 
@@ -22,6 +23,7 @@ onMounted(() => {
   </div>
   <div class="card mt-2 mb-2">
     <div class="card-body">
+      <AlgsetPicker/>
       <p class="text-muted mb-2">{{ $t("select.select_intro") }}</p>
       <MainCaseGrid/>
     </div>

@@ -17,5 +17,12 @@ export const useNotesStore = defineStore('notes', () => {
     writeNamespaced(localStorageKey, algset.activeId, store)
   }, {deep: true})
 
+  // switching algset -> load that set's notes slot
+  watch(() => algset.activeId, (id) => {
+    const fresh = readNamespaced(localStorageKey, id, {})
+    for (const k of Object.keys(store)) delete store[k]
+    Object.assign(store, fresh)
+  })
+
   return {store}
 });

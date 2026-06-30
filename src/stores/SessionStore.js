@@ -209,6 +209,9 @@ export const useSessionStore = defineStore('session', () => {
         sessionStartedAt.value = 0
     }
 
+    // switching algset -> the current run belongs to the old set; clear it
+    watch(() => algset.activeId, () => clearSession())
+
     // when the competitor places his hands on the timer (aka holds spacebar)
     const getTimerReady = (timerStartDelayMs) => {
         if (timerState.value !== TimerState.NOT_RUNNING) {

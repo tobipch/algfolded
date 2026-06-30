@@ -71,6 +71,13 @@ export const usePresetsStore = defineStore('presets', () => {
 
     watch(map, () => saveToLocalStorage(algset.activeId, map))
 
+    // switching algset -> load that set's presets slot
+    watch(() => algset.activeId, (id) => {
+        const fresh = loadFromLocalStorage(id)
+        for (const k of Object.keys(map)) delete map[k]
+        Object.assign(map, fresh)
+    })
+
     return {
         map,
         setPreset,

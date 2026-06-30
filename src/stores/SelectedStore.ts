@@ -49,6 +49,11 @@ export const useSelectedStore = defineStore('selected', () => {
     writeNamespaced(localStoreKey, algset.activeId, store.keys)
   })
 
+  // switching algset -> load that set's selection slot
+  watch(() => algset.activeId, (id) => {
+    store.keys = readNamespaced<string[]>(localStoreKey, id, [])
+  })
+
   return {store, addNode, removeNode, numSelectedUnder,
     addCase, removeCase, isCaseSelected,
     toggleSelected, totalCasesSelected, applyFromPreset}

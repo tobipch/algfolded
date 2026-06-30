@@ -21,7 +21,8 @@
       "practice_btn_title": "Pratiquer les cas de manière aléatoire",
       "recap_btn_title": "Parcourir chaque cas une fois",
       "practice": "démarrer",
-      "recap": "revoir chaque cas une fois"
+      "recap": "revoir chaque cas une fois",
+      "algset": "Jeu d'algos"
     },
     "presets": {
       "presets": "Préréglages",
@@ -35,9 +36,9 @@
     "howto": {
       "how_to_use": "Comment utiliser",
       "dismiss_label": "fermer cette section",
-      "howto_1": "\uD83D\uDDB1️ Cliquez sur l'image pour sélectionner / désélectionner tous les cas du groupe",
-      "howto_2": "\uD83D\uDD3D Cliquez sur l'en-tête de l'élément pour développer / réduire le groupe",
-      "howto_3": "\uD83D\uDFE2 La couleur verte signifie que tous les cas du groupe sont sélectionnés ; \uD83D\uDFE1 jaune - certains cas sont sélectionnés ; ⚪ blanc - aucun cas sélectionné",
+      "howto_1": "🖱️ Cliquez sur l'image pour sélectionner / désélectionner tous les cas du groupe",
+      "howto_2": "🔽 Cliquez sur l'en-tête de l'élément pour développer / réduire le groupe",
+      "howto_3": "🟢 La couleur verte signifie que tous les cas du groupe sont sélectionnés ; 🟡 jaune - certains cas sont sélectionnés ; ⚪ blanc - aucun cas sélectionné",
       "howto_4": "✅ Lorsque des cas sont sélectionnés, cliquez sur \"démarrer\""
     },
     "settings": {
@@ -124,6 +125,10 @@
       "contact": "À propos",
       "get_the_code": "Code source",
       "credits": "Crédits"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }

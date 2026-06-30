@@ -21,7 +21,8 @@
       "practice_btn_title": "Fälle zufällig üben",
       "recap_btn_title": "Gehe jeden Fall einmal durch",
       "practice": "starten",
-      "recap": "jeden Fall einmal durchgehen"
+      "recap": "jeden Fall einmal durchgehen",
+      "algset": "Algset"
     },
     "presets": {
       "presets": "Voreinstellungen",
@@ -35,9 +36,9 @@
     "howto": {
       "how_to_use": "Anleitung",
       "dismiss_label": "diesen Abschnitt ausblenden",
-      "howto_1": "\uD83D\uDDB1️ Klicke auf das Bild, um alle Fälle in der Gruppe auszuwählen / abzuwählen",
-      "howto_2": "\uD83D\uDD3D Klicke auf die Überschrift, um die Gruppe zu erweitern / zusammenzufalten",
-      "howto_3": "\uD83D\uDFE2 Grüne Farbe bedeutet, dass alle Fälle in der Gruppe ausgewählt sind; \uD83D\uDFE1 Gelb - einige Fälle sind ausgewählt; ⚪ Weiß - keine Fälle ausgewählt",
+      "howto_1": "🖱️ Klicke auf das Bild, um alle Fälle in der Gruppe auszuwählen / abzuwählen",
+      "howto_2": "🔽 Klicke auf die Überschrift, um die Gruppe zu erweitern / zusammenzufalten",
+      "howto_3": "🟢 Grüne Farbe bedeutet, dass alle Fälle in der Gruppe ausgewählt sind; 🟡 Gelb - einige Fälle sind ausgewählt; ⚪ Weiß - keine Fälle ausgewählt",
       "howto_4": "✅ Wenn Fälle ausgewählt sind, klicke auf \"starten\""
     },
     "settings": {
@@ -124,6 +125,10 @@
       "contact": "Info",
       "get_the_code": "Quellcode",
       "credits": "Credits"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }
