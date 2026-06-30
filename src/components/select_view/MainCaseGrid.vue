@@ -29,6 +29,13 @@ const algset = useAlgsetStore()
   min-width: 0;
 }
 
+/* at most 3 columns from 1200px down (sets like 3-twists have 6 groups) */
+@media (max-width: 1200px) {
+  .group-grid-item {
+    flex: 0 0 calc((100% - 24px) / 3);
+  }
+}
+
 /* 2 columns below 768px */
 @media (max-width: 767px) {
   .group-grid-item {
