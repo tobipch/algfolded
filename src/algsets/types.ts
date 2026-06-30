@@ -26,11 +26,20 @@ export interface AlgsetLevel {
   order?: string[]
 }
 
+// Inputs a set may use to derive its cases (e.g. the configurable buffer order
+// for 3-twists). LTCT ignores these.
+export interface DeriveDeps {
+  bufferOrder: string[]
+}
+
 // A trainable algset. New algsets = one of these + a data file.
+// `load()` returns the raw data; `derive()` turns it into the displayed cases
+// (paths/grouping), which may depend on settings (DeriveDeps).
 export interface Algset {
   id: string
   name: string                  // i18n key for the display name
   levels: AlgsetLevel[]         // top..deepest; the last level is the case
   usesLetterScheme: boolean
-  load: () => Promise<AlgCase[]>
+  load: () => Promise<unknown>
+  derive: (raw: unknown, deps: DeriveDeps) => AlgCase[]
 }

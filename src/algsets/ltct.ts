@@ -41,4 +41,6 @@ export const ltct: Algset = {
     import('@/assets/ltct_map.json').then((m) =>
       normalize((m.default as unknown) as Record<string, RawEntry>),
     ),
+  // LTCT's cases are static (paths already baked in); nothing to derive.
+  derive: (raw) => raw as AlgCase[],
 }

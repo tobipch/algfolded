@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import type { AlgCase } from '@/algsets/types'
 import { ALGSETS, DEFAULT_ALGSET_ID, getAlgset } from '@/algsets/registry'
 import { buildTree } from '@/algsets/tree'
+import { useSettingsStore } from '@/stores/SettingsStore'
 
 const activeIdKey = 'ltct_active_algset'
 
@@ -16,11 +17,19 @@ const getInitialId = (): string => {
 // Holds the currently active algset and its (lazily loaded) cases. This is the
 // single place the rest of the app reads case data / hierarchy from.
 export const useAlgsetStore = defineStore('algset', () => {
+  const settings = useSettingsStore()
   const activeId = ref(getInitialId())
-  const cases = ref<AlgCase[]>([])
+  const rawData = ref<unknown>(null)
   const loaded = ref(false)
 
   const active = computed(() => getAlgset(activeId.value) ?? ALGSETS[0])
+
+  // Cases are derived from the raw data + settings (e.g. the buffer order for
+  // 3-twists), so they update reactively when those change.
+  const cases = computed<AlgCase[]>(() => {
+    if (rawData.value === null) return []
+    return active.value.derive(rawData.value, { bufferOrder: settings.store.bufferOrder })
+  })
 
   const byId = computed<Record<string, AlgCase>>(() => {
     const map: Record<string, AlgCase> = {}
@@ -35,7 +44,8 @@ export const useAlgsetStore = defineStore('algset', () => {
     if (!set) return
     activeId.value = id
     loaded.value = false
-    cases.value = await set.load()
+    rawData.value = null
+    rawData.value = await set.load()
     loaded.value = true
     if (typeof localStorage !== 'undefined' && localStorage) {
       localStorage.setItem(activeIdKey, id)

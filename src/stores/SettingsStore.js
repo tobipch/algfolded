@@ -18,14 +18,17 @@ const defaultSettings = {
     smartSelection: true,
     slownessPower: 2,
     recencyDecay: 0.5,
+    // buffer order for the 3-twists algset (determines case grouping)
+    bufferOrder: ["UFR", "UFL", "UBR", "UBL", "RDF", "FDL"],
 }
 
 const localStorageKey = "ltctTrainerSettings"
 migrateLocalStorageKey("zbllTrainerSettings", localStorageKey)
 
 export const useSettingsStore = defineStore('settings', () => {
+    // merge defaults so settings saved before a new key existed still get it
     const store = reactive(
-        JSON.parse(localStorage.getItem(localStorageKey)) || defaultSettings
+        {...defaultSettings, ...(JSON.parse(localStorage.getItem(localStorageKey)) || {})}
     )
 
     const resetDefaults = () => {
