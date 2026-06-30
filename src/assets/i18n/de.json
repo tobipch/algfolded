@@ -1,7 +1,7 @@
 {
   "de": {
     "nav": {
-      "trainer_title": "LTCT Trainer",
+      "trainer_title": "Algfolded",
       "select_btn": "auswählen",
       "n_cases": "keine Fälle ausgewählt | ein Fall ausgewählt | {count} Fälle ausgewählt",
       "n_to_recap": "{count} zum Wiederholen",

@@ -1,12 +1,12 @@
-# LTCT Trainer
+# Algfolded
 
-Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), adapted for LTCT with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
+Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted for LTCT with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
 
-A timer-based tool for practicing **LTCT (Last Target Corner Twist)** algorithms — a subset of BLD (blindfolded) solving with 252 cases.
+A timer-based trainer for **blindfolded (BLD) speedcubing algorithms**. It started as an **LTCT (Last Target Corner Twist)** trainer and now hosts multiple algsets — LTCT, 3-twists, and (coming) commutators — each with its own cases, scrambles and progress.
 
 ## Features
 
-- **252 LTCT cases** with pre-generated scrambles
+- **Multiple algsets** (LTCT, 3-twists, …) with pre-generated scrambles, each with its own selection, stats and spaced-repetition history
 - **Interactive 3D cube visualization** (touch/drag to rotate)
 - **Customizable letter scheme** (Speffz default)
 - **Cube orientation setting** for preferred solving perspective
