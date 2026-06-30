@@ -2,15 +2,17 @@ import {reactive, watch} from 'vue'
 import { defineStore } from 'pinia'
 import { useAlgsetStore } from '@/stores/AlgsetStore'
 import { casesUnder } from '@/algsets/selection'
+import { DEFAULT_ALGSET_ID } from '@/algsets/registry'
+import { readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArray } from '@/helpers/namespaced_storage'
 
 const localStoreKey = "currentLtctArray";
-const loadedArray: string[] = JSON.parse(localStorage.getItem(localStoreKey) || "[]")
+migrateToNamespaced(localStoreKey, DEFAULT_ALGSET_ID, isFlatArray)
 
 export const useSelectedStore = defineStore('selected', () => {
   const algset = useAlgsetStore()
 
   const store = reactive<{ keys: string[] }>({
-    keys: loadedArray,
+    keys: readNamespaced<string[]>(localStoreKey, algset.activeId, []),
   });
 
   const applyFromPreset = (presetKeysSet: Iterable<string>) => store.keys = [...presetKeysSet]
@@ -44,7 +46,7 @@ export const useSelectedStore = defineStore('selected', () => {
   }
 
   watch(() => store.keys, () => {
-    localStorage.setItem(localStoreKey, JSON.stringify(store.keys))
+    writeNamespaced(localStoreKey, algset.activeId, store.keys)
   })
 
   return {store, addNode, removeNode, numSelectedUnder,
