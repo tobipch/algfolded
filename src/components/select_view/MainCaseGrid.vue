@@ -1,19 +1,15 @@
 <script setup>
 import GroupCard from "@/components/select_view/GroupCard.vue";
-import {useSelectedStore} from "@/stores/SelectedStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 
-const select = useSelectedStore()
-
-const groups = select.allCaseKeysArray
-    .map(key => key.split(' ')[0])
-    .filter((group, i, arr) => arr.indexOf(group) === i);
-
+// Render the first hierarchy level from the active algset's tree.
+const algset = useAlgsetStore()
 </script>
 
 <template>
   <div class="group-grid">
-    <div v-for="group in groups" :key="group" class="group-grid-item">
-      <GroupCard :group="group"/>
+    <div v-for="node in algset.tree" :key="node.value" class="group-grid-item">
+      <GroupCard :node="node"/>
     </div>
   </div>
 </template>

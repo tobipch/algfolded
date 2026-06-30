@@ -1,28 +1,32 @@
 <script setup>
 
 import {useSelectedStore} from "@/stores/SelectedStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
+import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
+import {countLeaves} from "@/algsets/tree";
 import {computed, onMounted, ref} from "vue";
 import SubgroupCard from "@/components/select_view/SubgroupCard.vue";
 
-const props = defineProps(['group'])
-const {group} = props;
+// `node` is a top-level (group) node of the algset tree.
+const props = defineProps(['node'])
 const selected = useSelectedStore();
-const num_cases_selected = computed(() => selected.numCasesInGroupSelected(group));
+const algset = useAlgsetStore();
+const ls = useLetterSchemeStore();
 
-const total_cases_in_group = selected.allCaseKeysArray.filter(key => key.startsWith(group)).length
+const display = computed(() => algset.active.levels[0].display(props.node.value, {toLetter: s => ls.toLetter(s)}))
+const collapseId = computed(() => `grp-${props.node.path.join('-')}`)
+
+const num_cases_selected = computed(() => selected.numSelectedUnder(props.node.path));
+const total_cases_in_group = computed(() => countLeaves(props.node))
+
 const onCardClicked = () => {
-  const action = num_cases_selected.value === 0 ? selected.addGroup : selected.removeGroup
-  action(group)
+  const action = num_cases_selected.value === 0 ? selected.addNode : selected.removeNode
+  action(props.node.path)
 }
-
-const subgroups = selected.allCaseKeysArray
-    .filter(key => key.startsWith(group))
-    .map(key => key.split(' ')[1])
-    .filter((item, index, self) => self.indexOf(item) === index);
 
 const card_bg_class = computed(() => {
   return (num_cases_selected.value === 0) ? "no_cases_selected" :
-      (total_cases_in_group === num_cases_selected.value)
+      (total_cases_in_group.value === num_cases_selected.value)
           ? "all_cases_selected"
           : "some_cases_selected";
 })
@@ -42,26 +46,25 @@ onMounted(() => {
     <div
         class="header p-1 clickable border-bottom d-flex justify-content-between align-items-center"
         data-bs-toggle="collapse"
-        :data-bs-target="`#collapsed-subgroups-${group}`">
+        :data-bs-target="`#${collapseId}`">
       <div>
         <strong class="text-center">
-          {{ props.group }}
+          {{ display.primary }}
         </strong>&nbsp;<span>({{ num_cases_selected }}/{{ total_cases_in_group }})</span>
       </div>
       <i class="bi bi-caret-down opacity-75 caret" :class="isCollapsed ? '' : 'upside_down'"></i>
     </div>
     <div class="clickable m-1 text-center py-2" @click="onCardClicked">
-      <span class="fs-2 fw-bold">{{ group }}</span>
+      <span class="fs-2 fw-bold">{{ display.primary }}</span>
     </div>
   </div>
   <div
       class="text-center collapse multi-collapse subgroup-well"
       ref="groupCardRef"
-      :id="`collapsed-subgroups-${group}`">
-    <SubgroupCard v-for="subgroup in subgroups"
-              :key="group+subgroup"
-              :group="group"
-              :subgroup="subgroup"
+      :id="collapseId">
+    <SubgroupCard v-for="child in props.node.children"
+              :key="child.value"
+              :node="child"
     />
   </div>
 </template>

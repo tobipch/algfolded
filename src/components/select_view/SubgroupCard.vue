@@ -1,37 +1,36 @@
 <script setup>
 
 import {useSelectedStore} from "@/stores/SelectedStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
+import {countLeaves} from "@/algsets/tree";
 import {computed, onMounted, ref} from "vue";
 import CaseCard from "@/components/select_view/CaseCard.vue";
 
-const props = defineProps(['group', 'subgroup'])
-const {group, subgroup}  = props;
+// `node` is a subgroup node of the algset tree; its children are the cases.
+const props = defineProps(['node'])
 const selected = useSelectedStore();
+const algset = useAlgsetStore();
 const ls = useLetterSchemeStore();
 
-const subgroupLetter = computed(() => ls.toLetter(subgroup))
+const display = computed(() => algset.active.levels[1].display(props.node.value, {toLetter: s => ls.toLetter(s)}))
 
-const num_cases_selected = computed(() => selected.numCasesInSubgroupSelected(group, subgroup));
-const total_cases_in_subgroup = selected.allCaseKeysArray.filter(key => key.startsWith(`${group} ${subgroup}`)).length
-
-const caseNames = selected.allCaseKeysArray
-    .filter(key => key.startsWith(`${group} ${subgroup}`))
-    .map(key => key.split(' ')[2])
+const num_cases_selected = computed(() => selected.numSelectedUnder(props.node.path));
+const total_cases_in_subgroup = computed(() => countLeaves(props.node))
 
 const onCardClicked = () => {
-  const action = num_cases_selected.value === 0 ? selected.addSubgroup : selected.removeSubgroup
-  action(group, subgroup)
+  const action = num_cases_selected.value === 0 ? selected.addNode : selected.removeNode
+  action(props.node.path)
 }
 
 const card_bg_class = computed(() => {
   return (num_cases_selected.value === 0) ? "no_cases_selected" :
-      (total_cases_in_subgroup === num_cases_selected.value)
+      (total_cases_in_subgroup.value === num_cases_selected.value)
           ? "all_cases_selected"
           : "some_cases_selected";
 })
 
-const collapseId = `collapsed-cases-${group}-${subgroup}`
+const collapseId = computed(() => `sub-${props.node.path.join('-')}`)
 
 const subgroupCardRef = ref(null)
 const isCollapsed = ref(true)
@@ -50,9 +49,9 @@ onMounted(() => {
         :data-bs-target="`#${collapseId}`">
       <div>
         <strong class="text-center">
-          {{ subgroupLetter }}
+          {{ display.primary }}
         </strong>
-        <small class="opacity-75 ms-1">{{ subgroup }}</small>
+        <small class="opacity-75 ms-1" v-if="display.secondary">{{ display.secondary }}</small>
         <span>
           ({{num_cases_selected}}/{{total_cases_in_subgroup}})
         </span>
@@ -60,7 +59,7 @@ onMounted(() => {
       <i class="bi bi-caret-down opacity-75 caret" :class="isCollapsed ? '' : 'upside_down'"></i>
     </div>
     <div class="clickable m-1 text-center py-2" @click="onCardClicked">
-      <span class="fs-4 fw-bold">{{ subgroupLetter }}</span>
+      <span class="fs-4 fw-bold">{{ display.primary }}</span>
     </div>
   </div>
   <div
@@ -68,8 +67,8 @@ onMounted(() => {
       ref="subgroupCardRef"
       :id="collapseId">
     <div class="row gx-0">
-      <div v-for="caseName in caseNames" :key="caseName" class="case-col">
-        <CaseCard :caseKey="`${group} ${subgroup} ${caseName}`"/>
+      <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
+        <CaseCard :node="leaf"/>
       </div>
     </div>
   </div>

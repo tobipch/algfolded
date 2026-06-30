@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { buildTree } from './tree'
+import { buildTree, countLeaves, flattenLeaves } from './tree'
 import type { AlgCase, AlgsetLevel } from './types'
 
 const levels: AlgsetLevel[] = [
@@ -31,5 +31,16 @@ describe('buildTree', () => {
   it('values without an order entry sort after ordered ones', () => {
     const tree = buildTree([mk('ZZ UBL A'), mk('UU UBL A')], levels)
     expect(tree.map((n) => n.value)).toEqual(['UU', 'ZZ'])
+  })
+
+  it('countLeaves counts cases under a node', () => {
+    const tree = buildTree([mk('UU UBL A'), mk('UU UBL B'), mk('UU UFL C')], levels)
+    expect(countLeaves(tree[0])).toBe(3) // group UU
+    expect(countLeaves(tree[0].children[0])).toBe(2) // subgroup UBL
+  })
+
+  it('flattenLeaves returns case ids in tree order', () => {
+    const tree = buildTree([mk('UD UFL X'), mk('UU UFL B'), mk('UU UBL A')], levels)
+    expect(flattenLeaves(tree)).toEqual(['UU UBL A', 'UU UFL B', 'UD UFL X'])
   })
 })
