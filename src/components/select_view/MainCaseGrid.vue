@@ -24,8 +24,10 @@ const algset = useAlgsetStore()
   gap: 12px;
 }
 
+/* at most 4 columns; wrap onto the next row after that (sets like the edge
+   commutators / flips have up to 10-12 buffer groups) */
 .group-grid-item {
-  flex: 1 0 0%;
+  flex: 0 0 calc((100% - 36px) / 4);
   min-width: 0;
 }
 
