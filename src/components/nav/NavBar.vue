@@ -41,11 +41,12 @@ const route = useRoute()
 const displayStore = useDisplayStore()
 
 const isTimerView = computed(() => route.fullPath.endsWith("timer"))
-const settingsBtnClass = computed(() => displayStore.showSettings ? 'btn-info' : 'btn-outline-info')
+const isSettingsView = computed(() => route.name === 'settings')
+const settingsBtnClass = computed(() => isSettingsView.value ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
-      ? (session.casesWithZeroCount.length + '/' + selected.totalZbllsSelected())
-      : selected.totalZbllsSelected()
+      ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
+      : selected.totalCasesSelected()
 })
 
 const onGlobalKeyDown = (e) => {
@@ -90,11 +91,11 @@ onUnmounted(() => {
             class="mx-2 btn d-inline-block d-sm-none m-0">
           <i class="bi bi-list-columns"></i>
         </button>
-        <span v-else class="mx-3 logoText">
-          {{ $t("nav.zbll_trainer") }}
+        <span v-else class="mx-3 logoText clickable" @click="router.push('select')">
+          {{ $t("nav.trainer_title") }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block">
-          {{ $t("nav.n_cases", selected.totalZbllsSelected()) }}
+          {{ $t("nav.n_cases", selected.totalCasesSelected()) }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block" v-if="isTimerView && session.store.recapMode">
           {{ $t("nav.n_to_recap", session.casesWithZeroCount.length) }}
@@ -158,7 +159,7 @@ onUnmounted(() => {
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
             :class="settingsBtnClass"
-            @click="displayStore.showSettings = !displayStore.showSettings"
+            @click="isSettingsView ? router.push('select') : router.push('settings')"
             :title="$t('nav.settings')">
           <i class="bi-wrench"/>
         </button>

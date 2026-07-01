@@ -1,7 +1,7 @@
 {
   "en": {
     "nav": {
-      "zbll_trainer": "LTCT Trainer",
+      "trainer_title": "Algfolded",
       "select_btn": "select",
       "n_cases": "no cases selected | one case selected | {count} cases selected",
       "n_to_recap": "{count} to recap",
@@ -17,10 +17,12 @@
     },
     "select": {
       "select_intro": "Select cases to practise",
+      "loading": "Loading cases…",
       "practice_btn_title": "Practice cases randomly",
       "recap_btn_title": "Go through each case once",
       "practice": "start",
-      "recap": "recap each case once"
+      "recap": "recap each case once",
+      "algset": "Algset"
     },
     "presets": {
       "presets": "Presets",
@@ -34,15 +36,10 @@
     "howto": {
       "how_to_use": "How to use",
       "dismiss_label": "dismiss this section",
-      "howto_1": "\uD83D\uDDB1️ Click on the picture to select / deselect all cases in the group",
-      "howto_2": "\uD83D\uDD3D Click on the item header to expand / collapse the group",
-      "howto_3": "\uD83D\uDFE2 Green color means all cases in the group are selected; \uD83D\uDFE1 yellow - some cases are selected; ⚪ white - no cases selected",
+      "howto_1": "🖱️ Click on the picture to select / deselect all cases in the group",
+      "howto_2": "🔽 Click on the item header to expand / collapse the group",
+      "howto_3": "🟢 Green color means all cases in the group are selected; 🟡 yellow - some cases are selected; ⚪ white - no cases selected",
       "howto_4": "✅ When cases are selected, click \"start\""
-    },
-    "zbll_select_card": {
-      "all": "All",
-      "none": "None",
-      "done": "Done"
     },
     "settings": {
       "settings_title": "Settings",
@@ -50,14 +47,11 @@
       "done_btn": "Done",
       "scramble_size": "Scramble size",
       "timer_size": "Timer size",
-      "timer_font": "Timer font",
       "timer_update": "Timer update",
       "timer_update_on": "On",
       "timer_update_off": "Off",
       "timer_update_seconds": "Seconds only",
       "timer_precision": "Timer precision",
-      "dark_theme": "Dark theme",
-      "light_theme": "Light theme",
       "show_lang_button": "Show language button",
       "are_you_sure_to_reset": "Are you sure?",
       "timer_start_delay_ms": "Timer start delay (ms)",
@@ -68,10 +62,9 @@
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",
-      "speed_emphasis": "Speed emphasis",
-      "speed_emphasis_hint": "How much to prioritize slow cases (0 = ignore, 4 = heavy)",
-      "recency_emphasis": "Recency emphasis",
-      "recency_emphasis_hint": "How quickly to resurface cases you haven't practiced (0 = ignore, 2 = aggressive)"
+      "buffer_order": "3-twists buffer order",
+      "buffer_order_hint": "Order in which buffers own a twist (re-groups the 3-twists set).",
+      "buffer_order_drag": "Drag to reorder"
     },
     "timer": {
       "no_scramble": "no scramble available",
@@ -135,6 +128,10 @@
       "contact": "About",
       "get_the_code": "Source code",
       "credits": "Credits"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }

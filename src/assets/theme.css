@@ -1,0 +1,132 @@
+/*
+ * Unified LTCT theme — "Indigo Modern" (light + dark).
+ * Layered ON TOP of the flatly (light) / darkly (dark) Bootstrap bases and
+ * loaded after them, so these rules win the cascade. Scoped by the
+ * data-mode attribute on <html> (set by ThemeStore), which also raises
+ * specificity above the base theme's :root / .btn-* rules.
+ */
+
+/* ====================== LIGHT ====================== */
+:root[data-mode="light"] {
+  --bs-primary: #6a62ea;
+  --bs-primary-rgb: 130, 124, 243;
+  --bs-info: #6a62ea;
+  --bs-info-rgb: 130, 124, 243;
+  --bs-success: #1fc16b;
+  --bs-success-rgb: 31, 193, 107;
+  --bs-warning: #f5a524;
+  --bs-warning-rgb: 245, 165, 36;
+
+  --bs-body-bg: #f7f7fc;
+  --bs-body-color: #20232f;
+  --bs-border-color: #e3e2ef;
+
+  --bs-link-color: #6a62ea;
+  --bs-link-hover-color: #564fd0;
+}
+
+/* ====================== DARK ======================= */
+:root[data-mode="dark"] {
+  --bs-primary: #a7a2fb;
+  --bs-primary-rgb: 167, 162, 251;
+  --bs-info: #a7a2fb;
+  --bs-info-rgb: 167, 162, 251;
+  --bs-success: #2bd992;
+  --bs-success-rgb: 43, 217, 146;
+  --bs-warning: #f7b53b;
+  --bs-warning-rgb: 247, 181, 59;
+
+  --bs-body-bg: #15151f;
+  --bs-body-color: #e9e9f3;
+  --bs-border-color: #3b3b58;
+
+  --bs-link-color: #b4b0fc;
+  --bs-link-hover-color: #cbc9fd;
+}
+
+:root[data-mode="dark"] .card {
+  --bs-card-bg: #222335;
+  --bs-card-border-color: #383a55;
+}
+
+/* ---------------- Buttons: primary ---------------- */
+:root[data-mode="light"] .btn-primary {
+  --bs-btn-color: #fff; --bs-btn-hover-color: #fff; --bs-btn-active-color: #fff; --bs-btn-disabled-color: #fff;
+  --bs-btn-bg: #6a62ea; --bs-btn-border-color: #6a62ea;
+  --bs-btn-hover-bg: #5a52e0; --bs-btn-hover-border-color: #554dd6;
+  --bs-btn-active-bg: #4f47cf; --bs-btn-active-border-color: #4f47cf;
+  --bs-btn-disabled-bg: #6a62ea; --bs-btn-disabled-border-color: #6a62ea;
+}
+:root[data-mode="dark"] .btn-primary {
+  --bs-btn-color: #14141f; --bs-btn-hover-color: #14141f; --bs-btn-active-color: #14141f; --bs-btn-disabled-color: #14141f;
+  --bs-btn-bg: #968ff6; --bs-btn-border-color: #968ff6;
+  --bs-btn-hover-bg: #a7a2fb; --bs-btn-hover-border-color: #a7a2fb;
+  --bs-btn-active-bg: #b4b0fc; --bs-btn-active-border-color: #b4b0fc;
+  --bs-btn-disabled-bg: #968ff6; --bs-btn-disabled-border-color: #968ff6;
+}
+
+/* ------- Buttons: outline primary / info (nav) ------- */
+:root[data-mode="light"] .btn-outline-primary,
+:root[data-mode="light"] .btn-outline-info {
+  --bs-btn-color: #6a62ea; --bs-btn-border-color: #c4c1f4;
+  --bs-btn-hover-bg: #6a62ea; --bs-btn-hover-border-color: #6a62ea; --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #6a62ea; --bs-btn-active-border-color: #6a62ea; --bs-btn-active-color: #fff;
+}
+:root[data-mode="dark"] .btn-outline-primary,
+:root[data-mode="dark"] .btn-outline-info {
+  --bs-btn-color: #b4b0fc; --bs-btn-border-color: #565179;
+  --bs-btn-hover-bg: #a7a2fb; --bs-btn-hover-border-color: #a7a2fb; --bs-btn-hover-color: #14141f;
+  --bs-btn-active-bg: #a7a2fb; --bs-btn-active-border-color: #a7a2fb; --bs-btn-active-color: #14141f;
+}
+
+/* ------- Buttons: filled info (active settings btn) ------- */
+:root[data-mode="light"] .btn-info {
+  --bs-btn-bg: #6a62ea; --bs-btn-border-color: #6a62ea; --bs-btn-color: #fff;
+  --bs-btn-hover-bg: #5a52e0; --bs-btn-hover-border-color: #5a52e0; --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #4f47cf; --bs-btn-active-border-color: #4f47cf; --bs-btn-active-color: #fff;
+}
+:root[data-mode="dark"] .btn-info {
+  --bs-btn-bg: #968ff6; --bs-btn-border-color: #968ff6; --bs-btn-color: #14141f;
+  --bs-btn-hover-bg: #a7a2fb; --bs-btn-hover-border-color: #a7a2fb; --bs-btn-hover-color: #14141f;
+  --bs-btn-active-bg: #b4b0fc; --bs-btn-active-border-color: #b4b0fc; --bs-btn-active-color: #14141f;
+}
+
+/* ---------------- Buttons: success / warning ---------------- */
+:root[data-mode="light"] .btn-success {
+  --bs-btn-bg: #1fc16b; --bs-btn-border-color: #1fc16b; --bs-btn-color: #fff;
+  --bs-btn-hover-bg: #1aa75c; --bs-btn-hover-border-color: #1aa75c; --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #179a54; --bs-btn-active-border-color: #179a54; --bs-btn-active-color: #fff;
+}
+:root[data-mode="dark"] .btn-success {
+  --bs-btn-bg: #22d18a; --bs-btn-border-color: #22d18a; --bs-btn-color: #0e1a12;
+  --bs-btn-hover-bg: #36da97; --bs-btn-hover-border-color: #36da97; --bs-btn-hover-color: #0e1a12;
+  --bs-btn-active-bg: #45dca0; --bs-btn-active-border-color: #45dca0; --bs-btn-active-color: #0e1a12;
+}
+:root[data-mode="light"] .btn-warning {
+  --bs-btn-bg: #f5a524; --bs-btn-border-color: #f5a524; --bs-btn-color: #1c1605;
+  --bs-btn-hover-bg: #e0951a; --bs-btn-hover-border-color: #e0951a; --bs-btn-hover-color: #1c1605;
+  --bs-btn-active-bg: #d28c18; --bs-btn-active-border-color: #d28c18; --bs-btn-active-color: #1c1605;
+}
+:root[data-mode="dark"] .btn-warning {
+  --bs-btn-bg: #f7b53b; --bs-btn-border-color: #f7b53b; --bs-btn-color: #1c1605;
+  --bs-btn-hover-bg: #f8c052; --bs-btn-hover-border-color: #f8c052; --bs-btn-hover-color: #1c1605;
+  --bs-btn-active-bg: #f9c869; --bs-btn-active-border-color: #f9c869; --bs-btn-active-color: #1c1605;
+}
+
+/* ---------------- Accordion (Presets / Shortcuts / About) ---------------- */
+:root[data-mode="light"] .accordion {
+  --bs-accordion-active-bg: #eeedfb;
+  --bs-accordion-active-color: #4f47cf;
+}
+:root[data-mode="dark"] .accordion {
+  --bs-accordion-bg: #1e1f2c;
+  --bs-accordion-color: var(--bs-body-color);
+  --bs-accordion-border-color: #2c2c44;
+  --bs-accordion-btn-color: var(--bs-body-color);
+  --bs-accordion-active-bg: #262a40;
+  --bs-accordion-active-color: #cdd0f5;
+}
+
+/* ---------------- Range sliders pick up the accent ---------------- */
+:root[data-mode] .form-range::-webkit-slider-thumb { background-color: var(--bs-primary); }
+:root[data-mode] .form-range::-moz-range-thumb { background-color: var(--bs-primary); }

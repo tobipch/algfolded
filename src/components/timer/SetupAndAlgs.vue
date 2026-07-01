@@ -1,10 +1,11 @@
 <script setup>
-import ltct_map from "@/assets/ltct_map.json"
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {computed} from "vue";
 import {inverseScramble} from "@/helpers/scramble_utils";
-const props = defineProps(['zbllKey', 'maxAmount']);
+const props = defineProps(['caseKey', 'maxAmount']);
+const algset = useAlgsetStore();
 
-const algs = computed(() => ltct_map[props.zbllKey].algs)
+const algs = computed(() => algset.byId[props.caseKey]?.algs ?? [])
 const suggestedAlgs = computed(() => algs.value.slice(0, props.maxAmount))
 const setup = computed(() => algs.value.length > 0 ? inverseScramble(algs.value[0]) : '')
 

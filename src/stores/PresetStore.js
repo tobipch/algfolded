@@ -1,12 +1,18 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
+import {migrateLocalStorageKey} from '@/helpers/helpers'
+import {useAlgsetStore} from '@/stores/AlgsetStore'
+import {DEFAULT_ALGSET_ID} from '@/algsets/registry'
+import {readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArrayMap} from '@/helpers/namespaced_storage'
 
-const localStoreKey = "zbll2_presets_arrays";
+const localStoreKey = "ltct_presets_arrays";
+migrateLocalStorageKey("zbll2_presets_arrays", localStoreKey)            // zbll* -> ltct* (legacy rename)
 export const starredName = "⭐" // do not make it locale-based!
+migrateToNamespaced(localStoreKey, DEFAULT_ALGSET_ID, isFlatArrayMap)    // flat -> { algsetId: presets }
 
-const loadFromLocalStorage = () => {
-    // load as map {name -> array}, return as map {name -> Set}
-    const loadedMap = JSON.parse(localStorage.getItem(localStoreKey) ?? `{"${starredName}": []}`)
+// load the active set's slot as {name -> Set}
+const loadFromLocalStorage = (algsetId) => {
+    const loadedMap = readNamespaced(localStoreKey, algsetId, {[starredName]: []})
     const result = {}
     for (const name in loadedMap) {
         result[name] = new Set(loadedMap[name])
@@ -14,17 +20,18 @@ const loadFromLocalStorage = () => {
     return result
 }
 
-const saveToLocalStorage = (map) => {
+const saveToLocalStorage = (algsetId, map) => {
     const mapToSave = {}
     for (const name in map) {
         mapToSave[name] = [...map[name]]
     }
-    localStorage.setItem(localStoreKey, JSON.stringify(mapToSave))
+    writeNamespaced(localStoreKey, algsetId, mapToSave)
 }
 
 export const usePresetsStore = defineStore('presets', () => {
-    // {name: [array of cases], name: [other array], …}
-    const map = reactive(loadFromLocalStorage())
+    const algset = useAlgsetStore()
+    // {name: Set(cases), …}
+    const map = reactive(loadFromLocalStorage(algset.activeId))
 
     // set (save) preset
     const setPreset = (name, keys) => {
@@ -62,7 +69,14 @@ export const usePresetsStore = defineStore('presets', () => {
         action(presetName, caseKey)
     }
 
-    watch(map, () => saveToLocalStorage(map))
+    watch(map, () => saveToLocalStorage(algset.activeId, map))
+
+    // switching algset -> load that set's presets slot
+    watch(() => algset.activeId, (id) => {
+        const fresh = loadFromLocalStorage(id)
+        for (const k of Object.keys(map)) delete map[k]
+        Object.assign(map, fresh)
+    })
 
     return {
         map,

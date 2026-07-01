@@ -5,12 +5,14 @@ import "@/assets/global.css"
 import {useThemeStore} from "@/stores/ThemeStore";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useSelectedStore} from "@/stores/SelectedStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
 import {watch} from "vue";
 
 useThemeStore().applyCurrentTheme();
 const selected = useSelectedStore()
 const session = useSessionStore()
+const algset = useAlgsetStore()
 const display = useDisplayStore()
 
 // bind selectStore and sessionStore
@@ -18,6 +20,12 @@ watch(() => selected.store.keys, () => {
   session.setSelectedKeys(selected.store.keys)
 })
 session.setSelectedKeys(selected.store.keys)
+
+// once the active set's cases have loaded, refresh the session so scrambles
+// resolve against the loaded data (matters after a set switch)
+watch(() => algset.loaded, (l) => {
+  if (l) session.setSelectedKeys(selected.store.keys)
+})
 
 </script>
 

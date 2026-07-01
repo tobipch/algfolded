@@ -1,7 +1,7 @@
 {
   "fr": {
     "nav": {
-      "zbll_trainer": "LTCT Trainer",
+      "trainer_title": "Algfolded",
       "select_btn": "sélectionner",
       "n_cases": "aucun cas sélectionné | un cas sélectionné | {count} cas sélectionnés",
       "n_to_recap": "{count} à réviser",
@@ -17,10 +17,12 @@
     },
     "select": {
       "select_intro": "Sélectionnez les cas à pratiquer",
+      "loading": "Chargement des cas…",
       "practice_btn_title": "Pratiquer les cas de manière aléatoire",
       "recap_btn_title": "Parcourir chaque cas une fois",
       "practice": "démarrer",
-      "recap": "revoir chaque cas une fois"
+      "recap": "revoir chaque cas une fois",
+      "algset": "Jeu d'algos"
     },
     "presets": {
       "presets": "Préréglages",
@@ -34,15 +36,10 @@
     "howto": {
       "how_to_use": "Comment utiliser",
       "dismiss_label": "fermer cette section",
-      "howto_1": "\uD83D\uDDB1️ Cliquez sur l'image pour sélectionner / désélectionner tous les cas du groupe",
-      "howto_2": "\uD83D\uDD3D Cliquez sur l'en-tête de l'élément pour développer / réduire le groupe",
-      "howto_3": "\uD83D\uDFE2 La couleur verte signifie que tous les cas du groupe sont sélectionnés ; \uD83D\uDFE1 jaune - certains cas sont sélectionnés ; ⚪ blanc - aucun cas sélectionné",
+      "howto_1": "🖱️ Cliquez sur l'image pour sélectionner / désélectionner tous les cas du groupe",
+      "howto_2": "🔽 Cliquez sur l'en-tête de l'élément pour développer / réduire le groupe",
+      "howto_3": "🟢 La couleur verte signifie que tous les cas du groupe sont sélectionnés ; 🟡 jaune - certains cas sont sélectionnés ; ⚪ blanc - aucun cas sélectionné",
       "howto_4": "✅ Lorsque des cas sont sélectionnés, cliquez sur \"démarrer\""
-    },
-    "zbll_select_card": {
-      "all": "Tout",
-      "none": "Aucun",
-      "done": "Terminé"
     },
     "settings": {
       "settings_title": "Paramètres",
@@ -50,14 +47,11 @@
       "done_btn": "Terminé",
       "scramble_size": "Taille du mélange",
       "timer_size": "Taille du chronomètre",
-      "timer_font": "Police du chronomètre",
       "timer_update": "Mise à jour du chronomètre",
       "timer_update_on": "Activé",
       "timer_update_off": "Désactivé",
       "timer_update_seconds": "Secondes uniquement",
       "timer_precision": "Précision du chronomètre",
-      "dark_theme": "Thème sombre",
-      "light_theme": "Thème clair",
       "show_lang_button": "Afficher le bouton de langue",
       "are_you_sure_to_reset": "Êtes-vous sûr ?",
       "timer_start_delay_ms": "Délai de démarrage du minuteur (ms)",
@@ -68,10 +62,9 @@
       "letter_scheme": "Schéma des lettres",
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
       "smart_selection": "Sélection intelligente des cas",
-      "speed_emphasis": "Priorité à la vitesse",
-      "speed_emphasis_hint": "À quel point prioriser les cas lents (0 = ignorer, 4 = élevé)",
-      "recency_emphasis": "Priorité à la récence",
-      "recency_emphasis_hint": "À quelle vitesse refaire apparaître les cas non pratiqués (0 = ignorer, 2 = agressif)"
+      "buffer_order": "Ordre des buffers (3-twists)",
+      "buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu 3-twists).",
+      "buffer_order_drag": "Glisser pour réorganiser"
     },
     "timer": {
       "no_scramble": "aucun mélange disponible",
@@ -135,6 +128,10 @@
       "contact": "À propos",
       "get_the_code": "Code source",
       "credits": "Crédits"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }

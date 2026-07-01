@@ -1,7 +1,7 @@
 {
   "it": {
     "nav": {
-      "zbll_trainer": "LTCT Trainer",
+      "trainer_title": "Algfolded",
       "select_btn": "seleziona",
       "n_cases": "nessun caso selezionato | un caso selezionato | {count} casi selezionati",
       "n_to_recap": "{count} da ripassare",
@@ -17,10 +17,12 @@
     },
     "select": {
       "select_intro": "Seleziona i casi da praticare",
+      "loading": "Caricamento dei casi…",
       "practice_btn_title": "Pratica i casi in modo casuale",
       "recap_btn_title": "Ripassa ogni caso una volta",
       "practice": "inizia",
-      "recap": "ripassa ogni caso una volta"
+      "recap": "ripassa ogni caso una volta",
+      "algset": "Set di algoritmi"
     },
     "presets": {
       "presets": "Preimpostazioni",
@@ -34,15 +36,10 @@
     "howto": {
       "how_to_use": "Come utilizzare",
       "dismiss_label": "chiudi questa sezione",
-      "howto_1": "\uD83D\uDDB1️ Fai clic sull'immagine per selezionare / deselezionare tutti i casi nel gruppo",
-      "howto_2": "\uD83D\uDD3D Fai clic sull'intestazione dell'elemento per espandere / comprimere il gruppo",
-      "howto_3": "\uD83D\uDFE2 Il colore verde indica che tutti i casi del gruppo sono selezionati; \uD83D\uDFE1 giallo - alcuni casi sono selezionati; ⚪ bianco - nessun caso selezionato",
+      "howto_1": "🖱️ Fai clic sull'immagine per selezionare / deselezionare tutti i casi nel gruppo",
+      "howto_2": "🔽 Fai clic sull'intestazione dell'elemento per espandere / comprimere il gruppo",
+      "howto_3": "🟢 Il colore verde indica che tutti i casi del gruppo sono selezionati; 🟡 giallo - alcuni casi sono selezionati; ⚪ bianco - nessun caso selezionato",
       "howto_4": "✅ Quando i casi sono selezionati, fai clic su \"inizia\""
-    },
-    "zbll_select_card": {
-      "all": "Tutti",
-      "none": "Nessuno",
-      "done": "Fatto"
     },
     "settings": {
       "settings_title": "Impostazioni",
@@ -50,14 +47,11 @@
       "done_btn": "Fatto",
       "scramble_size": "Dimensione miscela",
       "timer_size": "Dimensione timer",
-      "timer_font": "Carattere timer",
       "timer_update": "Aggiornamento timer",
       "timer_update_on": "Attivo",
       "timer_update_off": "Disattivo",
       "timer_update_seconds": "Solo secondi",
       "timer_precision": "Precisione timer",
-      "dark_theme": "Tema scuro",
-      "light_theme": "Tema chiaro",
       "show_lang_button": "Mostra pulsante lingua",
       "are_you_sure_to_reset": "Sei sicuro?",
       "timer_start_delay_ms": "Ritardo avvio timer (ms)",
@@ -68,10 +62,9 @@
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
       "smart_selection": "Selezione intelligente dei casi",
-      "speed_emphasis": "Enfasi sulla velocità",
-      "speed_emphasis_hint": "Quanto dare priorità ai casi lenti (0 = ignora, 4 = massimo)",
-      "recency_emphasis": "Enfasi sulla recenza",
-      "recency_emphasis_hint": "Con quanta rapidità riproporre i casi non praticati (0 = ignora, 2 = aggressivo)"
+      "buffer_order": "Ordine dei buffer (3-twists)",
+      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set 3-twists).",
+      "buffer_order_drag": "Trascina per riordinare"
     },
     "timer": {
       "no_scramble": "nessuna miscela disponibile",
@@ -135,6 +128,10 @@
       "contact": "Info",
       "get_the_code": "Codice sorgente",
       "credits": "Crediti"
+    },
+    "algset": {
+      "ltct": "LTCT",
+      "twists3": "3-Twists"
     }
   }
 }

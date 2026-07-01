@@ -3,18 +3,20 @@ import {computed, ref, watch} from "vue";
 import {TimerState, useSessionStore} from "@/stores/SessionStore";
 import {msToHumanReadable} from "@/helpers/time_formatter";
 import {useSelectedStore} from "@/stores/SelectedStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
-import {formatZbllKey, parseLtctKey} from "@/helpers/helpers";
+import {formatCaseKey, parseLtctKey} from "@/helpers/helpers";
 import {usePresetsStore, starredName} from "@/stores/PresetStore";
 import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
 import { useI18n } from 'vue-i18n'
 import CubePicture from "@/components/timer/CubePicture.vue";
 import SetupAndAlgs from "@/components/timer/SetupAndAlgs.vue";
-import ZbllNote from "@/components/ZbllNote.vue";
+import CaseNote from "@/components/CaseNote.vue";
 const { t } = useI18n()
 
 const sessionStore = useSessionStore()
 const selectedStore = useSelectedStore()
+const algsetStore = useAlgsetStore()
 const settings = useSettingsStore()
 const presets = usePresetsStore()
 const ls = useLetterSchemeStore()
@@ -32,11 +34,11 @@ const onDeleteBtnClicked = () => {
   }
 }
 
-const isSelected = computed(() => selectedStore.isZbllSelected(result.value["key"]))
+const isSelected = computed(() => selectedStore.isCaseSelected(result.value["key"]))
 const isSelectedCheckboxValue = ref(isSelected.value);
 watch(isSelectedCheckboxValue, (doSelect) => {
   if (isValid.value && doSelect !== isSelected.value) {
-    const action = doSelect ? selectedStore.addZbll : selectedStore.removeZbll;
+    const action = doSelect ? selectedStore.addCase : selectedStore.removeCase;
     action(result.value["key"]);
   }
 })
@@ -80,7 +82,7 @@ const isOpen = ref(true)
         <div class="flex-grow-1 min-width-0">
           <p class="card-text my-0 my-sm-1">
             <span class="d-sm-inline-block d-none">{{$t("result_card.case")}}</span>
-            <span class="fw-bold mx-1">{{ parsed.letters }}</span>
+            <span class="fw-bold mx-1">{{ algsetStore.caseLabel(result['key']) }}</span>
             <small class="opacity-75">({{ result["key"] }})</small>
             <i
                 class="bi clickable px-1"
@@ -88,7 +90,7 @@ const isOpen = ref(true)
                 :class="bookmarkIconClass"
                 @click="starClicked"/>
           </p>
-          <ZbllNote :zbllKey="result['key']"/>
+          <CaseNote :caseKey="result['key']"/>
           <div class="form-check mt-1">
             <label
                 class="form-check-label"
@@ -105,7 +107,7 @@ const isOpen = ref(true)
             </label>
           </div>
           <p class="card-text my-0 my-sm-1">
-            <SetupAndAlgs :zbllKey="result['key']" :maxAmount="3"/>
+            <SetupAndAlgs :caseKey="result['key']" :maxAmount="3"/>
           </p>
           <p class="d-sm-block d-none card-text my-0 my-sm-1">
             <span class="">{{$t("result_card.scramble")}}&nbsp;</span>
