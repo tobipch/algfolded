@@ -1,6 +1,7 @@
 <script setup>
 import {RouterView} from 'vue-router'
 import NavBar from "@/components/nav/NavBar.vue";
+import CommandPalette from "@/components/command_palette/CommandPalette.vue";
 import "@/assets/global.css"
 import {useThemeStore} from "@/stores/ThemeStore";
 import {useSessionStore} from "@/stores/SessionStore";
@@ -32,6 +33,7 @@ watch(() => algset.loaded, (l) => {
 <template>
   <div class="min-vh-100 d-flex flex-column">
     <NavBar/>
+    <CommandPalette/>
     <div class="app-content flex-grow-1 d-flex flex-column">
       <RouterView/>
     </div>

@@ -7,12 +7,14 @@ import {useRouter, useRoute} from "vue-router";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
+import {useCommandPaletteStore} from "@/stores/CommandPaletteStore";
 import {useI18n} from 'vue-i18n'
 
 const {t} = useI18n()
 const selected = useSelectedStore();
 const session = useSessionStore()
 const bt = useBluetoothCubeStore()
+const palette = useCommandPaletteStore()
 
 // When connected the button disconnects; when disconnected it opens a small
 // menu to pick the cube brand (different libraries handle GAN vs MoYu/QiYi).
@@ -160,6 +162,13 @@ onUnmounted(() => {
           <i class="bi-bluetooth bt-feature-badge"/>
           <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }} (Alt+M)</span>
         </span>
+        <button
+            class="btn btn-outline-info"
+            tabindex="-1" @keydown.space.prevent=""
+            @click="palette.openPalette()"
+            :title="$t('cmd.open') + ' (Alt+K)'">
+          <i class="bi-command"/>
+        </button>
         <button
             class="btn"
             tabindex="-1" @keydown.space.prevent=""

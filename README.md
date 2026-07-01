@@ -24,6 +24,7 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 ## Core features
 
 - **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance.
+- **Command palette** (`Alt+K` or the ⌘ navbar button) — a PowerToys-style quick-action box: navigate, switch algset, toggle settings/theme/language, load presets, connect the smart cube, and run **wildcard selections**. Type a pattern with `*` (e.g. `UU*E`, several space-separated), `+`/`-` to add/remove from the selection, or `#`/`@`/`>` to filter to algsets/presets/commands.
 - **Timer with stats** — per-solve history, inline notes, delete/inspect individual results, and a session summary (solve count, unique cases, total/mean time, sparkline, slowest cases with one-click re-practice).
 - **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings, for **both corners and edges**. The scheme drives the letters shown everywhere, including the 3-twists and commutator letters, so the whole app speaks your lettering.
 - **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets.

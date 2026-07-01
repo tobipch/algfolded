@@ -47,13 +47,42 @@ export const useSelectedStore = defineStore('selected', () => {
     action(result.key)
   }
 
+  // ---- bulk selection ----
+  const selectAll = () => { store.keys = algset.cases.map((c) => c.id) }
+  const deselectAll = () => { store.keys = [] }
+  const invertSelection = () => {
+    const sel = new Set(store.keys)
+    store.keys = algset.cases.filter((c) => !sel.has(c.id)).map((c) => c.id)
+  }
+
   // ---- wildcard selection ----
-  // Deselect everything, then select exactly the cases matching `pattern`
+  const matchingIds = (query: string): string[] =>
+    casesMatchingPattern(algset.cases, algset.active.levels, ls.toLetter, query)
+
+  // How many cases a query would match (for a live preview), without applying.
+  const countMatching = (query: string): number => matchingIds(query).length
+
+  // Deselect everything, then select exactly the cases matching `query`
   // ("*" = any run of characters). Returns how many were selected.
-  const selectByPattern = (pattern: string): number => {
-    const ids = casesMatchingPattern(algset.cases, algset.active.levels, ls.toLetter, pattern)
+  const selectByPattern = (query: string): number => {
+    const ids = matchingIds(query)
     store.keys = ids
     return ids.length
+  }
+
+  // Add the matching cases to the current selection. Returns how many matched.
+  const addByPattern = (query: string): number => {
+    const ids = matchingIds(query)
+    store.keys = [...new Set([...store.keys, ...ids])]
+    return ids.length
+  }
+
+  // Remove the matching cases from the current selection. Returns how many were removed.
+  const removeByPattern = (query: string): number => {
+    const ids = new Set(matchingIds(query))
+    const before = store.keys.length
+    store.keys = store.keys.filter((k) => !ids.has(k))
+    return before - store.keys.length
   }
 
   watch(() => store.keys, () => {
@@ -67,5 +96,7 @@ export const useSelectedStore = defineStore('selected', () => {
 
   return {store, addNode, removeNode, numSelectedUnder,
     addCase, removeCase, isCaseSelected,
-    toggleSelected, totalCasesSelected, applyFromPreset, selectByPattern}
+    toggleSelected, totalCasesSelected, applyFromPreset,
+    selectAll, deselectAll, invertSelection,
+    countMatching, selectByPattern, addByPattern, removeByPattern}
 });
