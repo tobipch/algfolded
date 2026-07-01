@@ -108,6 +108,9 @@ const makeCommAlgset = (opts: {
   load: opts.load,
   derive: (rawData, deps) => partition(rawData as Record<string, RawComm>, opts.order(deps)),
   caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),
+  // Piece notation of the three pieces: buffer + the two target stickers,
+  // e.g. "UB-FD-LB" — clearer than the raw source key.
+  caseSecondary: (c) => [bufferPiece(c.path[0]), ...c.path[2].split(SEP)].join('-'),
 })
 
 export const cornerComms: Algset = makeCommAlgset({

@@ -75,6 +75,8 @@ export const edgeFlips: Algset = {
     partition(raw as Record<string, RawFlipTwist>, withExtras(deps.edgeBufferOrder, EXTRA_EDGES),
       (buffer, other) => `${buffer}-${other}`),
   caseLabel: (c) => c.path[c.path.length - 1],
+  // The label ("UF-UB") is already piece notation, so no parenthetical is needed.
+  caseSecondary: () => '',
 }
 
 // Stufe 2 for twists is "<buffer piece>/<letter>"; the sticker after "/" is
@@ -100,4 +102,6 @@ export const cornerTwists2: Algset = {
     partition(raw as Record<string, RawFlipTwist>, withExtras(deps.bufferOrder, EXTRA_CORNERS),
       (buffer, other) => `${bufferPiece(buffer)}/${other}`),
   caseLabel: (c, toLetter) => twistCaseDisplay(c.path[c.path.length - 1], toLetter),
+  // The label ("UFR/N") already identifies the case in piece notation.
+  caseSecondary: () => '',
 }

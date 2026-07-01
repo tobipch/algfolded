@@ -78,7 +78,7 @@ const isOpen = ref(true)
           <p class="card-text my-0 my-sm-1">
             <span class="d-sm-inline-block d-none">{{$t("result_card.case")}}</span>
             <span class="fw-bold mx-1">{{ algsetStore.caseLabel(result['key']) }}</span>
-            <small class="opacity-75">({{ result["key"] }})</small>
+            <small class="opacity-75" v-if="algsetStore.caseSecondary(result['key'])">({{ algsetStore.caseSecondary(result['key']) }})</small>
             <i
                 class="bi clickable px-1"
                 :title="$t('result_card.add_to_starred') + ' (Alt+A)'"

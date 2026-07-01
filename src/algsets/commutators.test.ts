@@ -69,6 +69,21 @@ describe('commutators partition', () => {
     expect(letters(c)[0]).toBe('DFR')
   })
 
+  it('exposes piece notation as the secondary label (buffer-t1-t2)', () => {
+    const raw: Record<string, RawComm> = {
+      // edge buffer UB, targets FD and LB -> "UB-FD-LB" (not the raw source key)
+      k: { algs: ['a'], scrambles: [], buffers: { UB: ['FD', 'LB'] } },
+    }
+    const [c] = partition(raw, ['UB', 'UF'])
+    expect(cornerComms.caseSecondary!(c, toLetter)).toBe('UB-FD-LB')
+    // the DFR buffer shows piece notation, not its RDF sticker
+    const raw2: Record<string, RawComm> = {
+      m: { algs: ['a'], scrambles: [], buffers: { RDF: ['UBL', 'LUB'] } },
+    }
+    const [c2] = partition(raw2, ['RDF'])
+    expect(cornerComms.caseSecondary!(c2, toLetter)).toBe('DFR-UBL-LUB')
+  })
+
   it('keeps a stable id per case regardless of buffer order', () => {
     const raw: Record<string, RawComm> = {
       'corner-case-1': { algs: ['a'], scrambles: [], buffers: { UFR: ['UBL', 'LUF'] } },

@@ -151,7 +151,7 @@ const practiceSlowCases = () => {
         <div v-if="slowestForDisplay.length > 0" class="mt-2">
           <small class="text-muted fw-bold">{{ $t("summary.slowest_cases") }}</small>
           <div v-for="c in slowestForDisplay" :key="c.key" class="d-flex justify-content-between small">
-            <span>{{ caseLetters(c.key) }} <small class="text-muted">({{ c.key }})</small></span>
+            <span>{{ caseLetters(c.key) }} <small class="text-muted" v-if="algsetStore.caseSecondary(c.key)">({{ algsetStore.caseSecondary(c.key) }})</small></span>
             <span>{{ msToHumanReadable(c.avg, p) }}</span>
           </div>
           <button

@@ -47,4 +47,8 @@ export interface Algset {
   // Human-readable label for a case (e.g. "CRN" / "AB"), translated through the
   // active letter scheme.
   caseLabel: (c: AlgCase, toLetter: ToLetter) => string
+  // Optional secondary label shown in parentheses next to a result, in piece
+  // notation (e.g. "UB-FD-LB"). Return '' to hide it. When omitted, callers
+  // fall back to the raw case id.
+  caseSecondary?: (c: AlgCase, toLetter: ToLetter) => string
 }
