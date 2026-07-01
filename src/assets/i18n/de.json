@@ -62,8 +62,10 @@
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
-      "buffer_order": "3-Twists Buffer-Reihenfolge",
-      "buffer_order_hint": "Reihenfolge, in der Buffer einen Twist besitzen (gruppiert das 3-Twists-Set neu).",
+      "buffer_order": "Ecken-Buffer-Reihenfolge",
+      "buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das 3-Twists- und das Ecken-Kommutator-Set neu).",
+      "edge_buffer_order": "Kanten-Buffer-Reihenfolge",
+      "edge_buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das Kanten-Kommutator-Set neu).",
       "buffer_order_drag": "Zum Sortieren ziehen"
     },
     "timer": {
@@ -131,7 +133,9 @@
     },
     "algset": {
       "ltct": "LTCT",
-      "twists3": "3-Twists"
+      "twists3": "3-Twists",
+      "commCorner": "Ecken-Kommutatoren",
+      "commEdge": "Kanten-Kommutatoren"
     }
   }
 }

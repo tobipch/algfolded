@@ -30,7 +30,10 @@ export const useAlgsetStore = defineStore('algset', () => {
   // 3-twists), so they update reactively when those change.
   const cases = computed<AlgCase[]>(() => {
     if (rawData.value === null) return []
-    return active.value.derive(rawData.value, { bufferOrder: settings.store.bufferOrder })
+    return active.value.derive(rawData.value, {
+      bufferOrder: settings.store.bufferOrder,
+      edgeBufferOrder: settings.store.edgeBufferOrder,
+    })
   })
 
   const byId = computed<Record<string, AlgCase>>(() => {

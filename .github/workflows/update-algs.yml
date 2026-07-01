@@ -21,17 +21,22 @@ jobs:
 
       - run: npm ci
 
-      - name: Fetch latest algorithms
+      - name: Fetch latest LTCT algorithms
         run: node scripts/fetch_blddb_algs.mjs
+
+      - name: Fetch latest commutator algorithms
+        run: node scripts/fetch_blddb_comm_algs.mjs
 
       - name: Create PR if algorithms changed
         uses: peter-evans/create-pull-request@v6
         with:
-          title: 'Update LTCT algorithms from blddb'
-          commit-message: 'Update LTCT algorithms from blddb'
+          title: 'Update algorithms from blddb'
+          commit-message: 'Update algorithms from blddb'
           branch: auto/update-algs
           body: |
-            Automated weekly update of LTCT algorithms from [blddb](https://github.com/nbwzx/blddb).
+            Automated weekly update of algorithms from [blddb](https://github.com/nbwzx/blddb).
 
-            Only the `algs` arrays in `ltct_map.json` are updated. Scrambles are unchanged.
+            Updates the `algs` (and, for commutators, the derived `buffers`) in
+            `ltct_map.json`, `corner_comms.json` and `edge_comms.json`. Scrambles
+            are unchanged.
           delete-branch: true

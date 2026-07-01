@@ -1,10 +1,11 @@
 import type { Algset } from '@/algsets/types'
 import { ltct } from '@/algsets/ltct'
 import { threeTwists } from '@/algsets/three_twists'
+import { cornerComms, edgeComms } from '@/algsets/commutators'
 
 // The list of all available algsets. Adding a new set = add its data file
 // and append its definition here.
-export const ALGSETS: Algset[] = [ltct, threeTwists]
+export const ALGSETS: Algset[] = [ltct, threeTwists, cornerComms, edgeComms]
 
 export const DEFAULT_ALGSET_ID = 'ltct'
 

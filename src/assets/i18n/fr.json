@@ -62,8 +62,10 @@
       "letter_scheme": "Schéma des lettres",
       "reset_confirm": "Réinitialiser le schéma des lettres sur Speffz ?",
       "smart_selection": "Sélection intelligente des cas",
-      "buffer_order": "Ordre des buffers (3-twists)",
-      "buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu 3-twists).",
+      "buffer_order": "Ordre des buffers de coins",
+      "buffer_order_hint": "Ordre de priorité des buffers (regroupe les jeux 3-twists et commutateurs de coins).",
+      "edge_buffer_order": "Ordre des buffers d'arêtes",
+      "edge_buffer_order_hint": "Ordre de priorité des buffers (regroupe le jeu commutateurs d'arêtes).",
       "buffer_order_drag": "Glisser pour réorganiser"
     },
     "timer": {
@@ -131,7 +133,9 @@
     },
     "algset": {
       "ltct": "LTCT",
-      "twists3": "3-Twists"
+      "twists3": "3-Twists",
+      "commCorner": "Commutateurs de coins",
+      "commEdge": "Commutateurs d'arêtes"
     }
   }
 }

@@ -14,7 +14,8 @@ Switch between sets from the picker on the selection page. Each set keeps its **
 | --- | ----- | ----------- |
 | **LTCT** (Last Target Corner Twist) | 252 | The final corner-twist case at the end of a corners BLD solve |
 | **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
-| *Commutators (edges & corners)* | — | Planned |
+| **Corner Commutators** | 1008 | Every corner 3-cycle (3-style), grouped by buffer → second letter → case |
+| **Edge Commutators** | 1760 | Every edge 3-cycle (3-style), grouped by buffer → second letter → case |
 
 Because the app is set-agnostic, adding a new set is essentially "a data file + a small descriptor" (see `src/algsets/`).
 
@@ -22,15 +23,17 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 
 - **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance.
 - **Timer with stats** — per-solve history, inline notes, delete/inspect individual results, and a session summary (solve count, unique cases, total/mean time, sparkline, slowest cases with one-click re-practice).
-- **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings. The scheme drives the letters shown everywhere, including the 3-twists letters, so the whole app speaks your lettering.
+- **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings, for **both corners and edges**. The scheme drives the letters shown everywhere, including the 3-twists and commutator letters, so the whole app speaks your lettering.
 - **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets.
 - **Notes** — attach a personal note to any case.
 - **Interactive 3D cube** — touch/drag to rotate; configurable solving orientation.
 - **Unified light/dark theme** and **four languages** (EN, DE, FR, IT).
 
-### 3-Twists buffer order
+### Buffer order (3-twists & commutators)
 
-The 3-twists set is grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the set **re-partitions live**: each twist is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+The 3-twists and commutator sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+
+There are two buffer lists: a **corner** order (shared by 3-twists and corner commutators) and a separate **edge** order for edge commutators. As with the 3-twists, a commutator only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
 
 ### Smart case selection
 
@@ -86,6 +89,12 @@ node scripts/verify_scrambles.mjs
 # 3-Twists
 node scripts/generate_twists.mjs
 node scripts/generate_twist_scrambles.mjs
+
+# Commutators (edges & corners)
+node scripts/fetch_blddb_comm_algs.mjs      # builds/refreshes corner_comms.json + edge_comms.json from blddb
+node scripts/generate_comm_scrambles.mjs    # adds scrambles (idempotent/resumable)
 ```
 
-A GitHub Action (`.github/workflows/update-algs.yml`) refreshes the LTCT algorithms from blddb weekly and opens a PR when they change.
+The commutator sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every distinct 3-cycle is decoded by cube geometry and re-expressed from each configurable buffer, so `fetch_blddb_comm_algs.mjs` doubles as the importer (it only updates `algs`/`buffers`, leaving scrambles intact).
+
+A GitHub Action (`.github/workflows/update-algs.yml`) refreshes the LTCT **and** commutator algorithms from blddb weekly and opens a PR when they change.

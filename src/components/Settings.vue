@@ -114,7 +114,13 @@ const onResetBtnClicked = () => {
       <div class="mb-3">
         <label class="form-label fw-bold">{{ $t("settings.buffer_order") }}</label>
         <small class="text-muted d-block mb-1">{{ $t("settings.buffer_order_hint") }}</small>
-        <BufferOrderEditor />
+        <BufferOrderEditor setting-key="bufferOrder" />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">{{ $t("settings.edge_buffer_order") }}</label>
+        <small class="text-muted d-block mb-1">{{ $t("settings.edge_buffer_order_hint") }}</small>
+        <BufferOrderEditor setting-key="edgeBufferOrder" />
       </div>
       <hr>
 

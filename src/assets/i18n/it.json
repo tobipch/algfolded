@@ -62,8 +62,10 @@
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
       "smart_selection": "Selezione intelligente dei casi",
-      "buffer_order": "Ordine dei buffer (3-twists)",
-      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set 3-twists).",
+      "buffer_order": "Ordine dei buffer degli angoli",
+      "buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa i set 3-twists e commutatori degli angoli).",
+      "edge_buffer_order": "Ordine dei buffer degli spigoli",
+      "edge_buffer_order_hint": "Ordine di priorità dei buffer (riraggruppa il set commutatori degli spigoli).",
       "buffer_order_drag": "Trascina per riordinare"
     },
     "timer": {
@@ -131,7 +133,9 @@
     },
     "algset": {
       "ltct": "LTCT",
-      "twists3": "3-Twists"
+      "twists3": "3-Twists",
+      "commCorner": "Commutatori degli angoli",
+      "commEdge": "Commutatori degli spigoli"
     }
   }
 }

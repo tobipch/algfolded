@@ -62,8 +62,10 @@
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",
-      "buffer_order": "3-twists buffer order",
-      "buffer_order_hint": "Order in which buffers own a twist (re-groups the 3-twists set).",
+      "buffer_order": "Corner buffer order",
+      "buffer_order_hint": "Order in which buffers own a case (re-groups the 3-twists and corner-commutator sets).",
+      "edge_buffer_order": "Edge buffer order",
+      "edge_buffer_order_hint": "Order in which buffers own a case (re-groups the edge-commutator set).",
       "buffer_order_drag": "Drag to reorder"
     },
     "timer": {
@@ -131,7 +133,9 @@
     },
     "algset": {
       "ltct": "LTCT",
-      "twists3": "3-Twists"
+      "twists3": "3-Twists",
+      "commCorner": "Corner Commutators",
+      "commEdge": "Edge Commutators"
     }
   }
 }

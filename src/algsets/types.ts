@@ -27,9 +27,11 @@ export interface AlgsetLevel {
 }
 
 // Inputs a set may use to derive its cases (e.g. the configurable buffer order
-// for 3-twists). LTCT ignores these.
+// for 3-twists / corner comms, and the separate edge-comm buffer order). LTCT
+// ignores these.
 export interface DeriveDeps {
   bufferOrder: string[]
+  edgeBufferOrder: string[]
 }
 
 // A trainable algset. New algsets = one of these + a data file.
