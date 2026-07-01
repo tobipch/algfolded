@@ -135,7 +135,9 @@
       "ltct": "LTCT",
       "twists3": "3-Twists",
       "commCorner": "Commutateurs de coins",
-      "commEdge": "Commutateurs d'arêtes"
+      "commEdge": "Commutateurs d'arêtes",
+      "twists2": "2-Twists de coins",
+      "flips2": "2-Flips d'arêtes"
     }
   }
 }

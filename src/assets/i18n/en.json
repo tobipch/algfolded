@@ -135,7 +135,9 @@
       "ltct": "LTCT",
       "twists3": "3-Twists",
       "commCorner": "Corner Commutators",
-      "commEdge": "Edge Commutators"
+      "commEdge": "Edge Commutators",
+      "twists2": "Corner 2-Twists",
+      "flips2": "Edge 2-Flips"
     }
   }
 }

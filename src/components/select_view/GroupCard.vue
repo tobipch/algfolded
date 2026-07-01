@@ -6,6 +6,7 @@ import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
 import {countLeaves} from "@/algsets/tree";
 import {computed, onMounted, ref} from "vue";
 import SubgroupCard from "@/components/select_view/SubgroupCard.vue";
+import CaseCard from "@/components/select_view/CaseCard.vue";
 
 // `node` is a top-level (group) node of the algset tree.
 const props = defineProps(['node'])
@@ -14,6 +15,9 @@ const algset = useAlgsetStore();
 const ls = useLetterSchemeStore();
 
 const display = computed(() => algset.active.levels[0].display(props.node.value, {toLetter: s => ls.toLetter(s)}))
+// Two-level sets (e.g. 2-flips / 2-twists) have leaf cases directly under the
+// buffer group, so render them as a case grid instead of nested subgroups.
+const childrenAreLeaves = computed(() => props.node.children[0]?.caseId !== undefined)
 const collapseId = computed(() => `grp-${props.node.path.join('-')}`)
 
 const num_cases_selected = computed(() => selected.numSelectedUnder(props.node.path));
@@ -62,10 +66,17 @@ onMounted(() => {
       class="text-center collapse multi-collapse subgroup-well"
       ref="groupCardRef"
       :id="collapseId">
-    <SubgroupCard v-for="child in props.node.children"
-              :key="child.value"
-              :node="child"
-    />
+    <div v-if="childrenAreLeaves" class="row gx-0">
+      <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
+        <CaseCard :node="leaf"/>
+      </div>
+    </div>
+    <template v-else>
+      <SubgroupCard v-for="child in props.node.children"
+                :key="child.value"
+                :node="child"
+      />
+    </template>
   </div>
 </template>
 
@@ -82,6 +93,12 @@ onMounted(() => {
    so it never fights the yellow/green selection colours) */
 .no_cases_selected > .header {
   background-color: rgba(var(--bs-primary-rgb), 0.08);
+}
+
+/* Case grid for two-level sets (buffer -> case), matching the subgroup's grid */
+.case-col {
+  flex: 0 0 auto;
+  width: 25%;
 }
 
 /* Indented "well" holding the subgroups, with a soft primary left rail */

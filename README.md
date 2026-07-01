@@ -16,6 +16,8 @@ Switch between sets from the picker on the selection page. Each set keeps its **
 | **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
 | **Corner Commutators** | 1008 | Every corner 3-cycle (3-style), grouped by buffer → second letter → case |
 | **Edge Commutators** | 1760 | Every edge 3-cycle (3-style), grouped by buffer → second letter → case |
+| **Corner 2-Twists** | 56 | Two twisted corners, grouped by buffer → case (`UFR/N`) |
+| **Edge 2-Flips** | 66 | Two flipped edges, grouped by buffer → case (`UF-UB`) |
 
 Because the app is set-agnostic, adding a new set is essentially "a data file + a small descriptor" (see `src/algsets/`).
 
@@ -29,11 +31,13 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 - **Interactive 3D cube** — touch/drag to rotate; configurable solving orientation.
 - **Unified light/dark theme** and **four languages** (EN, DE, FR, IT).
 
-### Buffer order (3-twists & commutators)
+### Buffer order (3-twists, commutators, 2-flips & 2-twists)
 
-The 3-twists and commutator sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+The 3-twists, commutator, 2-twist and 2-flip sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
 
-There are two buffer lists: a **corner** order (shared by 3-twists and corner commutators) and a separate **edge** order for edge commutators. As with the 3-twists, a commutator only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
+There are two buffer lists: a **corner** order (3-twists, corner commutators, corner 2-twists) and a separate **edge** order (edge commutators, edge 2-flips). A case only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner commutator set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
+
+The 2-piece sets can also consist of exactly the two never-configured back pieces (`DBR`+`DBL`, or `BR`+`BL`); those get an implicit lowest-priority fallback buffer so every case is still reachable.
 
 ### Smart case selection
 
@@ -93,8 +97,12 @@ node scripts/generate_twist_scrambles.mjs
 # Commutators (edges & corners)
 node scripts/fetch_blddb_comm_algs.mjs      # builds/refreshes corner_comms.json + edge_comms.json from blddb
 node scripts/generate_comm_scrambles.mjs    # adds scrambles (idempotent/resumable)
+
+# 2-Flips (edges) & 2-Twists (corners)
+node scripts/fetch_blddb_flip_twist_algs.mjs   # builds/refreshes edge_flips.json + corner_twists2.json from blddb
+node scripts/generate_flip_twist_scrambles.mjs # adds scrambles (idempotent/resumable)
 ```
 
-The commutator sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every distinct 3-cycle is decoded by cube geometry and re-expressed from each configurable buffer, so `fetch_blddb_comm_algs.mjs` doubles as the importer (it only updates `algs`/`buffers`, leaving scrambles intact).
+The commutator, 2-flip and 2-twist sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every case is decoded by cube geometry and re-expressed from each configurable buffer, so the `fetch_blddb_*.mjs` scripts double as importers (they only update `algs`/`buffers`, leaving scrambles intact).
 
-A GitHub Action (`.github/workflows/update-algs.yml`) refreshes **all** sets' algorithms (LTCT, 3-twists and both commutator sets) from blddb weekly and opens a PR when they change.
+A GitHub Action (`.github/workflows/update-algs.yml`) refreshes **all** sets' algorithms (LTCT, 3-twists, both commutator sets and the 2-flip / 2-twist sets) from blddb weekly and opens a PR when they change.

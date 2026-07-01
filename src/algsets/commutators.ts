@@ -19,7 +19,7 @@ export const DEFAULT_EDGE_BUFFER_ORDER = ['UF', 'UB', 'UR', 'UL', 'FR', 'FL', 'D
 
 // Default (Speffz) letter of every sticker, used only for scheme-independent
 // stable ordering of the displayed cases (like SPEFFZ in three_twists.ts).
-const SPEFFZ: Record<string, string> = {
+export const SPEFFZ: Record<string, string> = {
   // corners
   UBL: 'A', UBR: 'B', UFR: 'C', UFL: 'D',
   LUB: 'E', LUF: 'F', LDF: 'G', LDB: 'H',

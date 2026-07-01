@@ -30,6 +30,9 @@ jobs:
       - name: Fetch latest commutator algorithms
         run: node scripts/fetch_blddb_comm_algs.mjs
 
+      - name: Fetch latest 2-flip / 2-twist algorithms
+        run: node scripts/fetch_blddb_flip_twist_algs.mjs
+
       - name: Create PR if algorithms changed
         uses: peter-evans/create-pull-request@v6
         with:
@@ -39,7 +42,8 @@ jobs:
           body: |
             Automated weekly update of algorithms from [blddb](https://github.com/nbwzx/blddb).
 
-            Updates the `algs` (and, for commutators, the derived `buffers`) in
-            `ltct_map.json`, `three_twists.json`, `corner_comms.json` and
-            `edge_comms.json`. Scrambles are unchanged.
+            Updates the `algs` (and, where derived, the `buffers`) in
+            `ltct_map.json`, `three_twists.json`, `corner_comms.json`,
+            `edge_comms.json`, `edge_flips.json` and `corner_twists2.json`.
+            Scrambles are unchanged.
           delete-branch: true

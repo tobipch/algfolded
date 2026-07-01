@@ -135,7 +135,9 @@
       "ltct": "LTCT",
       "twists3": "3-Twists",
       "commCorner": "Commutatori degli angoli",
-      "commEdge": "Commutatori degli spigoli"
+      "commEdge": "Commutatori degli spigoli",
+      "twists2": "2-Twist degli angoli",
+      "flips2": "2-Flip degli spigoli"
     }
   }
 }
