@@ -23,10 +23,11 @@
       "practice": "start",
       "recap": "recap each case once",
       "algset": "Algset",
-      "wildcard_placeholder": "Wildcard, e.g. UU*E or **E",
+      "wildcard_placeholder": "Wildcards, e.g. UU*E or UB*E UB*F",
       "wildcard_apply": "Select",
-      "wildcard_hint": "Select cases by wildcard (\"*\" matches anything). Replaces the current selection.",
-      "wildcard_result": "{count} case(s) selected"
+      "wildcard_hint": "Select cases by wildcard (\"*\" matches anything); separate several patterns with spaces. Replaces the current selection.",
+      "wildcard_result_one": "{count} case selected",
+      "wildcard_result_other": "{count} cases selected"
     },
     "presets": {
       "presets": "Presets",

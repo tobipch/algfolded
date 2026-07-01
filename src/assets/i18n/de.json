@@ -23,10 +23,11 @@
       "practice": "starten",
       "recap": "jeden Fall einmal durchgehen",
       "algset": "Algset",
-      "wildcard_placeholder": "Wildcard, z.B. UU*E oder **E",
+      "wildcard_placeholder": "Wildcards, z.B. UU*E oder UB*E UB*F",
       "wildcard_apply": "Auswählen",
-      "wildcard_hint": "Fälle per Wildcard auswählen (\"*\" steht für Beliebiges). Ersetzt die aktuelle Auswahl.",
-      "wildcard_result": "{count} Fall/Fälle ausgewählt"
+      "wildcard_hint": "Fälle per Wildcard auswählen (\"*\" steht für Beliebiges); mehrere Muster mit Leerzeichen trennen. Ersetzt die aktuelle Auswahl.",
+      "wildcard_result_one": "{count} Fall ausgewählt",
+      "wildcard_result_other": "{count} Fälle ausgewählt"
     },
     "presets": {
       "presets": "Voreinstellungen",

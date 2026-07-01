@@ -23,10 +23,11 @@
       "practice": "inizia",
       "recap": "ripassa ogni caso una volta",
       "algset": "Set di algoritmi",
-      "wildcard_placeholder": "Wildcard, es. UU*E o **E",
+      "wildcard_placeholder": "Wildcard, es. UU*E o UB*E UB*F",
       "wildcard_apply": "Seleziona",
-      "wildcard_hint": "Seleziona i casi tramite wildcard (\"*\" corrisponde a qualsiasi cosa). Sostituisce la selezione attuale.",
-      "wildcard_result": "{count} caso/i selezionato/i"
+      "wildcard_hint": "Seleziona i casi tramite wildcard (\"*\" corrisponde a qualsiasi cosa); separa più pattern con spazi. Sostituisce la selezione attuale.",
+      "wildcard_result_one": "{count} caso selezionato",
+      "wildcard_result_other": "{count} casi selezionati"
     },
     "presets": {
       "presets": "Preimpostazioni",

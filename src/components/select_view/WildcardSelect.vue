@@ -32,7 +32,9 @@ const apply = () => {
       </button>
     </div>
     <small class="text-muted d-block mt-1">
-      <template v-if="lastCount !== null">{{ $t("select.wildcard_result", { count: lastCount }) }}</template>
+      <template v-if="lastCount !== null">
+        {{ $t(lastCount === 1 ? "select.wildcard_result_one" : "select.wildcard_result_other", { count: lastCount }) }}
+      </template>
       <template v-else>{{ $t("select.wildcard_hint") }}</template>
     </small>
   </div>

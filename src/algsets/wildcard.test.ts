@@ -42,8 +42,15 @@ describe('wildcard case selection', () => {
     expect(match('**E')).toEqual(['DD UFR LUB', 'UD UBL LUB', 'UU UBL LUB', 'UU UBR LUB', 'UU UFL LUB'])
   })
 
-  it('is case-insensitive and ignores spaces', () => {
-    expect(match('uu * e')).toEqual(['UU UBL LUB', 'UU UBR LUB', 'UU UFL LUB'])
+  it('is case-insensitive', () => {
+    expect(match('uu*e')).toEqual(['UU UBL LUB', 'UU UBR LUB', 'UU UFL LUB'])
+  })
+
+  it('unions several whitespace-separated patterns', () => {
+    // UU cases ending in E, plus the UU case ending in I.
+    expect(match('UU*E UU*I')).toEqual(
+      ['UU UBL FUL', 'UU UBL LUB', 'UU UBR LUB', 'UU UFL LUB'],
+    )
   })
 
   it('matches a fully-specified case (no wildcard) exactly', () => {

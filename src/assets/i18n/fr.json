@@ -23,10 +23,11 @@
       "practice": "démarrer",
       "recap": "revoir chaque cas une fois",
       "algset": "Jeu d'algos",
-      "wildcard_placeholder": "Joker, p.ex. UU*E ou **E",
+      "wildcard_placeholder": "Jokers, p.ex. UU*E ou UB*E UB*F",
       "wildcard_apply": "Sélectionner",
-      "wildcard_hint": "Sélectionner des cas par joker (\"*\" correspond à n'importe quoi). Remplace la sélection actuelle.",
-      "wildcard_result": "{count} cas sélectionné(s)"
+      "wildcard_hint": "Sélectionner des cas par joker (\"*\" correspond à n'importe quoi) ; séparez plusieurs motifs par des espaces. Remplace la sélection actuelle.",
+      "wildcard_result_one": "{count} cas sélectionné",
+      "wildcard_result_other": "{count} cas sélectionnés"
     },
     "presets": {
       "presets": "Préréglages",

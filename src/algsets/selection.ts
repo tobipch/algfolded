@@ -18,16 +18,24 @@ export const caseSearchString = (
 
 const escapeRegex = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-// Ids of cases matching a wildcard pattern where "*" matches any run of
-// characters (glob-style), matched case-insensitively against caseSearchString.
-// e.g. "UU*E" -> UU-group cases ending in E; "**E" -> any case ending in E.
+const toRegex = (pattern: string): RegExp =>
+  new RegExp('^' + pattern.split('*').map(escapeRegex).join('.*') + '$', 'i')
+
+// Ids of cases matching a wildcard query, case-insensitively against
+// caseSearchString. "*" matches any run of characters (glob-style), and the
+// query may hold several whitespace-separated patterns whose matches are unioned.
+// e.g. "UU*E" -> UU-group cases ending in E; "**E" -> any case ending in E;
+// "UB*E UB*F" -> UB-group cases ending in E or F.
 export const casesMatchingPattern = (
-  cases: AlgCase[], levels: AlgsetLevel[], toLetter: ToLetter, pattern: string,
+  cases: AlgCase[], levels: AlgsetLevel[], toLetter: ToLetter, query: string,
 ): string[] => {
-  const cleaned = pattern.replace(/\s+/g, '')
-  if (!cleaned) return []
-  const rx = new RegExp('^' + cleaned.split('*').map(escapeRegex).join('.*') + '$', 'i')
+  const patterns = query.trim().split(/\s+/).filter(Boolean)
+  if (!patterns.length) return []
+  const regexes = patterns.map(toRegex)
   return cases
-    .filter((c) => rx.test(caseSearchString(c, levels, toLetter)))
+    .filter((c) => {
+      const s = caseSearchString(c, levels, toLetter)
+      return regexes.some((rx) => rx.test(s))
+    })
     .map((c) => c.id)
 }
