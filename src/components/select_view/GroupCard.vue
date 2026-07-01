@@ -95,10 +95,18 @@ onMounted(() => {
   background-color: rgba(var(--bs-primary-rgb), 0.08);
 }
 
-/* Case grid for two-level sets (buffer -> case), matching the subgroup's grid */
+/* Case grid for two-level sets (buffer -> case). Cases sit directly under the
+   buffer here and carry longer labels (e.g. "UFR/N", "UF-UB"), so cap at 2
+   columns — and 1 on narrow screens — to keep them readable. */
 .case-col {
   flex: 0 0 auto;
-  width: 25%;
+  width: 50%;
+}
+
+@media (max-width: 480px) {
+  .case-col {
+    width: 100%;
+  }
 }
 
 /* Indented "well" holding the subgroups, with a soft primary left rail */
