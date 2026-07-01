@@ -49,7 +49,6 @@ export const useCommands = () => {
       { id: 'nav.select', section: S.nav, icon: 'bi-grid', title: t('cmd.go_select'), run: () => { router.push('select') } },
       { id: 'nav.timer', section: S.nav, icon: 'bi-stopwatch', title: t('cmd.go_timer'), run: () => { router.push('timer') } },
       { id: 'nav.settings', section: S.nav, icon: 'bi-gear', title: t('cmd.go_settings'), run: goSettings },
-      { id: 'nav.about', section: S.nav, icon: 'bi-info-circle', title: t('cmd.go_about'), run: () => { router.push('about') } },
     )
 
     // ---- practice ----
