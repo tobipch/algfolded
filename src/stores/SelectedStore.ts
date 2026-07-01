@@ -1,7 +1,8 @@
 import {reactive, watch} from 'vue'
 import { defineStore } from 'pinia'
 import { useAlgsetStore } from '@/stores/AlgsetStore'
-import { casesUnder } from '@/algsets/selection'
+import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
+import { casesUnder, casesMatchingPattern } from '@/algsets/selection'
 import { DEFAULT_ALGSET_ID } from '@/algsets/registry'
 import { readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArray } from '@/helpers/namespaced_storage'
 
@@ -10,6 +11,7 @@ migrateToNamespaced(localStoreKey, DEFAULT_ALGSET_ID, isFlatArray)
 
 export const useSelectedStore = defineStore('selected', () => {
   const algset = useAlgsetStore()
+  const ls = useLetterSchemeStore()
 
   const store = reactive<{ keys: string[] }>({
     keys: readNamespaced<string[]>(localStoreKey, algset.activeId, []),
@@ -45,6 +47,15 @@ export const useSelectedStore = defineStore('selected', () => {
     action(result.key)
   }
 
+  // ---- wildcard selection ----
+  // Deselect everything, then select exactly the cases matching `pattern`
+  // ("*" = any run of characters). Returns how many were selected.
+  const selectByPattern = (pattern: string): number => {
+    const ids = casesMatchingPattern(algset.cases, algset.active.levels, ls.toLetter, pattern)
+    store.keys = ids
+    return ids.length
+  }
+
   watch(() => store.keys, () => {
     writeNamespaced(localStoreKey, algset.activeId, store.keys)
   })
@@ -56,5 +67,5 @@ export const useSelectedStore = defineStore('selected', () => {
 
   return {store, addNode, removeNode, numSelectedUnder,
     addCase, removeCase, isCaseSelected,
-    toggleSelected, totalCasesSelected, applyFromPreset}
+    toggleSelected, totalCasesSelected, applyFromPreset, selectByPattern}
 });

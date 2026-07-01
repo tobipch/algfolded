@@ -22,7 +22,11 @@
       "recap_btn_title": "Ripassa ogni caso una volta",
       "practice": "inizia",
       "recap": "ripassa ogni caso una volta",
-      "algset": "Set di algoritmi"
+      "algset": "Set di algoritmi",
+      "wildcard_placeholder": "Wildcard, es. UU*E o **E",
+      "wildcard_apply": "Seleziona",
+      "wildcard_hint": "Seleziona i casi tramite wildcard (\"*\" corrisponde a qualsiasi cosa). Sostituisce la selezione attuale.",
+      "wildcard_result": "{count} caso/i selezionato/i"
     },
     "presets": {
       "presets": "Preimpostazioni",

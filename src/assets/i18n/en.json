@@ -22,7 +22,11 @@
       "recap_btn_title": "Go through each case once",
       "practice": "start",
       "recap": "recap each case once",
-      "algset": "Algset"
+      "algset": "Algset",
+      "wildcard_placeholder": "Wildcard, e.g. UU*E or **E",
+      "wildcard_apply": "Select",
+      "wildcard_hint": "Select cases by wildcard (\"*\" matches anything). Replaces the current selection.",
+      "wildcard_result": "{count} case(s) selected"
     },
     "presets": {
       "presets": "Presets",

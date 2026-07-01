@@ -22,7 +22,11 @@
       "recap_btn_title": "Gehe jeden Fall einmal durch",
       "practice": "starten",
       "recap": "jeden Fall einmal durchgehen",
-      "algset": "Algset"
+      "algset": "Algset",
+      "wildcard_placeholder": "Wildcard, z.B. UU*E oder **E",
+      "wildcard_apply": "Auswählen",
+      "wildcard_hint": "Fälle per Wildcard auswählen (\"*\" steht für Beliebiges). Ersetzt die aktuelle Auswahl.",
+      "wildcard_result": "{count} Fall/Fälle ausgewählt"
     },
     "presets": {
       "presets": "Voreinstellungen",

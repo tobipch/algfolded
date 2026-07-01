@@ -22,7 +22,11 @@
       "recap_btn_title": "Parcourir chaque cas une fois",
       "practice": "démarrer",
       "recap": "revoir chaque cas une fois",
-      "algset": "Jeu d'algos"
+      "algset": "Jeu d'algos",
+      "wildcard_placeholder": "Joker, p.ex. UU*E ou **E",
+      "wildcard_apply": "Sélectionner",
+      "wildcard_hint": "Sélectionner des cas par joker (\"*\" correspond à n'importe quoi). Remplace la sélection actuelle.",
+      "wildcard_result": "{count} cas sélectionné(s)"
     },
     "presets": {
       "presets": "Préréglages",
