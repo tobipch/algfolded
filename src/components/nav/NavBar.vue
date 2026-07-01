@@ -98,7 +98,8 @@ onUnmounted(() => {
             class="mx-2 btn d-inline-block d-sm-none m-0">
           <i class="bi bi-list-columns"></i>
         </button>
-        <span v-else class="mx-3 logoText clickable" @click="router.push('select')">
+        <span v-else class="mx-3 logoText clickable d-inline-flex align-items-center" @click="router.push('select')">
+          <img src="/favicons/favicon.svg" alt="" class="logo-icon me-2"/>
           {{ $t("nav.trainer_title") }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block">
@@ -186,6 +187,11 @@ onUnmounted(() => {
 <style scoped>
 .logoText {
   font-weight: 900;
+}
+.logo-icon {
+  height: 1.4em;
+  width: auto;
+  vertical-align: middle;
 }
 .bt-connect-wrap {
   position: relative;
