@@ -38,6 +38,9 @@ const showResetHint = computed(() =>
 // In letter-pair mode there is nothing to scramble, so it is suppressed.
 const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !letterPairMode.value)
 
+// Self-paced flow: letter-pair mode without a smart cube -> the spacebar drives.
+const selfPaced = computed(() => letterPairMode.value && !bt.connected)
+
 // Simplify a list of {text, type} by merging adjacent same-face moves
 function simplifyMoves(items) {
   const result = []
@@ -121,6 +124,9 @@ const displayMoves = computed(() => {
   </h3>
   <div v-if="showResetHint" class="reset-hint text-warning small mt-1">
     <i class="bi bi-arrow-repeat"></i> {{ $t("timer.reset_hint") }}
+  </div>
+  <div v-else-if="selfPaced" class="text-muted small mt-1">
+    <kbd>Space</kbd> {{ $t("timer.selfpaced_hint") }}
   </div>
 </template>
 

@@ -66,8 +66,8 @@
       "timer_start_delay_ms": "Timer-Startverzögerung (ms)",
       "cube_orientation": "Würfelorientierung",
       "cube_orientation_hint": "Rotation für die Würfelanzeige, z.B. y, x2, x y (max. 2 Rotationen)",
-      "letterpair_mode": "Letterpair-Modus (Smartcube)",
-      "letterpair_mode_hint": "Zeigt das Letterpair des Falls statt der Mischung. Der virtuelle Würfel startet bereits verdreht – du führst nur den LTCT aus und der Timer stoppt, sobald er gelöst ist. Kein physisches Verwürfeln nötig, und der Würfel darf zwischen den Fällen verdreht bleiben.",
+      "letterpair_mode": "Letterpair-Modus",
+      "letterpair_mode_hint": "Zeigt das Letterpair des Falls statt der Mischung. Der virtuelle Würfel startet bereits verdreht – du führst nur den LTCT aus und der Timer stoppt, sobald er gelöst ist. Kein physisches Verwürfeln nötig, und der Würfel darf zwischen den Fällen verdreht bleiben. Ohne Smartcube gehst du mit der Leertaste weiter (sie speichert die Zeit und startet den nächsten Fall).",
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
@@ -85,6 +85,7 @@
       "reset_hint": "Falscher Alg? Drehe die untere oder obere Ebene einmal komplett (D D D D oder U U U U), um diesen Fall zurückzusetzen.",
       "ready": "bereit",
       "running": "läuft",
+      "selfpaced_hint": "= nächster Fall (speichert die Zeit und startet den nächsten)",
       "didnt_know": "Nicht gewusst",
       "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird"
     },

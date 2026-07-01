@@ -66,8 +66,8 @@
       "timer_start_delay_ms": "Timer start delay (ms)",
       "cube_orientation": "Cube orientation",
       "cube_orientation_hint": "Rotation applied to the cube display, e.g. y, x2, x y (max 2 rotations)",
-      "letterpair_mode": "Letterpair mode (smart cube)",
-      "letterpair_mode_hint": "Show the case's letter pair instead of the scramble. The virtual cube starts already scrambled, so you just execute the LTCT and the timer stops when it's solved — no physical scrambling needed, and the cube can stay scrambled between cases.",
+      "letterpair_mode": "Letterpair mode",
+      "letterpair_mode_hint": "Show the case's letter pair instead of the scramble. The virtual cube starts already scrambled, so you just execute the LTCT and the timer stops when it's solved — no physical scrambling needed, and the cube can stay scrambled between cases. Without a smart cube, advance with the spacebar (it records the time and starts the next case).",
       "letter_scheme": "Letter Scheme",
       "reset_confirm": "Reset letter scheme to Speffz?",
       "smart_selection": "Smart case selection",
@@ -85,6 +85,7 @@
       "reset_hint": "Wrong alg? Spin the bottom or top layer a full turn (D D D D or U U U U) to reset this case.",
       "ready": "ready",
       "running": "running",
+      "selfpaced_hint": "= next case (records the time and starts the next)",
       "didnt_know": "Didn't know",
       "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner"
     },

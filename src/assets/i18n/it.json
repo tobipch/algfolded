@@ -66,8 +66,8 @@
       "timer_start_delay_ms": "Ritardo avvio timer (ms)",
       "cube_orientation": "Orientamento del cubo",
       "cube_orientation_hint": "Rotazione applicata alla visualizzazione del cubo, es. y, x2, x y (max 2 rotazioni)",
-      "letterpair_mode": "Modalità letterpair (smart cube)",
-      "letterpair_mode_hint": "Mostra la coppia di lettere del caso invece della miscela. Il cubo virtuale parte già mescolato, esegui solo l'LTCT e il timer si ferma quando è risolto — nessun mescolamento fisico necessario, e il cubo può restare mescolato tra un caso e l'altro.",
+      "letterpair_mode": "Modalità letterpair",
+      "letterpair_mode_hint": "Mostra la coppia di lettere del caso invece della miscela. Il cubo virtuale parte già mescolato, esegui solo l'LTCT e il timer si ferma quando è risolto — nessun mescolamento fisico necessario, e il cubo può restare mescolato tra un caso e l'altro. Senza smart cube avanzi con la barra spaziatrice (salva il tempo e avvia il caso successivo).",
       "letter_scheme": "Schema delle lettere",
       "reset_confirm": "Reimpostare lo schema delle lettere su Speffz?",
       "smart_selection": "Selezione intelligente dei casi",
@@ -85,6 +85,7 @@
       "reset_hint": "Algoritmo sbagliato? Ruota lo strato inferiore o superiore di un giro completo (D D D D o U U U U) per reimpostare questo caso.",
       "ready": "pronto",
       "running": "in corso",
+      "selfpaced_hint": "= caso successivo (salva il tempo e avvia il prossimo)",
       "didnt_know": "Non lo sapevo",
       "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima"
     },
