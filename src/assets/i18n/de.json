@@ -135,7 +135,7 @@
       "open": "Befehlspalette",
       "placeholder": "Befehl eingeben, oder eine Wildcard wie UU*E …",
       "no_results": "Keine Treffer",
-      "prefix_hint": "* Wildcard · +hinzufügen · −entfernen · # Algset · {'@'} Presets · > Befehle",
+      "prefix_hint": "UU*E wählt aus · +… fügt hinzu · −… entfernt · # Algset · {'@'} Presets · > Befehle",
       "section": {
         "nav": "Navigation",
         "practice": "Üben",

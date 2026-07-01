@@ -135,7 +135,7 @@
       "open": "Command palette",
       "placeholder": "Type a command, or a wildcard like UU*E …",
       "no_results": "No results",
-      "prefix_hint": "* wildcard · +add · −remove · # algset · {'@'} presets · > commands",
+      "prefix_hint": "UU*E selects · +… adds · −… removes · # algset · {'@'} presets · > commands",
       "section": {
         "nav": "Navigate",
         "practice": "Practice",

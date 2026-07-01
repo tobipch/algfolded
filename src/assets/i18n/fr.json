@@ -135,7 +135,7 @@
       "open": "Palette de commandes",
       "placeholder": "Tapez une commande, ou un joker comme UU*E …",
       "no_results": "Aucun résultat",
-      "prefix_hint": "* joker · +ajouter · −retirer · # jeu · {'@'} presets · > commandes",
+      "prefix_hint": "UU*E sélectionne · +… ajoute · −… retire · # jeu · {'@'} presets · > commandes",
       "section": {
         "nav": "Navigation",
         "practice": "Pratiquer",

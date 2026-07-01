@@ -135,7 +135,7 @@
       "open": "Palette dei comandi",
       "placeholder": "Digita un comando, o una wildcard come UU*E …",
       "no_results": "Nessun risultato",
-      "prefix_hint": "* wildcard · +aggiungi · −rimuovi · # set · {'@'} preset · > comandi",
+      "prefix_hint": "UU*E seleziona · +… aggiunge · −… rimuove · # set · {'@'} preset · > comandi",
       "section": {
         "nav": "Naviga",
         "practice": "Pratica",
