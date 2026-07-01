@@ -97,4 +97,4 @@ node scripts/generate_comm_scrambles.mjs    # adds scrambles (idempotent/resumab
 
 The commutator sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every distinct 3-cycle is decoded by cube geometry and re-expressed from each configurable buffer, so `fetch_blddb_comm_algs.mjs` doubles as the importer (it only updates `algs`/`buffers`, leaving scrambles intact).
 
-A GitHub Action (`.github/workflows/update-algs.yml`) refreshes the LTCT **and** commutator algorithms from blddb weekly and opens a PR when they change.
+A GitHub Action (`.github/workflows/update-algs.yml`) refreshes **all** sets' algorithms (LTCT, 3-twists and both commutator sets) from blddb weekly and opens a PR when they change.
