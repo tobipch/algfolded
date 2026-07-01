@@ -36,6 +36,12 @@ const SPEFFZ: Record<string, string> = {
   DF: 'U', DR: 'V', DB: 'W', DL: 'X',
 }
 
+// Buffer stickers whose name isn't already the canonical piece name. The first
+// level shows the buffer in piece notation (e.g. UFR, UBL / UF, UB), so these
+// two corner buffers map from their tracked sticker to their corner.
+const BUFFER_PIECE: Record<string, string> = { RDF: 'DFR', FDL: 'DFL' }
+const bufferPiece = (v: string): string => BUFFER_PIECE[v] ?? v
+
 // Path segments join stickers with this separator so each piece translates
 // independently (e.g. "UFR·LUB" -> two letters).
 const SEP = '·'
@@ -93,9 +99,9 @@ const makeCommAlgset = (opts: {
   name: opts.name,
   usesLetterScheme: true,
   levels: [
-    // Stufe 1: buffer. Stufe 2: the second (first-target) letter.
-    // Stufe 3: the case written as its letter pair.
-    { id: 'buffer', display: (v, ctx) => ({ primary: ctx.toLetter(v), secondary: v }) },
+    // Stufe 1: buffer, shown in piece notation (UFR / UF, not its letter).
+    // Stufe 2: the second (first-target) letter. Stufe 3: the case letter pair.
+    { id: 'buffer', display: (v, ctx) => ({ primary: bufferPiece(v), secondary: ctx.toLetter(v) }) },
     { id: 'secondLetter', display: (v, ctx) => ({ primary: ctx.toLetter(v) }) },
     { id: 'case', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
   ],

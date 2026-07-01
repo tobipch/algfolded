@@ -29,10 +29,11 @@ describe('commutators partition', () => {
       x: { algs: ['alg'], scrambles: ['scr'], buffers: { UFR: ['UBL', 'LUF'] } },
     }
     const [c] = partition(raw, DEFAULT_CORNER_BUFFER_ORDER)
-    expect(letters(c)).toEqual(['C', 'A', 'AF'])
+    // buffer level shows piece notation; then the second letter, then the pair.
+    expect(letters(c)).toEqual(['UFR', 'A', 'AF'])
     expect(cornerComms.caseLabel(c, toLetter)).toBe('AF')
-    // the buffer level also exposes the raw sticker as secondary
-    expect(cornerComms.levels[0].display(c.path[0], { toLetter }).secondary).toBe('UFR')
+    // the buffer level exposes the buffer letter as secondary
+    expect(cornerComms.levels[0].display(c.path[0], { toLetter }).secondary).toBe('C')
   })
 
   it('assigns the highest-priority buffer present among the case pieces', () => {
@@ -44,7 +45,7 @@ describe('commutators partition', () => {
       },
     }
     const [c] = partition(raw, DEFAULT_CORNER_BUFFER_ORDER)
-    expect(letters(c)[0]).toBe('D') // UFL
+    expect(letters(c)[0]).toBe('UFL')
   })
 
   it('re-partitions when the buffer order changes', () => {
@@ -54,9 +55,18 @@ describe('commutators partition', () => {
         buffers: { UFR: ['UBL', 'LUF'], UFL: ['UBL', 'BUL'] },
       },
     }
-    expect(letters(partition(raw, DEFAULT_CORNER_BUFFER_ORDER)[0])[0]).toBe('C') // UFR wins
+    expect(letters(partition(raw, DEFAULT_CORNER_BUFFER_ORDER)[0])[0]).toBe('UFR') // UFR wins
     const reordered = ['UFL', 'UBR', 'UBL', 'RDF', 'FDL', 'UFR']
-    expect(letters(partition(raw, reordered)[0])[0]).toBe('D') // now UFL wins
+    expect(letters(partition(raw, reordered)[0])[0]).toBe('UFL') // now UFL wins
+  })
+
+  it('shows the DFR/DFL buffers in piece notation, not their sticker', () => {
+    const raw: Record<string, RawComm> = {
+      // Only the RDF (=DFR corner) buffer is present here.
+      w: { algs: ['alg'], scrambles: [], buffers: { RDF: ['UBL', 'LUB'] } },
+    }
+    const [c] = partition(raw, DEFAULT_CORNER_BUFFER_ORDER)
+    expect(letters(c)[0]).toBe('DFR')
   })
 
   it('keeps a stable id per case regardless of buffer order', () => {

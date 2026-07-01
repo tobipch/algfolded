@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22 # cubing (used by the commutator fetch) needs Node >= 22.3
 
       - run: npm ci
 

@@ -43,6 +43,11 @@ const displayStore = useDisplayStore()
 const isTimerView = computed(() => route.fullPath.endsWith("timer"))
 const isSettingsView = computed(() => route.name === 'settings')
 const settingsBtnClass = computed(() => isSettingsView.value ? 'btn-info' : 'btn-outline-info')
+
+// Open settings remembering where we came from, so closing returns there
+// (e.g. open from the trainer -> back to the trainer).
+const openSettings = () => router.push({name: 'settings', query: {from: route.name}})
+const closeSettings = () => router.push({name: route.query.from === 'timer' ? 'timer' : 'select'})
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
       ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
@@ -159,7 +164,7 @@ onUnmounted(() => {
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
             :class="settingsBtnClass"
-            @click="isSettingsView ? router.push('select') : router.push('settings')"
+            @click="isSettingsView ? closeSettings() : openSettings()"
             :title="$t('nav.settings')">
           <i class="bi-wrench"/>
         </button>

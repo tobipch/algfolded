@@ -3,17 +3,22 @@ import {useSettingsStore} from "@/stores/SettingsStore";
 import LetterSchemeEditor from "@/components/LetterSchemeEditor.vue";
 import BufferOrderEditor from "@/components/BufferOrderEditor.vue";
 import {useI18n} from 'vue-i18n'
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 
 const {t} = useI18n()
 const settings = useSettingsStore()
 const router = useRouter()
+const route = useRoute()
 
 const onResetBtnClicked = () => {
   if (confirm(t("settings.are_you_sure_to_reset"))) {
     settings.resetDefaults()
   }
 }
+
+// Return to wherever settings was opened from (e.g. the trainer), defaulting to
+// the selection page.
+const onDoneBtnClicked = () => router.push({name: route.query.from === 'timer' ? 'timer' : 'select'})
 </script>
 
 <template>
@@ -22,7 +27,7 @@ const onResetBtnClicked = () => {
       <span class="h2 flex-grow-1">{{ $t("settings.settings_title") }}</span>
       <div class="d-lg-none d-block"><br></div>
       <button class="mx-2 btn btn-warning" @click="onResetBtnClicked">{{ $t("settings.reset_btn") }}</button>
-      <button class="mx-2 btn btn-success" @click="router.push('select')">{{ $t("settings.done_btn") }}
+      <button class="mx-2 btn btn-success" @click="onDoneBtnClicked">{{ $t("settings.done_btn") }}
       </button>
     </div>
     <hr>
