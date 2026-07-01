@@ -33,114 +33,145 @@ const onDoneBtnClicked = () => router.push({name: route.query.from === 'timer' ?
     <hr>
     <form>
 
-      <div class="mb-2">
-        <label for="scrambleFontSize" class="form-label">{{ $t("settings.scramble_size") }}</label>
-        <input
-            type="number"
-            min="1" max="999" maxlength="3" size="5"
-            class="mx-2" tabindex="-1" @keydown.space.prevent=""
-            v-model.number="settings.store.scrambleFontSize" id="scrambleFontSize"/>
-      </div>
+      <!-- Timer -->
+      <section class="settings-section">
+        <h5 class="settings-heading"><i class="bi bi-stopwatch me-2"></i>{{ $t("settings.section_timer") }}</h5>
 
-      <div class="mb-2">
-        <label for="timerFontSize" class="form-label">{{ $t("settings.timer_size") }}</label>
-        <input
-            type="number"
-            min="1" max="999" maxlength="3" size="5"
-            class="mx-2" tabindex="-1" @keydown.space.prevent=""
-            v-model.number="settings.store.timerFontSize" id="timerFontSize"/>
-      </div>
-
-      <div class="mb-2">
-        <label for="timerUpdate" class="form-label">{{ $t("settings.timer_update") }}</label>
-        <select
-            v-model="settings.store.timerUpdate"
-            class="mx-2" tabindex="-1" @keydown.space.prevent=""
-            id="timerUpdate">
-          <option value="on">{{ $t("settings.timer_update_on") }}</option>
-          <option value="seconds">{{ $t("settings.timer_update_seconds") }}</option>
-          <option value="off">{{ $t("settings.timer_update_off") }}</option>
-        </select>
-      </div>
-
-      <div class="mb-2">
-        <label for="timerPrecision" class="form-label">{{ $t("settings.timer_precision") }}</label>
-        <select
-            class="mx-2" tabindex="-1" @keydown.space.prevent=""
-            v-model.number="settings.store.timerPrecision" id="timerPrecision">
-          <option value="1">1/10</option>
-          <option value="2">1/100</option>
-          <option value="3">1/1000</option>
-        </select>
-      </div>
-
-      <div class="mb-2">
-        <label for="timerStartDelayMs" class="form-label">{{ $t("settings.timer_start_delay_ms") }}</label>
-        <select
-            class="mx-2" tabindex="-1" @keydown.space.prevent=""
-            v-model.number="settings.store.timerStartDelayMs" id="timerStartDelayMs">
-          <option value="0">0</option>
-          <option value="100">100</option>
-          <option value="300">300</option>
-          <option value="500">500</option>
-          <option value="1000">1000</option>
-        </select>
-      </div>
-
-      <hr>
-      <div class="mb-2">
-        <label for="cubeOrientation" class="form-label">{{ $t("settings.cube_orientation") }}</label>
-        <input
-            type="text"
-            class="mx-2 form-control form-control-sm d-inline-block"
-            style="width: 160px"
-            placeholder="e.g. x y"
-            v-model="settings.store.cubeOrientation"
-            @keydown.space.stop=""
-            id="cubeOrientation"/>
-        <small class="text-muted d-block mt-1">{{ $t("settings.cube_orientation_hint") }}</small>
-      </div>
-
-      <div class="mb-3">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch"
-                 v-model="settings.store.letterPairMode" id="letterPairMode"
-                 tabindex="-1" @keydown.space.prevent="">
-          <label class="form-check-label" for="letterPairMode">{{ $t("settings.letterpair_mode") }}</label>
+        <div class="mb-2">
+          <label for="scrambleFontSize" class="form-label">{{ $t("settings.scramble_size") }}</label>
+          <input
+              type="number"
+              min="1" max="999" maxlength="3" size="5"
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              v-model.number="settings.store.scrambleFontSize" id="scrambleFontSize"/>
         </div>
-        <small class="text-muted d-block mt-1">{{ $t("settings.letterpair_mode_hint") }}</small>
-      </div>
 
-      <div class="mb-3">
-        <label class="form-label fw-bold">{{ $t("settings.letter_scheme") }}</label>
-        <LetterSchemeEditor />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-bold">{{ $t("settings.buffer_order") }}</label>
-        <small class="text-muted d-block mb-1">{{ $t("settings.buffer_order_hint") }}</small>
-        <BufferOrderEditor setting-key="bufferOrder" />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-bold">{{ $t("settings.edge_buffer_order") }}</label>
-        <small class="text-muted d-block mb-1">{{ $t("settings.edge_buffer_order_hint") }}</small>
-        <BufferOrderEditor setting-key="edgeBufferOrder" />
-      </div>
-      <hr>
-
-      <div class="mb-3">
-        <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch"
-                 v-model="settings.store.smartSelection" id="smartSelection"
-                 tabindex="-1" @keydown.space.prevent="">
-          <label class="form-check-label" for="smartSelection">{{ $t("settings.smart_selection") }}</label>
+        <div class="mb-2">
+          <label for="timerFontSize" class="form-label">{{ $t("settings.timer_size") }}</label>
+          <input
+              type="number"
+              min="1" max="999" maxlength="3" size="5"
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              v-model.number="settings.store.timerFontSize" id="timerFontSize"/>
         </div>
-      </div>
+
+        <div class="mb-2">
+          <label for="timerUpdate" class="form-label">{{ $t("settings.timer_update") }}</label>
+          <select
+              v-model="settings.store.timerUpdate"
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              id="timerUpdate">
+            <option value="on">{{ $t("settings.timer_update_on") }}</option>
+            <option value="seconds">{{ $t("settings.timer_update_seconds") }}</option>
+            <option value="off">{{ $t("settings.timer_update_off") }}</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label for="timerPrecision" class="form-label">{{ $t("settings.timer_precision") }}</label>
+          <select
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              v-model.number="settings.store.timerPrecision" id="timerPrecision">
+            <option value="1">1/10</option>
+            <option value="2">1/100</option>
+            <option value="3">1/1000</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label for="timerStartDelayMs" class="form-label">{{ $t("settings.timer_start_delay_ms") }}</label>
+          <select
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              v-model.number="settings.store.timerStartDelayMs" id="timerStartDelayMs">
+            <option value="0">0</option>
+            <option value="100">100</option>
+            <option value="300">300</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Practice -->
+      <section class="settings-section">
+        <h5 class="settings-heading"><i class="bi bi-shuffle me-2"></i>{{ $t("settings.section_practice") }}</h5>
+        <div class="mb-2">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch"
+                   v-model="settings.store.smartSelection" id="smartSelection"
+                   tabindex="-1" @keydown.space.prevent="">
+            <label class="form-check-label" for="smartSelection">{{ $t("settings.smart_selection") }}</label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Lettering -->
+      <section class="settings-section">
+        <h5 class="settings-heading"><i class="bi bi-fonts me-2"></i>{{ $t("settings.section_lettering") }}</h5>
+        <div class="mb-2">
+          <label class="form-label fw-bold">{{ $t("settings.letter_scheme") }}</label>
+          <LetterSchemeEditor />
+        </div>
+      </section>
+
+      <!-- Buffer order -->
+      <section class="settings-section">
+        <h5 class="settings-heading"><i class="bi bi-collection me-2"></i>{{ $t("settings.section_buffers") }}</h5>
+        <div class="mb-3">
+          <label class="form-label fw-bold">{{ $t("settings.buffer_order") }}</label>
+          <small class="text-muted d-block mb-1">{{ $t("settings.buffer_order_hint") }}</small>
+          <BufferOrderEditor setting-key="bufferOrder" />
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label fw-bold">{{ $t("settings.edge_buffer_order") }}</label>
+          <small class="text-muted d-block mb-1">{{ $t("settings.edge_buffer_order_hint") }}</small>
+          <BufferOrderEditor setting-key="edgeBufferOrder" />
+        </div>
+      </section>
+
+      <!-- Smart cube -->
+      <section class="settings-section">
+        <h5 class="settings-heading"><i class="bi bi-bluetooth me-2"></i>{{ $t("settings.section_cube") }}</h5>
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch"
+                   v-model="settings.store.letterPairMode" id="letterPairMode"
+                   tabindex="-1" @keydown.space.prevent="">
+            <label class="form-check-label" for="letterPairMode">{{ $t("settings.letterpair_mode") }}</label>
+          </div>
+          <small class="text-muted d-block mt-1">{{ $t("settings.letterpair_mode_hint") }}</small>
+        </div>
+
+        <div class="mb-2">
+          <label for="cubeOrientation" class="form-label">{{ $t("settings.cube_orientation") }}</label>
+          <input
+              type="text"
+              class="mx-2 form-control form-control-sm d-inline-block"
+              style="width: 160px"
+              placeholder="e.g. x y"
+              v-model="settings.store.cubeOrientation"
+              @keydown.space.stop=""
+              id="cubeOrientation"/>
+          <small class="text-muted d-block mt-1">{{ $t("settings.cube_orientation_hint") }}</small>
+        </div>
+      </section>
 
     </form>
   </div></div>
 </template>
 
 <style scoped>
+.settings-section {
+  padding: 0.75rem 0 1rem;
+  border-top: 1px solid var(--bs-border-color);
+}
+.settings-section:first-of-type {
+  border-top: none;
+}
+.settings-heading {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  opacity: 0.85;
+}
 </style>

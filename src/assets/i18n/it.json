@@ -22,7 +22,11 @@
       "recap_btn_title": "Ripassa ogni caso una volta",
       "practice": "inizia",
       "recap": "ripassa ogni caso una volta",
-      "algset": "Set di algoritmi"
+      "algset": "Set di algoritmi",
+      "all": "Tutti",
+      "none": "Nessuno",
+      "expand_all": "Espandi tutto",
+      "collapse_all": "Comprimi tutto"
     },
     "presets": {
       "presets": "Preimpostazioni",
@@ -43,6 +47,11 @@
     },
     "settings": {
       "settings_title": "Impostazioni",
+      "section_timer": "Timer",
+      "section_practice": "Pratica",
+      "section_lettering": "Lettere",
+      "section_buffers": "Ordine dei buffer",
+      "section_cube": "Smart cube",
       "reset_btn": "Reset",
       "done_btn": "Fatto",
       "scramble_size": "Dimensione miscela",
@@ -114,6 +123,7 @@
     },
     "hotkeys": {
       "hotkeys": "Scorciatoie da tastiera",
+      "command_palette": "Apri la palette dei comandi",
       "or": "o",
       "toggle_timer_select": "Passa alla vista Timer / Selezione",
       "delete_current_result": "Elimina il risultato corrente",

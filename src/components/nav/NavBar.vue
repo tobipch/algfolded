@@ -79,7 +79,7 @@ onUnmounted(() => {
 <template>
   <nav class="navbar bg-secondary bg-opacity-25 py-lg-3 py-1 w-100">
     <div class="navbar-inner w-100 d-flex align-items-center">
-      <div class="me-auto">
+      <div class="me-auto d-flex align-items-center">
         <button
             v-if="isTimerView"
             tabindex="-1"

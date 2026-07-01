@@ -22,7 +22,11 @@
       "recap_btn_title": "Go through each case once",
       "practice": "start",
       "recap": "recap each case once",
-      "algset": "Algset"
+      "algset": "Algset",
+      "all": "All",
+      "none": "None",
+      "expand_all": "Expand all",
+      "collapse_all": "Collapse all"
     },
     "presets": {
       "presets": "Presets",
@@ -43,6 +47,11 @@
     },
     "settings": {
       "settings_title": "Settings",
+      "section_timer": "Timer",
+      "section_practice": "Practice",
+      "section_lettering": "Lettering",
+      "section_buffers": "Buffer order",
+      "section_cube": "Smart cube",
       "reset_btn": "Reset",
       "done_btn": "Done",
       "scramble_size": "Scramble size",
@@ -114,6 +123,7 @@
     },
     "hotkeys": {
       "hotkeys": "Shortcuts",
+      "command_palette": "Open the command palette",
       "or": "or",
       "toggle_timer_select": "Toggle Timer/Select view",
       "delete_current_result": "Delete current result",

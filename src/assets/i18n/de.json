@@ -22,7 +22,11 @@
       "recap_btn_title": "Gehe jeden Fall einmal durch",
       "practice": "starten",
       "recap": "jeden Fall einmal durchgehen",
-      "algset": "Algset"
+      "algset": "Algset",
+      "all": "Alle",
+      "none": "Keine",
+      "expand_all": "Alle aufklappen",
+      "collapse_all": "Alle zuklappen"
     },
     "presets": {
       "presets": "Voreinstellungen",
@@ -43,6 +47,11 @@
     },
     "settings": {
       "settings_title": "Einstellungen",
+      "section_timer": "Timer",
+      "section_practice": "Üben",
+      "section_lettering": "Beschriftung",
+      "section_buffers": "Buffer-Reihenfolge",
+      "section_cube": "Smart Cube",
       "reset_btn": "Zurücksetzen",
       "done_btn": "Fertig",
       "scramble_size": "Mischgröße",
@@ -114,6 +123,7 @@
     },
     "hotkeys": {
       "hotkeys": "Tastenkürzel",
+      "command_palette": "Befehlspalette öffnen",
       "or": "oder",
       "toggle_timer_select": "Timer-/Auswahlanzeige umschalten",
       "delete_current_result": "Aktuelles Ergebnis löschen",

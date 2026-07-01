@@ -4,6 +4,10 @@
 <template>
   <ul class="no_bullet">
     <li>
+      <kbd>Alt</kbd>+<kbd>K</kbd>
+      <span class="expl">{{ $t("hotkeys.command_palette") }}</span>
+    </li>
+    <li>
       <kbd>Alt</kbd>+<kbd>T</kbd>
       <span class="expl">{{ $t("hotkeys.toggle_timer_select") }}</span>
     </li>

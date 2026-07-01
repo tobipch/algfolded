@@ -22,7 +22,11 @@
       "recap_btn_title": "Parcourir chaque cas une fois",
       "practice": "démarrer",
       "recap": "revoir chaque cas une fois",
-      "algset": "Jeu d'algos"
+      "algset": "Jeu d'algos",
+      "all": "Tout",
+      "none": "Aucun",
+      "expand_all": "Tout développer",
+      "collapse_all": "Tout réduire"
     },
     "presets": {
       "presets": "Préréglages",
@@ -43,6 +47,11 @@
     },
     "settings": {
       "settings_title": "Paramètres",
+      "section_timer": "Chronomètre",
+      "section_practice": "Pratique",
+      "section_lettering": "Lettrage",
+      "section_buffers": "Ordre des buffers",
+      "section_cube": "Smart cube",
       "reset_btn": "Réinitialiser",
       "done_btn": "Terminé",
       "scramble_size": "Taille du mélange",
@@ -114,6 +123,7 @@
     },
     "hotkeys": {
       "hotkeys": "Raccourcis clavier",
+      "command_palette": "Ouvrir la palette de commandes",
       "or": "ou",
       "toggle_timer_select": "Basculer entre l'affichage du chronomètre et de la sélection",
       "delete_current_result": "Supprimer le résultat actuel",
