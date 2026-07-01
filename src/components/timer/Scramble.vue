@@ -2,31 +2,31 @@
 
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
-import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {computed} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {moveFace, moveAmount, amountToMove} from "@/helpers/scramble_utils";
-import {parseLtctKey} from "@/helpers/helpers";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const session = useSessionStore()
 const settings = useSettingsStore()
 const bt = useBluetoothCubeStore()
-const ls = useLetterSchemeStore()
+const algset = useAlgsetStore()
 const scramble = computed(() => session.currentScramble ?? t("timer.no_scramble"))
 
-// Letter-pair mode hides the scramble and shows the case's letter pair instead,
-// so the user knows which LTCT to execute without ever scrambling physically.
+// Letter-pair mode hides the scramble and shows the case's label instead, so the
+// user knows which case to execute without ever scrambling physically. The label
+// is delegated to the active algset (LTCT letter pair, comm "AB", flip "UF-UB", …).
 const letterPairMode = computed(() => settings.store.letterPairMode)
 const letterPair = computed(() => {
   const key = session.store.currentKey
-  return key ? parseLtctKey(key, ls.toLetter).letters : ''
+  return key ? algset.caseLabel(key) : ''
 })
 
 // Preview of the next and next-next cases, to keep the solving flow going.
 const upcomingPairs = computed(() =>
-    (session.store.upcoming || []).slice(0, 2).map(u => parseLtctKey(u.key, ls.toLetter).letters)
+    (session.store.upcoming || []).slice(0, 2).map(u => algset.caseLabel(u.key))
 )
 
 // Hint shown in letter-pair mode when the cube looks far from solved (likely a
