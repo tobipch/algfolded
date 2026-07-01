@@ -4,7 +4,7 @@ A timer-based trainer for **blindfolded (BLD) speedcubing algorithms**.
 
 Algfolded started as an [LTCT](https://www.speedsolving.com/wiki/index.php/LTCT) trainer and has grown into a general BLD **algset** trainer: it hosts several algorithm sets side by side, each with its own cases, scrambles and independent progress. Pick a set, select the cases you want, and drill them with a timer, spaced-repetition-style case selection, per-case notes and optional smart-cube tracking.
 
-Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted for LTCT with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
+Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
 
 ## Algsets
 
