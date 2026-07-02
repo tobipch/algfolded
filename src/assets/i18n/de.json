@@ -13,7 +13,8 @@
       "bluetooth_select_brand": "Würfelmarke wählen",
       "bluetooth_pause": "Tracking pausieren",
       "bluetooth_resume": "Tracking fortsetzen",
-      "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen"
+      "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen",
+      "stats": "Statistiken"
     },
     "select": {
       "select_intro": "Wähle Fälle zum Üben aus",
@@ -75,7 +76,8 @@
       "ready": "bereit",
       "running": "läuft",
       "didnt_know": "Nicht gewusst",
-      "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird"
+      "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird",
+      "alg_detected_toast": "Alg erkannt: {alg} — als dein Alg für diesen Fall gespeichert"
     },
     "stats_card": {
       "stats_title": "Verlauf:",
@@ -108,7 +110,8 @@
       "add_your_note": "Füge deine Notiz hinzu",
       "edit_note": "Notiz bearbeiten",
       "setup_moves": "Einrichten",
-      "algorithms_collection": "Algorithmen"
+      "algorithms_collection": "Algorithmen",
+      "choose_alg_hint": "(Alg anklicken, um ihn auszuwählen)"
     },
     "hotkeys": {
       "hotkeys": "Tastenkürzel",
@@ -132,6 +135,24 @@
     "algset": {
       "ltct": "LTCT",
       "twists3": "3-Twists"
+    },
+    "auth": {
+      "login_with_wca": "Mit WCA anmelden",
+      "logout": "Abmelden",
+      "login_failed": "WCA-Anmeldung fehlgeschlagen — bitte erneut versuchen."
+    },
+    "stats": {
+      "title": "Fall-Statistiken",
+      "search_placeholder": "Fälle suchen — Wildcards * und ?",
+      "sort_default": "Standard-Reihenfolge",
+      "sort_count": "Meiste Wiederholungen",
+      "sort_avg": "Langsamste zuerst",
+      "cases_trained": "{trained}/{total} Fälle trainiert",
+      "total_reps": "{count} Wiederholungen",
+      "loading": "lädt…",
+      "local_hint": "Zeigt lokal gespeicherte Daten. Melde dich an, um deine Zeiten im Konto und auf allen Geräten zu behalten:",
+      "no_matches": "Keine Fälle passen zur Suche.",
+      "best": "Beste"
     }
   }
 }

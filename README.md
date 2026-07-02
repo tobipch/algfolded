@@ -22,6 +22,9 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 
 - **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance.
 - **Timer with stats** — per-solve history, inline notes, delete/inspect individual results, and a session summary (solve count, unique cases, total/mean time, sparkline, slowest cases with one-click re-practice).
+- **WCA account & cloud sync** — sign in with your WCA account; solves are stored in a database so your history follows you across devices.
+- **Statistics overview** — a mobile-friendly grid of all cases with average time and repetition count, searchable with `*`/`?` wildcards.
+- **Your alg per case** — pick the algorithm you actually use for each case (click it in any case detail); with a smart cube the executed alg is recognized automatically.
 - **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings. The scheme drives the letters shown everywhere, including the 3-twists letters, so the whole app speaks your lettering.
 - **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets.
 - **Notes** — attach a personal note to any case.
@@ -59,7 +62,31 @@ Connect a Bluetooth smart cube for hands-free scramble tracking. Supported brand
 - **Pause / resume tracking** (Alt+Y) — temporarily ignore moves, e.g. while adjusting grip.
 - **Reset virtual cube** (Alt+M) — re-sync when the physical cube is back to solved.
 - **Letterpair mode** — practice straight from the letter pair: the bar shows the case's letters instead of a scramble, the virtual cube starts already scrambled, and the timer stops the moment you solve it. Only relative moves are tracked, so the physical cube can stay scrambled between cases — no re-scrambling, no doubt about whether your alg was correct. Enable it in settings.
+- **Fresh measurement after mistakes** — if you turn wrong, undo your moves: as soon as the cube is back at the case's start position (or you reset with a full D/U-layer spin, D4/U4), the timing restarts from zero on your next move.
+- **Alg recognition** — when a smart-cube solve finishes, the executed move sequence is matched against the case's algorithm collection (rotations, slice and wide moves are translated to what the cube physically reports). A recognized alg is recorded with the solve and saved as *your* alg for that case.
 - **Keyboard simulator** for testing without a physical cube (`window.btSim.connect()` in the browser console).
+
+## WCA login, cloud sync & statistics
+
+Sign in via the account button in the navbar (WCA OAuth, same flow as [CubeFeed](https://github.com/tobipch/CubeFeed)). While signed in:
+
+- every solve is stored in the database (an offline queue in `localStorage` buffers solves when you're offline or logged out and drains after the next login),
+- deleting a result also deletes it from the database,
+- your per-case alg choices sync across devices,
+- the **statistics page** (bar-chart icon) aggregates over your whole account history.
+
+Logged out, the statistics page falls back to the locally stored per-case data, so it works without an account too.
+
+### Backend & deployment
+
+The frontend stays a static Vite SPA; the API lives in **Vercel serverless functions** (`api/`) that talk to a **Hostpoint MariaDB** — the same setup CubeFeed uses:
+
+1. Create a MySQL database in the Hostpoint control panel and allow remote access for its user. Use the **external** URL (e.g. `xxx.mysql.db.hostpoint.ch`) everywhere outside Hostpoint — Vercel and GitHub Actions can't resolve the internal one.
+2. Create a WCA OAuth application (redirect URI `https://<domain>/api/auth/wca/callback`; the scope field can stay blank — the default scope is `public`).
+3. Configure the environment variables from `.env.example` in Vercel.
+4. Create the tables once — either run the **"Setup database"** GitHub Action (needs the `MYSQL_*` repository secrets, see `.github/workflows/setup-db.yml`) or locally `npm run setup-db` with the `MYSQL_*` variables set.
+
+For local development run `vercel dev` (serves the functions on port 3000) next to `npm run dev` — the Vite dev server proxies `/api` there. Without a backend the app simply behaves as logged out.
 
 ## Development
 

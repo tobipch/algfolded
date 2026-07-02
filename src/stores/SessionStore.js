@@ -2,9 +2,15 @@ import {defineStore} from 'pinia'
 import {computed, reactive, ref, watch} from "vue";
 import {random_element} from "@/helpers/helpers";
 import {makeScramble} from "@/helpers/scramble_utils"
+import {detectAlg} from "@/helpers/alg_match"
 import {updateEma, caseWeight, weightedRandomPick, median} from "@/helpers/srs"
 import {useSettingsStore} from "@/stores/SettingsStore"
 import {useAlgsetStore} from "@/stores/AlgsetStore"
+import {useSolveSyncStore} from "@/stores/SolveSyncStore"
+import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore"
+import {usePreferredAlgStore} from "@/stores/PreferredAlgStore"
+import {useDisplayStore} from "@/stores/DisplayStore"
+import {i18n} from "@/locale"
 import {DEFAULT_ALGSET_ID} from "@/algsets/registry"
 import {readNamespaced, writeNamespaced, migrateToNamespaced,
     isFlatSession, isFlatSrs, isFlatNumber} from "@/helpers/namespaced_storage"
@@ -57,6 +63,12 @@ const loadStore = (id) => {
     return s
 }
 
+// Stable per-solve id so a solve can be deduplicated / deleted on the server.
+const makeClientId = () =>
+    (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)
+
 export const TimerState = Object.freeze({
     NOT_RUNNING: 0,
     AWAITING_READY: 1, // user just started to hold space but there is the gap still
@@ -90,6 +102,10 @@ export const useSessionStore = defineStore('session', () => {
         const key = store.stats[i].key
         if (store.keysCount[key] > 0) {
             store.keysCount[key]--
+        }
+        // also drop the solve from the account database / pending sync queue
+        if (store.stats[i].clientId) {
+            useSolveSyncStore().remove(store.stats[i].clientId)
         }
         store.stats.splice(i, 1)
         // rebuild indexes
@@ -213,6 +229,12 @@ export const useSessionStore = defineStore('session', () => {
         const sameKeys = keys.length === store.keys.length
             && keys.every(k => store.keys.includes(k))
         if (sameKeys) {
+            // Drop queue entries produced before the algset data had loaded
+            // (they carry empty scrambles) and regenerate the current one.
+            store.upcoming = store.upcoming.filter(u => u.scramble)
+            if (!store.currentScramble && store.currentKey && algset.byId[store.currentKey]) {
+                store.currentScramble = makeScramble(algset.byId[store.currentKey])
+            }
             if (!store.currentScramble) setRandomCase()
             else refillUpcoming() // ensure the preview queue is populated after a reload
             return
@@ -279,13 +301,43 @@ export const useSessionStore = defineStore('session', () => {
         if (store.currentKey !== null) {
             const key = store.currentKey
             const ms = Date.now() - timerStarted.value
+            const clientId = makeClientId()
+
+            // Smart cube: which algorithm the cube actually saw for this solve
+            // (null when solved by keyboard/touch or when nothing matched).
+            const bt = useBluetoothCubeStore()
+            const solveMoves = bt.connected ? bt.consumeSolveMoves() : null
+            const algUsed = solveMoves && solveMoves.length > 0
+                ? detectAlg(solveMoves, algset.byId[key]?.algs)
+                : null
+            if (algUsed) {
+                const prefs = usePreferredAlgStore()
+                if (prefs.recordDetected(key, algUsed)) {
+                    useDisplayStore().showToast(
+                        i18n.global.t('timer.alg_detected_toast', {alg: algUsed}), 'success')
+                }
+            }
+
             store.stats.push({
                 "i": index,
                 "key": key,
                 "scramble": currentScramble.value,
-                "ms": ms
+                "ms": ms,
+                "clientId": clientId
             })
             store.keysCount[key]++;
+
+            // Persist the solve to the account database (queued while offline).
+            useSolveSyncStore().enqueue({
+                clientId,
+                algset: algset.activeId,
+                caseKey: key,
+                ms,
+                scramble: currentScramble.value,
+                algUsed,
+                source: bt.connected ? 'smartcube' : 'timer',
+                solvedAt: new Date().toISOString(),
+            })
 
             // Clear "Didn't know" flag so it can be re-applied next time
             delete didntKnowMap[key]
