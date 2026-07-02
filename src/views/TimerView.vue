@@ -117,6 +117,22 @@ const onGlobalKeyDown = event => {
     }
   }
 
+  // Self-paced letter-pair mode (letter-pair display, no smart cube connected):
+  // the spacebar drives the flow. First press starts timing the current case;
+  // every further press records its time and immediately starts the next one.
+  const selfPacedLetterpair = settings.store.letterPairMode && !btStore.connected
+  if (selfPacedLetterpair && event.key === " ") {
+    event.preventDefault()
+    if (event.repeat) return
+    if (sessionStore.timerState === TimerState.RUNNING) {
+      sessionStore.stopTimer()   // record current case + advance to the next
+      sessionStore.startTimer()  // and immediately start timing that next case
+    } else if (sessionStore.timerState === TimerState.NOT_RUNNING && sessionStore.store.currentKey) {
+      sessionStore.startTimer()  // first press: start timing the first case
+    }
+    return
+  }
+
   if (sessionStore.timerState === TimerState.RUNNING) {
     event.preventDefault()
     sessionStore.stopTimer()

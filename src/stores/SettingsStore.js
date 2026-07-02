@@ -18,8 +18,10 @@ const defaultSettings = {
     smartSelection: true,
     slownessPower: 2,
     recencyDecay: 0.5,
-    // buffer order for the 3-twists algset (determines case grouping)
+    // buffer order for the 3-twists and corner-commutator algsets (shared)
     bufferOrder: ["UFR", "UFL", "UBR", "UBL", "RDF", "FDL"],
+    // buffer order for the edge-commutator algset
+    edgeBufferOrder: ["UF", "UB", "UR", "UL", "FR", "FL", "DF", "DB", "DR", "DL"],
 }
 
 const localStorageKey = "ltctTrainerSettings"

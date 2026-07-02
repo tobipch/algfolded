@@ -4,11 +4,10 @@ import {useSessionStore} from "@/stores/SessionStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {usePresetsStore} from "@/stores/PresetStore";
 import {useSelectedStore} from "@/stores/SelectedStore";
-import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useRouter} from "vue-router";
 import {useI18n} from 'vue-i18n'
 import {msToHumanReadable} from "@/helpers/time_formatter";
-import {parseLtctKey} from "@/helpers/helpers";
 
 const {t} = useI18n()
 const router = useRouter()
@@ -16,7 +15,7 @@ const sessionStore = useSessionStore()
 const settings = useSettingsStore()
 const presets = usePresetsStore()
 const selected = useSelectedStore()
-const ls = useLetterSchemeStore()
+const algsetStore = useAlgsetStore()
 
 const isOpen = ref(false)
 const p = computed(() => settings.store.timerPrecision)
@@ -101,7 +100,7 @@ const onSparklineMove = (e) => {
 
 const onSparklineLeave = () => { hoverInfo.value = null }
 
-const caseLetters = (key) => parseLtctKey(key, ls.toLetter).letters
+const caseLetters = (key) => algsetStore.caseLabel(key)
 
 const practiceSlowCases = () => {
   const keys = slowestForPreset.value
@@ -152,7 +151,7 @@ const practiceSlowCases = () => {
         <div v-if="slowestForDisplay.length > 0" class="mt-2">
           <small class="text-muted fw-bold">{{ $t("summary.slowest_cases") }}</small>
           <div v-for="c in slowestForDisplay" :key="c.key" class="d-flex justify-content-between small">
-            <span>{{ caseLetters(c.key) }} <small class="text-muted">({{ c.key }})</small></span>
+            <span>{{ caseLetters(c.key) }} <small class="text-muted" v-if="algsetStore.caseSecondary(c.key)">({{ algsetStore.caseSecondary(c.key) }})</small></span>
             <span>{{ msToHumanReadable(c.avg, p) }}</span>
           </div>
           <button

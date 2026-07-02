@@ -1,15 +1,22 @@
 <script setup>
-import {ref} from "vue";
+import {ref, computed} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
+// Which settings array this editor drives (corner/3-twists buffers by default,
+// or the edge-commutator buffers).
+const props = defineProps({
+  settingKey: { type: String, default: "bufferOrder" },
+});
+
 const settings = useSettingsStore();
+const order = computed(() => settings.store[props.settingKey]);
 
 const move = (i, dir) => {
-  const arr = [...settings.store.bufferOrder];
+  const arr = [...order.value];
   const j = i + dir;
   if (j < 0 || j >= arr.length) return;
   [arr[i], arr[j]] = [arr[j], arr[i]];
-  settings.store.bufferOrder = arr; // reassign so the algset re-partitions
+  settings.store[props.settingKey] = arr; // reassign so the algset re-partitions
 };
 
 // Index currently being dragged, and the index it would drop before/onto.
@@ -31,10 +38,10 @@ const onDragOver = (i) => {
 const onDrop = (i) => {
   const from = dragIndex.value;
   if (from === -1 || from === i) return reset();
-  const arr = [...settings.store.bufferOrder];
+  const arr = [...order.value];
   const [moved] = arr.splice(from, 1);
   arr.splice(i, 0, moved);
-  settings.store.bufferOrder = arr; // reassign so the algset re-partitions
+  settings.store[props.settingKey] = arr; // reassign so the algset re-partitions
   reset();
 };
 
@@ -47,7 +54,7 @@ const reset = () => {
 <template>
   <ol class="list-group" style="max-width: 360px">
     <li
-        v-for="(buf, i) in settings.store.bufferOrder" :key="buf"
+        v-for="(buf, i) in order" :key="buf"
         class="list-group-item d-flex align-items-center justify-content-between py-1 buffer-item"
         :class="{ dragging: dragIndex === i, 'drop-target': overIndex === i && dragIndex !== i }"
         draggable="true"
@@ -64,7 +71,7 @@ const reset = () => {
                 tabindex="-1" @keydown.space.prevent="" @click="move(i, -1)">
           <i class="bi bi-chevron-up"></i>
         </button>
-        <button class="btn btn-outline-secondary py-0" :disabled="i === settings.store.bufferOrder.length - 1"
+        <button class="btn btn-outline-secondary py-0" :disabled="i === order.length - 1"
                 tabindex="-1" @keydown.space.prevent="" @click="move(i, 1)">
           <i class="bi bi-chevron-down"></i>
         </button>

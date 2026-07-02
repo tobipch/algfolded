@@ -4,7 +4,7 @@ A timer-based trainer for **blindfolded (BLD) speedcubing algorithms**.
 
 Algfolded started as an [LTCT](https://www.speedsolving.com/wiki/index.php/LTCT) trainer and has grown into a general BLD **algset** trainer: it hosts several algorithm sets side by side, each with its own cases, scrambles and independent progress. Pick a set, select the cases you want, and drill them with a timer, spaced-repetition-style case selection, per-case notes and optional smart-cube tracking.
 
-Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted for LTCT with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
+Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
 
 ## Algsets
 
@@ -14,14 +14,19 @@ Switch between sets from the picker on the selection page. Each set keeps its **
 | --- | ----- | ----------- |
 | **LTCT** (Last Target Corner Twist) | 252 | The final corner-twist case at the end of a corners BLD solve |
 | **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
-| *Commutators (edges & corners)* | — | Planned |
+| **Corner Commutators** | 1008 | Every corner 3-cycle (3-style), grouped by buffer → second letter → case |
+| **Edge Commutators** | 1760 | Every edge 3-cycle (3-style), grouped by buffer → second letter → case |
+| **Corner 2-Twists** | 56 | Two twisted corners, grouped by buffer → case (`UFR/N`) |
+| **Edge 2-Flips** | 66 | Two flipped edges, grouped by buffer → case (`UF-UB`) |
 
 Because the app is set-agnostic, adding a new set is essentially "a data file + a small descriptor" (see `src/algsets/`).
 
 ## Core features
 
 - **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance.
+- **Command palette** (`Alt+K` or the ⌘ navbar button) — a PowerToys-style quick-action box: navigate, switch algset, toggle settings/theme/language, load presets, connect the smart cube, and run **wildcard selections**. Type a pattern with `*` (e.g. `UU*E`, several space-separated), `+`/`-` to add/remove from the selection, or `#`/`@`/`>` to filter to algsets/presets/commands.
 - **Timer with stats** — per-solve history, inline notes, delete/inspect individual results, and a session summary (solve count, unique cases, total/mean time, sparkline, slowest cases with one-click re-practice).
+- **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings, for **both corners and edges**. The scheme drives the letters shown everywhere, including the 3-twists and commutator letters, so the whole app speaks your lettering.
 - **WCA account & cloud sync** — sign in with your WCA account; solves are stored in a database so your history follows you across devices.
 - **Statistics overview** — a mobile-friendly grid of all cases with average time and repetition count, searchable with `*`/`?` wildcards.
 - **Your alg per case** — pick the algorithm you actually use for each case (click it in any case detail); with a smart cube the executed alg is recognized automatically.
@@ -31,9 +36,13 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 - **Interactive 3D cube** — touch/drag to rotate; configurable solving orientation.
 - **Unified light/dark theme** and **four languages** (EN, DE, FR, IT).
 
-### 3-Twists buffer order
+### Buffer order (3-twists, commutators, 2-flips & 2-twists)
 
-The 3-twists set is grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the set **re-partitions live**: each twist is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+The 3-twists, commutator, 2-twist and 2-flip sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+
+There are two buffer lists: a **corner** order (3-twists, corner commutators, corner 2-twists) and a separate **edge** order (edge commutators, edge 2-flips). A case only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner commutator set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
+
+The 2-piece sets can also consist of exactly the two never-configured back pieces (`DBR`+`DBL`, or `BR`+`BL`); those get an implicit lowest-priority fallback buffer so every case is still reachable.
 
 ### Smart case selection
 
@@ -113,6 +122,16 @@ node scripts/verify_scrambles.mjs
 # 3-Twists
 node scripts/generate_twists.mjs
 node scripts/generate_twist_scrambles.mjs
+
+# Commutators (edges & corners)
+node scripts/fetch_blddb_comm_algs.mjs      # builds/refreshes corner_comms.json + edge_comms.json from blddb
+node scripts/generate_comm_scrambles.mjs    # adds scrambles (idempotent/resumable)
+
+# 2-Flips (edges) & 2-Twists (corners)
+node scripts/fetch_blddb_flip_twist_algs.mjs   # builds/refreshes edge_flips.json + corner_twists2.json from blddb
+node scripts/generate_flip_twist_scrambles.mjs # adds scrambles (idempotent/resumable)
 ```
 
-A GitHub Action (`.github/workflows/update-algs.yml`) refreshes the LTCT algorithms from blddb weekly and opens a PR when they change.
+The commutator, 2-flip and 2-twist sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every case is decoded by cube geometry and re-expressed from each configurable buffer, so the `fetch_blddb_*.mjs` scripts double as importers (they only update `algs`/`buffers`, leaving scrambles intact).
+
+A GitHub Action (`.github/workflows/update-algs.yml`) refreshes **all** sets' algorithms (LTCT, 3-twists, both commutator sets and the 2-flip / 2-twist sets) from blddb weekly and opens a PR when they change.

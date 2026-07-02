@@ -17,21 +17,33 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22 # cubing (used by the commutator fetch) needs Node >= 22.3
 
       - run: npm ci
 
-      - name: Fetch latest algorithms
+      - name: Fetch latest LTCT algorithms
         run: node scripts/fetch_blddb_algs.mjs
+
+      - name: Fetch latest 3-twist algorithms
+        run: node scripts/fetch_blddb_twist_algs.mjs
+
+      - name: Fetch latest commutator algorithms
+        run: node scripts/fetch_blddb_comm_algs.mjs
+
+      - name: Fetch latest 2-flip / 2-twist algorithms
+        run: node scripts/fetch_blddb_flip_twist_algs.mjs
 
       - name: Create PR if algorithms changed
         uses: peter-evans/create-pull-request@v6
         with:
-          title: 'Update LTCT algorithms from blddb'
-          commit-message: 'Update LTCT algorithms from blddb'
+          title: 'Update algorithms from blddb'
+          commit-message: 'Update algorithms from blddb'
           branch: auto/update-algs
           body: |
-            Automated weekly update of LTCT algorithms from [blddb](https://github.com/nbwzx/blddb).
+            Automated weekly update of algorithms from [blddb](https://github.com/nbwzx/blddb).
 
-            Only the `algs` arrays in `ltct_map.json` are updated. Scrambles are unchanged.
+            Updates the `algs` (and, where derived, the `buffers`) in
+            `ltct_map.json`, `three_twists.json`, `corner_comms.json`,
+            `edge_comms.json`, `edge_flips.json` and `corner_twists2.json`.
+            Scrambles are unchanged.
           delete-branch: true

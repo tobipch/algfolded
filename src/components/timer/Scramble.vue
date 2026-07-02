@@ -2,31 +2,31 @@
 
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
-import {useLetterSchemeStore} from "@/stores/LetterSchemeStore";
+import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {computed} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {moveFace, moveAmount, amountToMove} from "@/helpers/scramble_utils";
-import {parseLtctKey} from "@/helpers/helpers";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const session = useSessionStore()
 const settings = useSettingsStore()
 const bt = useBluetoothCubeStore()
-const ls = useLetterSchemeStore()
+const algset = useAlgsetStore()
 const scramble = computed(() => session.currentScramble ?? t("timer.no_scramble"))
 
-// Letter-pair mode hides the scramble and shows the case's letter pair instead,
-// so the user knows which LTCT to execute without ever scrambling physically.
+// Letter-pair mode hides the scramble and shows the case's label instead, so the
+// user knows which case to execute without ever scrambling physically. The label
+// is delegated to the active algset (LTCT letter pair, comm "AB", flip "UF-UB", …).
 const letterPairMode = computed(() => settings.store.letterPairMode)
 const letterPair = computed(() => {
   const key = session.store.currentKey
-  return key ? parseLtctKey(key, ls.toLetter).letters : ''
+  return key ? algset.caseLabel(key) : ''
 })
 
 // Preview of the next and next-next cases, to keep the solving flow going.
 const upcomingPairs = computed(() =>
-    (session.store.upcoming || []).slice(0, 2).map(u => parseLtctKey(u.key, ls.toLetter).letters)
+    (session.store.upcoming || []).slice(0, 2).map(u => algset.caseLabel(u.key))
 )
 
 // Hint shown in letter-pair mode when the cube looks far from solved (likely a
@@ -37,6 +37,9 @@ const showResetHint = computed(() =>
 // The green move-by-move overlay only applies to the physical scramble flow.
 // In letter-pair mode there is nothing to scramble, so it is suppressed.
 const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !letterPairMode.value)
+
+// Self-paced flow: letter-pair mode without a smart cube -> the spacebar drives.
+const selfPaced = computed(() => letterPairMode.value && !bt.connected)
 
 // Simplify a list of {text, type} by merging adjacent same-face moves
 function simplifyMoves(items) {
@@ -121,6 +124,9 @@ const displayMoves = computed(() => {
   </h3>
   <div v-if="showResetHint" class="reset-hint text-warning small mt-1">
     <i class="bi bi-arrow-repeat"></i> {{ $t("timer.reset_hint") }}
+  </div>
+  <div v-else-if="selfPaced" class="text-muted small mt-1">
+    <kbd>Space</kbd> {{ $t("timer.selfpaced_hint") }}
   </div>
 </template>
 

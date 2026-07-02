@@ -27,9 +27,11 @@ export interface AlgsetLevel {
 }
 
 // Inputs a set may use to derive its cases (e.g. the configurable buffer order
-// for 3-twists). LTCT ignores these.
+// for 3-twists / corner comms, and the separate edge-comm buffer order). LTCT
+// ignores these.
 export interface DeriveDeps {
   bufferOrder: string[]
+  edgeBufferOrder: string[]
 }
 
 // A trainable algset. New algsets = one of these + a data file.
@@ -45,4 +47,8 @@ export interface Algset {
   // Human-readable label for a case (e.g. "CRN" / "AB"), translated through the
   // active letter scheme.
   caseLabel: (c: AlgCase, toLetter: ToLetter) => string
+  // Optional secondary label shown in parentheses next to a result, in piece
+  // notation (e.g. "UB-FD-LB"). Return '' to hide it. When omitted, callers
+  // fall back to the raw case id.
+  caseSecondary?: (c: AlgCase, toLetter: ToLetter) => string
 }

@@ -7,6 +7,7 @@ import {useRouter, useRoute} from "vue-router";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
+import {useCommandPaletteStore} from "@/stores/CommandPaletteStore";
 import {useAuthStore} from "@/stores/AuthStore";
 import {useI18n} from 'vue-i18n'
 
@@ -14,6 +15,7 @@ const {t} = useI18n()
 const selected = useSelectedStore();
 const session = useSessionStore()
 const bt = useBluetoothCubeStore()
+const palette = useCommandPaletteStore()
 const auth = useAuthStore()
 
 // Account dropdown (login with WCA / logout)
@@ -62,6 +64,11 @@ const isTimerView = computed(() => route.fullPath.endsWith("timer"))
 const isSettingsView = computed(() => route.name === 'settings')
 const isStatsView = computed(() => route.name === 'stats')
 const settingsBtnClass = computed(() => isSettingsView.value ? 'btn-info' : 'btn-outline-info')
+
+// Open settings remembering where we came from, so closing returns there
+// (e.g. open from the trainer -> back to the trainer).
+const openSettings = () => router.push({name: 'settings', query: {from: route.name}})
+const closeSettings = () => router.push({name: route.query.from === 'timer' ? 'timer' : 'select'})
 const statsBtnClass = computed(() => isStatsView.value ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
@@ -92,7 +99,7 @@ onUnmounted(() => {
 <template>
   <nav class="navbar bg-secondary bg-opacity-25 py-lg-3 py-1 w-100">
     <div class="navbar-inner w-100 d-flex align-items-center">
-      <div class="me-auto">
+      <div class="me-auto d-flex align-items-center">
         <button
             v-if="isTimerView"
             tabindex="-1"
@@ -111,7 +118,8 @@ onUnmounted(() => {
             class="mx-2 btn d-inline-block d-sm-none m-0">
           <i class="bi bi-list-columns"></i>
         </button>
-        <span v-else class="mx-3 logoText clickable" @click="router.push('select')">
+        <span v-else class="mx-3 logoText clickable d-inline-flex align-items-center" @click="router.push('select')">
+          <img src="/favicons/favicon.svg" alt="" class="logo-icon me-2"/>
           {{ $t("nav.trainer_title") }}
         </span>
         <span class="mx-2 d-none d-sm-inline-block">
@@ -176,6 +184,13 @@ onUnmounted(() => {
           <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }} (Alt+M)</span>
         </span>
         <button
+            class="btn btn-outline-info"
+            tabindex="-1" @keydown.space.prevent=""
+            @click="palette.openPalette()"
+            :title="$t('cmd.open') + ' (Alt+K)'">
+          <i class="bi-command"/>
+        </button>
+        <button
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
             :class="statsBtnClass"
@@ -187,7 +202,7 @@ onUnmounted(() => {
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
             :class="settingsBtnClass"
-            @click="isSettingsView ? router.push('select') : router.push('settings')"
+            @click="isSettingsView ? closeSettings() : openSettings()"
             :title="$t('nav.settings')">
           <i class="bi-wrench"/>
         </button>
@@ -222,6 +237,11 @@ onUnmounted(() => {
 .logoText {
   font-weight: 900;
 }
+.logo-icon {
+  height: 1.4em;
+  width: auto;
+  vertical-align: middle;
+ }
 .account-btn {
   padding-top: 4px;
   padding-bottom: 4px;

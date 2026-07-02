@@ -11,7 +11,7 @@
 
     <h5>{{ $t("contact.credits") }}</h5>
     <p>
-      Fork of <a href="https://github.com/Roman-/zbll" target="_blank">Roman Strakhov's ZBLL Trainer</a>, adapted for LTCT with permission.
+      Fork of <a href="https://github.com/Roman-/zbll" target="_blank">Roman Strakhov's ZBLL Trainer</a>, adapted with permission.
     </p>
   </div>
 </template>

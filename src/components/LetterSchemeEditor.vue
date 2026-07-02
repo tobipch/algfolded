@@ -6,15 +6,20 @@ import { useSettingsStore } from "@/stores/SettingsStore";
 const ls = useLetterSchemeStore();
 const settings = useSettingsStore();
 
-// Each face: 3x3 grid. null = edge, string = sticker key for corner input, "label" = center
+// Each face: 3x3 grid. 3-char = corner sticker, 2-char = edge sticker,
+// "label" = center. Corner inputs bind the corner scheme, edge inputs the edge
+// scheme (dispatched by sticker length in schemeFor()).
 const faces = {
-  U: { grid: ["UBL", null, "UBR", null, "label", null, "UFL", null, "UFR"] },
-  L: { grid: ["LUB", null, "LUF", null, "label", null, "LDB", null, "LDF"] },
-  F: { grid: ["FUL", null, "FUR", null, "label", null, "FDL", null, "FDR"] },
-  R: { grid: ["RUF", null, "RUB", null, "label", null, "RDF", null, "RDB"] },
-  B: { grid: ["BUR", null, "BUL", null, "label", null, "BDR", null, "BDL"] },
-  D: { grid: ["DFL", null, "DFR", null, "label", null, "DBL", null, "DBR"] },
+  U: { grid: ["UBL", "UB", "UBR", "UL", "label", "UR", "UFL", "UF", "UFR"] },
+  L: { grid: ["LUB", "LU", "LUF", "LB", "label", "LF", "LDB", "LD", "LDF"] },
+  F: { grid: ["FUL", "FU", "FUR", "FL", "label", "FR", "FDL", "FD", "FDR"] },
+  R: { grid: ["RUF", "RU", "RUB", "RF", "label", "RB", "RDF", "RD", "RDB"] },
+  B: { grid: ["BUR", "BU", "BUL", "BR", "label", "BL", "BDR", "BD", "BDL"] },
+  D: { grid: ["DFL", "DF", "DFR", "DL", "label", "DR", "DBL", "DB", "DBR"] },
 };
+
+// The reactive scheme object a given sticker belongs to (edge if 2 chars).
+const schemeFor = (cell) => (cell.length === 2 ? ls.edgeScheme : ls.scheme);
 
 // Standard face colors (default orientation: U=white, F=green)
 const BASE_COLORS = { U: "#ffffff", D: "#ffdd00", F: "#00aa44", B: "#0055bb", L: "#ff8800", R: "#cc0000" };
@@ -104,9 +109,9 @@ const onReset = () => {
             <template v-for="(cell, idx) in faces.U.grid" :key="'U-'+idx">
               <input
                 v-if="cell && cell !== 'label'"
-                class="scheme-input"
+                class="scheme-input" :class="{ 'edge-input': cell.length === 2 }"
                 maxlength="2"
-                v-model="ls.scheme[cell]"
+                v-model="schemeFor(cell)[cell]"
                 :title="cell"
               />
               <div v-else-if="cell === 'label'" class="grid-center" :style="centerStyle('U')">U</div>
@@ -125,9 +130,9 @@ const onReset = () => {
             <template v-for="(cell, idx) in faces[face].grid" :key="face+'-'+idx">
               <input
                 v-if="cell && cell !== 'label'"
-                class="scheme-input"
+                class="scheme-input" :class="{ 'edge-input': cell.length === 2 }"
                 maxlength="2"
-                v-model="ls.scheme[cell]"
+                v-model="schemeFor(cell)[cell]"
                 :title="cell"
               />
               <div v-else-if="cell === 'label'" class="grid-center" :style="centerStyle(face)">{{ face }}</div>
@@ -145,9 +150,9 @@ const onReset = () => {
             <template v-for="(cell, idx) in faces.D.grid" :key="'D-'+idx">
               <input
                 v-if="cell && cell !== 'label'"
-                class="scheme-input"
+                class="scheme-input" :class="{ 'edge-input': cell.length === 2 }"
                 maxlength="2"
-                v-model="ls.scheme[cell]"
+                v-model="schemeFor(cell)[cell]"
                 :title="cell"
               />
               <div v-else-if="cell === 'label'" class="grid-center" :style="centerStyle('D')">D</div>
@@ -212,6 +217,12 @@ const onReset = () => {
 .scheme-input:focus {
   outline: 2px solid var(--bs-primary);
   outline-offset: -1px;
+}
+
+/* Edge stickers are tinted so they read as a separate set from the corners. */
+.scheme-input.edge-input {
+  border-style: dashed;
+  opacity: 0.9;
 }
 
 .grid-center {

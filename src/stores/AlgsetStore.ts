@@ -30,7 +30,10 @@ export const useAlgsetStore = defineStore('algset', () => {
   // 3-twists), so they update reactively when those change.
   const cases = computed<AlgCase[]>(() => {
     if (rawData.value === null) return []
-    return active.value.derive(rawData.value, { bufferOrder: settings.store.bufferOrder })
+    return active.value.derive(rawData.value, {
+      bufferOrder: settings.store.bufferOrder,
+      edgeBufferOrder: settings.store.edgeBufferOrder,
+    })
   })
 
   const byId = computed<Record<string, AlgCase>>(() => {
@@ -49,6 +52,14 @@ export const useAlgsetStore = defineStore('algset', () => {
     return active.value.caseLabel(c, ls.toLetter)
   }
 
+  // Secondary label shown in parentheses next to a result (piece notation).
+  // Sets that don't define one fall back to the raw id; '' hides it.
+  const caseSecondary = (id: string): string => {
+    const c = byId.value[id]
+    if (!c) return id
+    return active.value.caseSecondary ? active.value.caseSecondary(c, ls.toLetter) : id
+  }
+
   async function activate(id: string): Promise<void> {
     const set = getAlgset(id)
     if (!set) return
@@ -62,5 +73,5 @@ export const useAlgsetStore = defineStore('algset', () => {
     }
   }
 
-  return { activeId, active, cases, byId, tree, loaded, activate, caseLabel }
+  return { activeId, active, cases, byId, tree, loaded, activate, caseLabel, caseSecondary }
 })
