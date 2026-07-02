@@ -53,7 +53,12 @@ watch(
 const caseLevel = computed(() => algset.active.levels[algset.active.levels.length - 1])
 
 const rows = computed(() => algset.cases.map(c => {
-  const display = caseLevel.value.display(c.path[c.path.length - 1], {toLetter: s => ls.toLetter(s)})
+  const toLetter = s => ls.toLetter(s)
+  // Sets can define their own stats label (e.g. LTCT: set + letter pair);
+  // otherwise fall back to the deepest level's display.
+  const display = algset.active.statsDisplay
+      ? algset.active.statsDisplay(c, toLetter)
+      : caseLevel.value.display(c.path[c.path.length - 1], {toLetter})
   const srv = serverStats.value ? serverStats.value[c.id] : null
   const local = session.srsData[c.id]
   const count = srv ? srv.count : (local?.n ?? 0)
@@ -71,11 +76,15 @@ const rows = computed(() => algset.cases.map(c => {
 const filtered = computed(() => {
   const q = searchText.value
   if (!q.trim()) return rows.value
-  return rows.value.filter(r =>
-      matchesWildcard(q, r.primary)
-      || (r.secondary && matchesWildcard(q, r.secondary))
-      || matchesWildcard(q, r.path)
-      || matchesWildcard(q, r.id))
+  return rows.value.filter(r => {
+    // "UD NP": lets patterns span the set and the letter pair (e.g. "UD*P")
+    const label = r.secondary ? r.secondary + ' ' + r.primary : r.primary
+    return matchesWildcard(q, r.primary)
+        || (r.secondary && matchesWildcard(q, r.secondary))
+        || matchesWildcard(q, label)
+        || matchesWildcard(q, r.path)
+        || matchesWildcard(q, r.id)
+  })
 })
 
 const sorted = computed(() => {
