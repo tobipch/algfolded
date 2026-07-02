@@ -13,7 +13,8 @@
       "bluetooth_select_brand": "Select cube brand",
       "bluetooth_pause": "Pause tracking",
       "bluetooth_resume": "Resume tracking",
-      "bluetooth_reset_to_solved": "Reset virtual cube to solved"
+      "bluetooth_reset_to_solved": "Reset virtual cube to solved",
+      "stats": "Statistics"
     },
     "select": {
       "select_intro": "Select cases to practise",
@@ -87,7 +88,8 @@
       "running": "running",
       "selfpaced_hint": "= next case (records the time and starts the next)",
       "didnt_know": "Didn't know",
-      "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner"
+      "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner",
+      "alg_detected_toast": "Alg recognized: {alg} — saved as your alg for this case"
     },
     "stats_card": {
       "stats_title": "History:",
@@ -120,7 +122,8 @@
       "add_your_note": "Add your note",
       "edit_note": "Edit note",
       "setup_moves": "Setup",
-      "algorithms_collection": "Algs"
+      "algorithms_collection": "Algs",
+      "choose_alg_hint": "(click an alg to make it yours)"
     },
     "hotkeys": {
       "hotkeys": "Shortcuts",
@@ -197,6 +200,24 @@
       "commEdge": "Edge Commutators",
       "twists2": "Corner 2-Twists",
       "flips2": "Edge 2-Flips"
+    },
+    "auth": {
+      "login_with_wca": "Sign in with WCA",
+      "logout": "Sign out",
+      "login_failed": "WCA sign-in failed — please try again."
+    },
+    "stats": {
+      "title": "Case statistics",
+      "search_placeholder": "Search cases — * and ? wildcards",
+      "sort_default": "Default order",
+      "sort_count": "Most repetitions",
+      "sort_avg": "Slowest first",
+      "cases_trained": "{trained}/{total} cases trained",
+      "total_reps": "{count} repetitions",
+      "loading": "loading…",
+      "local_hint": "Showing locally stored data. Sign in to keep your times in your account and across devices:",
+      "no_matches": "No cases match your search.",
+      "best": "Best"
     }
   }
 }

@@ -41,6 +41,22 @@ export function areSetsEqual<T>(setA: Set<T>, setB: Set<T>): boolean {
     return setA.size === setB.size && [...setA].every(item => setB.has(item));
 }
 
+// Case-insensitive search with optional wildcards: `*` matches any sequence,
+// `?` matches a single character. Without wildcards it's a plain substring
+// match; with wildcards the pattern must match the whole text.
+export const matchesWildcard = (pattern: string, text: string): boolean => {
+    const p = pattern.trim().toLowerCase()
+    if (p === '') return true
+    const t = text.toLowerCase()
+    if (!p.includes('*') && !p.includes('?')) return t.includes(p)
+    const rx = '^' + p.split('').map(ch =>
+        ch === '*' ? '.*'
+        : ch === '?' ? '.'
+        : ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    ).join('') + '$'
+    return new RegExp(rx).test(t)
+}
+
 // One-time migration of a renamed localStorage key (oldKey -> newKey).
 // Copies the old value to the new key if the new key isn't set yet, then drops the old key.
 export const migrateLocalStorageKey = (oldKey: string, newKey: string): void => {

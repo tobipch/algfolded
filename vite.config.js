@@ -7,6 +7,13 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   base: '',
   plugins: [vue()],
+  server: {
+    // The API lives in Vercel functions (api/). Run `vercel dev` (port 3000)
+    // next to `npm run dev` to get a working backend locally.
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

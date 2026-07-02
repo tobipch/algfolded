@@ -13,7 +13,8 @@
       "bluetooth_select_brand": "Choisir la marque du cube",
       "bluetooth_pause": "Mettre en pause le suivi",
       "bluetooth_resume": "Reprendre le suivi",
-      "bluetooth_reset_to_solved": "Réinitialiser le cube virtuel à l'état résolu"
+      "bluetooth_reset_to_solved": "Réinitialiser le cube virtuel à l'état résolu",
+      "stats": "Statistiques"
     },
     "select": {
       "select_intro": "Sélectionnez les cas à pratiquer",
@@ -87,7 +88,8 @@
       "running": "en cours",
       "selfpaced_hint": "= cas suivant (enregistre le temps et démarre le suivant)",
       "didnt_know": "Je ne savais pas",
-      "didnt_know_tooltip": "Prioriser temporairement ce cas pour qu'il se répète plus tôt"
+      "didnt_know_tooltip": "Prioriser temporairement ce cas pour qu'il se répète plus tôt",
+      "alg_detected_toast": "Algo reconnu : {alg} — enregistré comme votre algo pour ce cas"
     },
     "stats_card": {
       "stats_title": "Historique :",
@@ -120,7 +122,8 @@
       "add_your_note": "Ajouter votre note",
       "edit_note": "Modifier la note",
       "setup_moves": "Configuration",
-      "algorithms_collection": "Algorithmes"
+      "algorithms_collection": "Algorithmes",
+      "choose_alg_hint": "(cliquez sur un algo pour le choisir)"
     },
     "hotkeys": {
       "hotkeys": "Raccourcis clavier",
@@ -197,6 +200,24 @@
       "commEdge": "Commutateurs d'arêtes",
       "twists2": "2-Twists de coins",
       "flips2": "2-Flips d'arêtes"
+    },
+    "auth": {
+      "login_with_wca": "Se connecter avec la WCA",
+      "logout": "Se déconnecter",
+      "login_failed": "Échec de la connexion WCA — veuillez réessayer."
+    },
+    "stats": {
+      "title": "Statistiques des cas",
+      "search_placeholder": "Rechercher des cas — jokers * et ?",
+      "sort_default": "Ordre par défaut",
+      "sort_count": "Plus de répétitions",
+      "sort_avg": "Les plus lents d'abord",
+      "cases_trained": "{trained}/{total} cas entraînés",
+      "total_reps": "{count} répétitions",
+      "loading": "chargement…",
+      "local_hint": "Données locales affichées. Connectez-vous pour conserver vos temps dans votre compte et sur tous vos appareils :",
+      "no_matches": "Aucun cas ne correspond à la recherche.",
+      "best": "Meilleur"
     }
   }
 }

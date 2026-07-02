@@ -13,7 +13,8 @@
       "bluetooth_select_brand": "Scegli la marca del cubo",
       "bluetooth_pause": "Metti in pausa il tracciamento",
       "bluetooth_resume": "Riprendi il tracciamento",
-      "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto"
+      "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto",
+      "stats": "Statistiche"
     },
     "select": {
       "select_intro": "Seleziona i casi da praticare",
@@ -87,7 +88,8 @@
       "running": "in corso",
       "selfpaced_hint": "= caso successivo (salva il tempo e avvia il prossimo)",
       "didnt_know": "Non lo sapevo",
-      "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima"
+      "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima",
+      "alg_detected_toast": "Algoritmo riconosciuto: {alg} — salvato come il tuo algoritmo per questo caso"
     },
     "stats_card": {
       "stats_title": "Cronologia:",
@@ -120,7 +122,8 @@
       "add_your_note": "Aggiungi la tua nota",
       "edit_note": "Modifica nota",
       "setup_moves": "Impostazione",
-      "algorithms_collection": "Algoritmi"
+      "algorithms_collection": "Algoritmi",
+      "choose_alg_hint": "(clicca un algoritmo per sceglierlo)"
     },
     "hotkeys": {
       "hotkeys": "Scorciatoie da tastiera",
@@ -197,6 +200,24 @@
       "commEdge": "Commutatori degli spigoli",
       "twists2": "2-Twist degli angoli",
       "flips2": "2-Flip degli spigoli"
+    },
+    "auth": {
+      "login_with_wca": "Accedi con la WCA",
+      "logout": "Esci",
+      "login_failed": "Accesso WCA non riuscito — riprova."
+    },
+    "stats": {
+      "title": "Statistiche dei casi",
+      "search_placeholder": "Cerca casi — caratteri jolly * e ?",
+      "sort_default": "Ordine predefinito",
+      "sort_count": "Più ripetizioni",
+      "sort_avg": "Prima i più lenti",
+      "cases_trained": "{trained}/{total} casi allenati",
+      "total_reps": "{count} ripetizioni",
+      "loading": "caricamento…",
+      "local_hint": "Dati locali visualizzati. Accedi per conservare i tuoi tempi nel tuo account e su tutti i dispositivi:",
+      "no_matches": "Nessun caso corrisponde alla ricerca.",
+      "best": "Migliore"
     }
   }
 }

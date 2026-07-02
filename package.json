@@ -6,8 +6,9 @@
     "build": "vite build",
     "dev": "vite",
     "preview": "vite preview",
-    "typecheck": "vue-tsc --noEmit",
-    "test": "vitest run"
+    "typecheck": "vue-tsc --noEmit && tsc -p api",
+    "test": "vitest run",
+    "setup-db": "node scripts/setup_db.mjs"
   },
   "dependencies": {
     "@mdi/font": "5.9.55",
@@ -19,6 +20,7 @@
     "btcube-web": "^1.1.5",
     "cubing": "^0.63.3",
     "gan-web-bluetooth": "^3.0.2",
+    "mysql2": "^3.11.0",
     "pinia": "^2.0.28",
     "roboto-fontface": "*",
     "vue": "^3.2.46",
@@ -28,6 +30,7 @@
   "devDependencies": {
     "@types/bootstrap": "~5.2.10",
     "@types/node": "^26.0.1",
+    "@vercel/node": "^3.2.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/tsconfig": "^0.4.0",
     "typescript": "~5.2.2",
