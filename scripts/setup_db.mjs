@@ -60,7 +60,7 @@ const main = async () => {
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
-    port: Number(process.env.MYSQL_PORT ?? 3306),
+    port: Number(process.env.MYSQL_PORT || 3306), // `||`: an empty env var must not become port 0
     charset: 'utf8mb4',
     ssl: { rejectUnauthorized: false },
   })

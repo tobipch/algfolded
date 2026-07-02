@@ -81,10 +81,10 @@ Logged out, the statistics page falls back to the locally stored per-case data, 
 
 The frontend stays a static Vite SPA; the API lives in **Vercel serverless functions** (`api/`) that talk to a **Hostpoint MariaDB** — the same setup CubeFeed uses:
 
-1. Create a MySQL database in the Hostpoint control panel and allow remote access for its user.
-2. Create a WCA OAuth application (scope `public`, redirect URI `https://<domain>/api/auth/wca/callback`).
+1. Create a MySQL database in the Hostpoint control panel and allow remote access for its user. Use the **external** URL (e.g. `xxx.mysql.db.hostpoint.ch`) everywhere outside Hostpoint — Vercel and GitHub Actions can't resolve the internal one.
+2. Create a WCA OAuth application (redirect URI `https://<domain>/api/auth/wca/callback`; the scope field can stay blank — the default scope is `public`).
 3. Configure the environment variables from `.env.example` in Vercel.
-4. Create the tables once: `npm run setup-db` (with the `MYSQL_*` variables set).
+4. Create the tables once — either run the **"Setup database"** GitHub Action (needs the `MYSQL_*` repository secrets, see `.github/workflows/setup-db.yml`) or locally `npm run setup-db` with the `MYSQL_*` variables set.
 
 For local development run `vercel dev` (serves the functions on port 3000) next to `npm run dev` — the Vite dev server proxies `/api` there. Without a backend the app simply behaves as logged out.
 
