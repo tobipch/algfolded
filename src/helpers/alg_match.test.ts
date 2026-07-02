@@ -1,0 +1,73 @@
+import { describe, it, expect } from 'vitest'
+// @ts-ignore -- helper is plain JS (checkJs is off)
+import { algToFaceMoves, normalizeMoves, detectAlg } from './alg_match'
+
+describe('normalizeMoves', () => {
+  it('merges doubled turns', () => {
+    expect(normalizeMoves(['R', 'R'])).toEqual(['R2'])
+    expect(normalizeMoves(['U', 'U', 'U'])).toEqual(["U'"])
+  })
+
+  it('drops cancellations, including ones exposed by earlier merges', () => {
+    expect(normalizeMoves(['R', "R'"])).toEqual([])
+    expect(normalizeMoves(['R', 'U', "U'", "R'"])).toEqual([])
+  })
+
+  it('orders commuting same-axis moves canonically', () => {
+    expect(normalizeMoves(["L'", 'R'])).toEqual(normalizeMoves(['R', "L'"]))
+  })
+
+  it('keeps non-commuting moves in order', () => {
+    expect(normalizeMoves(['R', 'U', "R'"])).toEqual(['R', 'U', "R'"])
+  })
+})
+
+describe('algToFaceMoves', () => {
+  it('passes plain face-turn algs through', () => {
+    expect(algToFaceMoves("R U R' U'")).toEqual(['R', 'U', "R'", "U'"])
+  })
+
+  it('translates moves after a rotation into the fixed cube frame', () => {
+    // y F y' is physically an R turn as the cube reports it
+    expect(algToFaceMoves("y F y'")).toEqual(['R'])
+    expect(algToFaceMoves('y2 R')).toEqual(['L'])
+  })
+
+  it('expands slice moves into the reported outer-layer turns', () => {
+    // M = x' R L': cube reports R L'; the following U happens in the
+    // x'-shifted frame, i.e. on the hardware B axis
+    expect(algToFaceMoves('M U')).toEqual(['R', "L'", 'B'])
+    expect(algToFaceMoves("M U M'")).toEqual(['R', "L'", 'B', "R'", 'L'])
+  })
+
+  it('expands wide moves', () => {
+    expect(algToFaceMoves("r U r'")).toEqual(['L', 'F', "L'"])
+  })
+
+  it('returns null for tokens it cannot translate', () => {
+    expect(algToFaceMoves('R foo U')).toBeNull()
+  })
+})
+
+describe('detectAlg', () => {
+  const algs = ["U2 R' U' R2 D R' U' R D' R2 U2 R U", "M U M'", "R U R'"]
+
+  it('finds the exact alg that was executed', () => {
+    expect(detectAlg(['R', 'U', "R'"], algs)).toBe("R U R'")
+  })
+
+  it('ignores in-place corrected mistakes', () => {
+    expect(detectAlg(['R', 'U', "U'", 'U', "R'"], algs)).toBe("R U R'")
+  })
+
+  it('matches slice algs from the reported face turns, in either order', () => {
+    expect(detectAlg(['R', "L'", 'B', "R'", 'L'], algs)).toBe("M U M'")
+    expect(detectAlg(["L'", 'R', 'B', 'L', "R'"], algs)).toBe("M U M'")
+  })
+
+  it('returns null when nothing matches', () => {
+    expect(detectAlg(['R', 'U2', "R'"], algs)).toBeNull()
+    expect(detectAlg([], algs)).toBeNull()
+    expect(detectAlg(null, algs)).toBeNull()
+  })
+})

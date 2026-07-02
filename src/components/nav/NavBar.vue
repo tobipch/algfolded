@@ -7,12 +7,27 @@ import {useRouter, useRoute} from "vue-router";
 import {computed, onMounted, onUnmounted, ref} from "vue";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
+import {useAuthStore} from "@/stores/AuthStore";
 import {useI18n} from 'vue-i18n'
 
 const {t} = useI18n()
 const selected = useSelectedStore();
 const session = useSessionStore()
 const bt = useBluetoothCubeStore()
+const auth = useAuthStore()
+
+// Account dropdown (login with WCA / logout)
+const showAccountMenu = ref(false)
+const accountWrap = ref(null)
+const onAccountClick = () => {
+  if (!auth.loggedIn) { auth.login(); return }
+  showAccountMenu.value = !showAccountMenu.value
+}
+const onLogoutClick = async () => {
+  showAccountMenu.value = false
+  await auth.logout()
+}
+onMounted(() => auth.checkAuthError(t))
 
 // When connected the button disconnects; when disconnected it opens a small
 // menu to pick the cube brand (different libraries handle GAN vs MoYu/QiYi).
@@ -30,6 +45,9 @@ const onDocClick = (e) => {
   if (showConnectMenu.value && btConnectWrap.value && !btConnectWrap.value.contains(e.target)) {
     showConnectMenu.value = false
   }
+  if (showAccountMenu.value && accountWrap.value && !accountWrap.value.contains(e.target)) {
+    showAccountMenu.value = false
+  }
 }
 const btBtnClass = computed(() => bt.connected ? 'btn-info' : 'btn-outline-secondary')
 const btTooltip = computed(() => bt.connected
@@ -42,7 +60,9 @@ const displayStore = useDisplayStore()
 
 const isTimerView = computed(() => route.fullPath.endsWith("timer"))
 const isSettingsView = computed(() => route.name === 'settings')
+const isStatsView = computed(() => route.name === 'stats')
 const settingsBtnClass = computed(() => isSettingsView.value ? 'btn-info' : 'btn-outline-info')
+const statsBtnClass = computed(() => isStatsView.value ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
   return isTimerView && session.store.recapMode
       ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
@@ -158,11 +178,40 @@ onUnmounted(() => {
         <button
             class="btn"
             tabindex="-1" @keydown.space.prevent=""
+            :class="statsBtnClass"
+            @click="isStatsView ? router.push('select') : router.push('stats')"
+            :title="$t('nav.stats')">
+          <i class="bi-bar-chart"/>
+        </button>
+        <button
+            class="btn"
+            tabindex="-1" @keydown.space.prevent=""
             :class="settingsBtnClass"
             @click="isSettingsView ? router.push('select') : router.push('settings')"
             :title="$t('nav.settings')">
           <i class="bi-wrench"/>
         </button>
+        <span ref="accountWrap" class="bt-connect-wrap">
+          <button
+              class="btn account-btn"
+              tabindex="-1" @keydown.space.prevent=""
+              :class="auth.loggedIn ? 'btn-success' : 'btn-outline-secondary'"
+              @click.stop="onAccountClick"
+              :title="auth.loggedIn ? auth.user.name : $t('auth.login_with_wca')">
+            <img v-if="auth.loggedIn && auth.user.avatarUrl"
+                 :src="auth.user.avatarUrl" class="account-avatar" alt=""/>
+            <i v-else class="bi-person-circle"/>
+          </button>
+          <div v-if="showAccountMenu && auth.loggedIn" class="bt-connect-menu">
+            <div class="bt-connect-menu-title">{{ auth.user.name }}<template v-if="auth.user.wcaId"> · {{ auth.user.wcaId }}</template></div>
+            <button class="bt-connect-item" @click.stop="showAccountMenu = false; router.push('stats')">
+              <i class="bi-bar-chart me-1"/>{{ $t('nav.stats') }}
+            </button>
+            <button class="bt-connect-item" @click.stop="onLogoutClick">
+              <i class="bi-box-arrow-right me-1"/>{{ $t('auth.logout') }}
+            </button>
+          </div>
+        </span>
         <ThemeSwitcher/>
       </div>
     </div>
@@ -172,6 +221,17 @@ onUnmounted(() => {
 <style scoped>
 .logoText {
   font-weight: 900;
+}
+.account-btn {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.account-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 .bt-connect-wrap {
   position: relative;

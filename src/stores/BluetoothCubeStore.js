@@ -42,7 +42,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // the bottom layer), so the UI can show a toast.
     const resetSignal = ref(0)
 
+    // Moves of the finished solve, for algorithm detection. Set when the cube
+    // reaches solved; consumed (and cleared) by the session store's stopTimer.
+    const lastSolveMoves = ref(null)
+
     // Internal (not exposed)
+    let solveMoves = []           // moves made since the solving phase began
     let cube = null               // underlying brand-specific connection object
     let cubeDisconnect = null     // brand-specific disconnect fn
     let gattDevice = null         // BluetoothDevice for gattserverdisconnected listener
@@ -60,6 +65,26 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             try { p = p.applyMove(m) } catch (_) {}
             expectedPatterns.push(p)
         }
+    }
+
+    // The fully-scrambled state — where the solve (the algorithm) begins.
+    const startPattern = () =>
+        expectedPatterns.length > 0 ? expectedPatterns[expectedPatterns.length - 1] : null
+
+    // Cube reached solved: freeze the executed moves for alg detection and
+    // finish the attempt.
+    const finishSolve = () => {
+        lastSolveMoves.value = solveMoves.slice()
+        solveMoves = []
+        phase.value = 'idle'
+    }
+
+    // Hand the executed moves of the last finished solve to the caller
+    // exactly once (avoids a stale sequence leaking into the next case).
+    const consumeSolveMoves = () => {
+        const moves = lastSolveMoves.value
+        lastSolveMoves.value = null
+        return moves
     }
 
     // --- Reset gesture + "too far from solved" detection (letter-pair mode) ---
@@ -281,6 +306,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         pendingFaceTurn.value = null
         tooFarFromSolved.value = false
         resetGestureMoves = []
+        solveMoves = []
         clearIdleTimer()
         computeExpectedPatterns(kpuzzle)
 
@@ -315,6 +341,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         paused.value = false
         tooFarFromSolved.value = false
         resetGestureMoves = []
+        solveMoves = []
         clearIdleTimer()
         cubePattern = null
         solvedPattern = null
@@ -376,16 +403,26 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             // commuting moves self-heal.
             reconcileState()
         } else if (phase.value === 'awaiting_solve') {
-            // Letter-pair mode: the first move begins the solution. Switch to
-            // 'solving' (which starts the timer) and immediately check for the
-            // (degenerate) case where one move already solves it.
+            // Letter-pair mode or a restarted measurement: the first move
+            // begins the solution. Switch to 'solving' (which starts the
+            // timer) and immediately check for the (degenerate) case where
+            // one move already solves it.
             phase.value = 'solving'
+            solveMoves = [move]
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
-                phase.value = 'idle'
+                finishSolve()
             }
         } else if (phase.value === 'solving') {
+            solveMoves.push(move)
             if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
-                phase.value = 'idle'
+                finishSolve()
+            } else if (startPattern() && cubePattern && cubePattern.isIdentical(startPattern())) {
+                // The user undid their mistakes all the way back to the case's
+                // start position: restart the measurement (and the executed-
+                // move recording) from scratch — the next move re-starts the
+                // timer.
+                solveMoves = []
+                phase.value = 'awaiting_solve'
             }
         }
 
@@ -566,7 +603,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     return {
         connected, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
-        tooFarFromSolved, resetSignal,
+        tooFarFromSolved, resetSignal, lastSolveMoves, consumeSolveMoves,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals
     }

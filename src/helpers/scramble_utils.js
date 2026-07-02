@@ -43,7 +43,7 @@ export const amountToMove = (face, amount) => {
 }
 
 // How each rotation remaps face positions: rotation → { newPosition: originalFace }
-const ROTATION_MAP = {
+export const ROTATION_MAP = {
   'x':   { U:'F', D:'B', F:'D', B:'U', L:'L', R:'R' },
   "x'":  { U:'B', D:'F', F:'U', B:'D', L:'L', R:'R' },
   'x2':  { U:'D', D:'U', F:'B', B:'F', L:'L', R:'R' },
@@ -55,7 +55,7 @@ const ROTATION_MAP = {
   'z2':  { U:'D', D:'U', F:'F', B:'B', L:'R', R:'L' },
 }
 
-function applyRotation(map, rot) {
+export function applyRotation(map, rot) {
   const rmap = ROTATION_MAP[rot]
   if (!rmap) return map
   const result = {}
