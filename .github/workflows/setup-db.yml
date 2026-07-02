@@ -1,0 +1,38 @@
+# Creates (or upgrades) the Algfolded tables on the Hostpoint MariaDB.
+# Run it manually from the Actions tab whenever the schema changes.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   MYSQL_HOST      external Hostpoint URL, e.g. tobipch.mysql.db.hostpoint.ch
+#   MYSQL_USER      database user, e.g. tobipch_admin
+#   MYSQL_PASSWORD  the user's password
+#   MYSQL_DATABASE  database name
+#   MYSQL_PORT      optional, defaults to 3306
+#
+# Note: the Hostpoint user needs remote access allowed for any host (%),
+# since GitHub-hosted runners connect from changing IP addresses.
+name: Setup database
+
+on:
+  workflow_dispatch:
+
+jobs:
+  setup-db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install mysql2
+        run: npm install --no-save --no-audit --no-fund mysql2
+
+      - name: Create / upgrade tables
+        run: node scripts/setup_db.mjs
+        env:
+          MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
