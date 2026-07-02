@@ -53,7 +53,7 @@ const onAlgClick = (alg) => {
       </ul>
     </div>
   </template>
-  <div v-else class="text-muted">No algorithm available</div>
+  <div v-else class="text-muted fst-italic">{{ $t("select.no_alg") }}</div>
 
 </template>
 

@@ -31,6 +31,8 @@
       "case_info_title": "Details & Algorithmen",
       "no_alg": "kein Algorithmus",
       "avg_time_title": "Durchschnittszeit · Anzahl Solves",
+      "avg_time": "Ø Zeit",
+      "solves": "Solves",
       "not_solved_yet": "Noch nicht geübt"
     },
     "presets": {

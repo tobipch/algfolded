@@ -31,6 +31,8 @@
       "case_info_title": "Case details & algorithms",
       "no_alg": "no algorithm",
       "avg_time_title": "Average time · number of solves",
+      "avg_time": "avg time",
+      "solves": "solves",
       "not_solved_yet": "Not practised yet"
     },
     "presets": {

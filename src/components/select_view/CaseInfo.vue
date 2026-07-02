@@ -1,20 +1,52 @@
 <script setup>
 import SetupAndAlgs from "@/components/timer/SetupAndAlgs.vue";
 import CaseNote from "@/components/CaseNote.vue";
+import CubePicture from "@/components/timer/CubePicture.vue";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
+import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
+import {useSessionStore} from "@/stores/SessionStore";
+import {computed} from "vue";
+import {inverseScramble} from "@/helpers/scramble_utils";
 
 const props = defineProps(['caseKey']);
 const algset = useAlgsetStore();
+const prefs = usePreferredAlgStore();
+const session = useSessionStore();
+
+// The case as it appears on the cube: apply the inverse of the user's
+// (preferred, or first) alg to a solved cube.
+const algs = computed(() => algset.byId[props.caseKey]?.algs ?? [])
+const preferred = computed(() => {
+  const p = prefs.store[props.caseKey]
+  return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
+})
+const setup = computed(() => preferred.value ? inverseScramble(preferred.value) : '')
+
+// Practice stats from the spaced-repetition data: EMA of recent times + count.
+const srs = computed(() => session.srsData[props.caseKey])
+const avgTime = computed(() => srs.value?.a != null ? srs.value.a.toFixed(1) + 's' : null)
+const solveCount = computed(() => srs.value?.n ?? 0)
 </script>
 
 <template>
-  <hr class="mt-0">
-  <div class="row mx-1">
-    <div class="col col-auto leftCol">
-      <div class="fs-7 fst-italic">{{ props.caseKey }}</div>
-      <span class="fs-4 fw-bold">{{ algset.caseLabel(props.caseKey) }}</span>
+  <div class="d-flex flex-wrap align-items-start gap-3">
+    <div v-if="setup" class="cube-col flex-shrink-0 mx-auto">
+      <CubePicture :scramble="setup"/>
     </div>
-    <div class="col text-start">
+    <div class="flex-grow-1 info-col">
+      <div v-if="solveCount > 0" class="d-flex gap-2 mb-3" :title="$t('select.avg_time_title')">
+        <div class="stat-tile">
+          <div class="stat-value">{{ avgTime }}</div>
+          <div class="stat-label">{{ $t("select.avg_time") }}</div>
+        </div>
+        <div class="stat-tile">
+          <div class="stat-value">{{ solveCount }}</div>
+          <div class="stat-label">{{ $t("select.solves") }}</div>
+        </div>
+      </div>
+      <div v-else class="mb-3 opacity-50 fst-italic">
+        <i class="bi bi-stopwatch"></i> {{ $t("select.not_solved_yet") }}
+      </div>
       <CaseNote :caseKey="props.caseKey"/>
       <SetupAndAlgs :caseKey="props.caseKey" :maxAmount="8"/>
     </div>
@@ -22,7 +54,33 @@ const algset = useAlgsetStore();
 </template>
 
 <style scoped>
-.leftCol {
-  border-right: 1px solid var(--bs-secondary);
+.info-col {
+  min-width: 0;
+  flex-basis: 300px;
+}
+
+.stat-tile {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 0.5rem;
+  padding: 0.35rem 1rem;
+  text-align: center;
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+:root[data-mode="dark"] .stat-tile {
+  background-color: rgba(var(--bs-primary-rgb), 0.12);
+}
+
+.stat-value {
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  opacity: 0.65;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 </style>

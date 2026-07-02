@@ -31,6 +31,8 @@
       "case_info_title": "Dettagli e algoritmi",
       "no_alg": "nessun algoritmo",
       "avg_time_title": "Tempo medio · numero di risoluzioni",
+      "avg_time": "tempo medio",
+      "solves": "risoluzioni",
       "not_solved_yet": "Non ancora praticato"
     },
     "presets": {
