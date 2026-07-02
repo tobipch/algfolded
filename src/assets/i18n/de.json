@@ -27,7 +27,11 @@
       "all": "Alle",
       "none": "Keine",
       "expand_all": "Alle aufklappen",
-      "collapse_all": "Alle zuklappen"
+      "collapse_all": "Alle zuklappen",
+      "case_info_title": "Details & Algorithmen",
+      "no_alg": "kein Algorithmus",
+      "avg_time_title": "Durchschnittszeit · Anzahl Solves",
+      "not_solved_yet": "Noch nicht geübt"
     },
     "presets": {
       "presets": "Voreinstellungen",

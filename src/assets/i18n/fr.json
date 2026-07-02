@@ -27,7 +27,11 @@
       "all": "Tout",
       "none": "Aucun",
       "expand_all": "Tout développer",
-      "collapse_all": "Tout réduire"
+      "collapse_all": "Tout réduire",
+      "case_info_title": "Détails et algorithmes",
+      "no_alg": "aucun algorithme",
+      "avg_time_title": "Temps moyen · nombre de résolutions",
+      "not_solved_yet": "Pas encore pratiqué"
     },
     "presets": {
       "presets": "Préréglages",

@@ -66,7 +66,7 @@ onMounted(() => {
       class="text-center collapse multi-collapse subgroup-well"
       ref="groupCardRef"
       :id="collapseId">
-    <div v-if="childrenAreLeaves" class="row gx-0">
+    <div v-if="childrenAreLeaves" class="row g-1">
       <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
         <CaseCard :node="leaf"/>
       </div>
@@ -97,13 +97,15 @@ onMounted(() => {
 
 /* Case grid for two-level sets (buffer -> case). Cases sit directly under the
    buffer here and carry longer labels (e.g. "UFR/N", "UF-UB"), so cap at 2
-   columns — and 1 on narrow screens — to keep them readable. */
+   columns — and 1 on narrow screens — to keep them readable. Flex so all
+   cards in a row share the same height. */
 .case-col {
   flex: 0 0 auto;
   width: 50%;
+  display: flex;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 575px) {
   .case-col {
     width: 100%;
   }

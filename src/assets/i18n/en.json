@@ -27,7 +27,11 @@
       "all": "All",
       "none": "None",
       "expand_all": "Expand all",
-      "collapse_all": "Collapse all"
+      "collapse_all": "Collapse all",
+      "case_info_title": "Case details & algorithms",
+      "no_alg": "no algorithm",
+      "avg_time_title": "Average time · number of solves",
+      "not_solved_yet": "Not practised yet"
     },
     "presets": {
       "presets": "Presets",

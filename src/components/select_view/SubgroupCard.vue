@@ -66,7 +66,7 @@ onMounted(() => {
       class="collapse multi-collapse case-well"
       ref="subgroupCardRef"
       :id="collapseId">
-    <div class="row gx-0">
+    <div class="row g-1">
       <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
         <CaseCard :node="leaf"/>
       </div>
@@ -111,15 +111,17 @@ onMounted(() => {
   background-color: rgba(var(--bs-primary-rgb), 0.06);
 }
 
-/* 4 cases per row on wide screens, 2 per row below 1280px */
+/* 2 cases per row (the cards carry alg/stats/note info now), 1 per row on
+   narrow screens; flex so all cards in a row share the same height */
 .case-col {
   flex: 0 0 auto;
-  width: 25%;
+  width: 50%;
+  display: flex;
 }
 
-@media (max-width: 1279px) {
+@media (max-width: 575px) {
   .case-col {
-    width: 50%;
+    width: 100%;
   }
 }
 </style>

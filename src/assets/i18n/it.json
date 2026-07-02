@@ -27,7 +27,11 @@
       "all": "Tutti",
       "none": "Nessuno",
       "expand_all": "Espandi tutto",
-      "collapse_all": "Comprimi tutto"
+      "collapse_all": "Comprimi tutto",
+      "case_info_title": "Dettagli e algoritmi",
+      "no_alg": "nessun algoritmo",
+      "avg_time_title": "Tempo medio · numero di risoluzioni",
+      "not_solved_yet": "Non ancora praticato"
     },
     "presets": {
       "presets": "Preimpostazioni",
