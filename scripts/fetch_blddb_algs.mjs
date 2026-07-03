@@ -1,10 +1,18 @@
 /**
- * Fetch latest LTCT algorithms from blddb and update ltct_map.json.
+ * Fetch latest LTCT algorithms from blddb and update ltct_map.json, and
+ * (re)generate t2c_map.json from the same file.
  *
- * Matching strategy: convert blddb Chichu-scheme keys to position notation,
- * then match against existing ltct_map keys. Only the `algs` arrays are
- * updated; scrambles are left untouched since they depend on the case
- * geometry, not the specific algorithm text.
+ * LTCT matching strategy: convert blddb Chichu-scheme keys to position
+ * notation, then match against existing ltct_map keys. Only the `algs`
+ * arrays are updated; scrambles are left untouched since they depend on the
+ * case geometry, not the specific algorithm text.
+ *
+ * T2C: the non-J keys of the same file are LTCTs of other buffers whose
+ * twisted corner is UFR ("T2C"). They are fully regenerated: each key
+ * `[X][Y][K|L]` encodes (canonical sticker of corner X, target sticker on
+ * corner Y, UFR twist RUF/FUR); the case state — and from it all six
+ * 3-target memo variants (one per possible start sticker) — follows from
+ * corner-orientation bookkeeping (see stickerCycle below).
  *
  * Usage: node scripts/fetch_blddb_algs.mjs
  */
@@ -46,6 +54,99 @@ for (let i = 0; i < POSITION_ARRAY.length; i++) {
  */
 function chichuKeyToPositions(key) {
   return key.split("").map((ch) => letterToPos[ch] || ch);
+}
+
+// ── T2C generation ───────────────────────────────────────────────────────
+
+const T2C_PATH = new URL("../src/assets/t2c_map.json", import.meta.url);
+
+// Corner stickers in clockwise order starting from the U/D facelet, so the
+// index of a sticker is its orientation (0 = U/D facelet, 1 = one clockwise
+// twist, 2 = two). Same table as STICKER_CYCLES in src/algsets/t2c.ts.
+const CORNER_CYCLES = [
+  ["UFR", "RUF", "FUR"],
+  ["UFL", "FUL", "LUF"],
+  ["UBL", "LUB", "BUL"],
+  ["UBR", "BUR", "RUB"],
+  ["DFR", "FDR", "RDF"],
+  ["DFL", "LDF", "FDL"],
+  ["DBL", "BDL", "LDB"],
+  ["DBR", "RDB", "BDR"],
+];
+
+const cycleOf = (sticker) => CORNER_CYCLES.find((c) => c.includes(sticker));
+const oriOf = (sticker) => cycleOf(sticker).indexOf(sticker);
+// The sticker `n` clockwise twists away from `sticker` on the same corner.
+const rot = (sticker, n) => {
+  const c = cycleOf(sticker);
+  return c[(c.indexOf(sticker) + n) % 3];
+};
+
+/**
+ * Decode a non-J blddb key into the case's memo variants.
+ *
+ * The state is a "twisted 2-cycle" of corners X and Y (plus the UFR twist):
+ * the sticker at facelet t1 belongs at t2, at t2 belongs at t3, at t3
+ * belongs at t1 — where t1 = X's canonical sticker (the key's first letter),
+ * t2 = the key's second letter and t3 is forced by the orientation-sum
+ * invariant: ori(t3) = ori(t1) + ori(twist) = ori of the key's K/L suffix.
+ *
+ * The rigid pieces extend that 3-facelet cycle to a full facelet map H
+ * (rotating both alignments), and the memo starting at any sticker s of X or
+ * Y is then simply [s, H(s), H(H(s))].
+ */
+function decodeT2cKey(blddbKey) {
+  const [t1, t2, twist] = blddbKey.split("").map((ch) => letterToPos[ch]);
+  if (!t1 || !t2 || !twist) throw new Error(`Undecodable T2C key "${blddbKey}"`);
+  if (oriOf(t1) !== 0) throw new Error(`T2C key "${blddbKey}": first sticker ${t1} not canonical`);
+  if (cycleOf(twist)[0] !== "UFR") throw new Error(`T2C key "${blddbKey}": suffix ${twist} not on UFR`);
+  if (cycleOf(t1) === cycleOf(t2) || cycleOf(t2)[0] === "UFR" || cycleOf(t1)[0] === "UFR") {
+    throw new Error(`T2C key "${blddbKey}": bad corner pair ${t1}/${t2}`);
+  }
+
+  const t3 = rot(t1, oriOf(twist));
+  // full facelet map on X (aligned t1 -> t2) and Y (aligned t2 -> t3)
+  const H = {};
+  for (let n = 0; n < 3; n++) {
+    H[rot(t1, n)] = rot(t2, n);
+    H[rot(t2, n)] = rot(t3, n);
+  }
+  const variants = {};
+  for (const s of [...cycleOf(t1), ...cycleOf(t2)]) {
+    variants[s] = [s, H[s], H[H[s]]];
+  }
+  return {
+    corners: [cycleOf(t1)[0], cycleOf(t2)[0]],
+    twist,
+    variants,
+  };
+}
+
+/** Regenerate t2c_map.json from the non-J entries of the blddb data. */
+function generateT2c(blddbData) {
+  const map = {};
+  for (const [blddbKey, entries] of Object.entries(blddbData)) {
+    if (blddbKey.startsWith("J")) continue;
+
+    const allAlgs = [];
+    for (const entry of entries) {
+      for (const alg of entry[0]) allAlgs.push(alg.trim());
+    }
+    if (allAlgs.length === 0) continue;
+
+    const { corners, twist, variants } = decodeT2cKey(blddbKey);
+    const [t1, t2] = blddbKey.split("").map((ch) => letterToPos[ch]);
+    // stable, buffer-order-independent id: blddb's canonical representation
+    const id = `${t1} ${t2} ${twist}`;
+    map[id] = { corners, twist, variants, algs: allAlgs };
+  }
+
+  const ids = Object.keys(map).sort();
+  const sorted = {};
+  for (const id of ids) sorted[id] = map[id];
+
+  writeFileSync(T2C_PATH, JSON.stringify(sorted, null, 2) + "\n");
+  console.log(`\nWritten t2c_map.json with ${ids.length} cases.`);
 }
 
 // ── Main ──────────────────��─────────────────────────────────���───────────
@@ -173,6 +274,10 @@ async function main() {
   } else {
     console.log(`\nNo changes — ltct_map.json is up to date.`);
   }
+
+  // 7. T2C: the non-J entries of the same file (LTCTs of other buffers with
+  //    a twisted UFR) fully regenerate t2c_map.json.
+  generateT2c(blddbData);
 }
 
 main().catch((e) => {

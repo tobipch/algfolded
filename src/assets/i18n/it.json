@@ -207,6 +207,7 @@
     },
     "algset": {
       "ltct": "LTCT",
+      "t2c": "T2C",
       "twists3": "3-Twists",
       "commCorner": "Commutatori degli angoli",
       "commEdge": "Commutatori degli spigoli",
