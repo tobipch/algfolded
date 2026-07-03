@@ -2,20 +2,20 @@
 import SetupAndAlgs from "@/components/timer/SetupAndAlgs.vue";
 import CaseNote from "@/components/CaseNote.vue";
 import CubePicture from "@/components/timer/CubePicture.vue";
-import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
+import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {useSessionStore} from "@/stores/SessionStore";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {inverseScramble} from "@/helpers/scramble_utils";
 
 const props = defineProps(['caseKey']);
-const algset = useAlgsetStore();
 const prefs = usePreferredAlgStore();
+const custom = useCustomAlgsStore();
 const session = useSessionStore();
 
 // The case as it appears on the cube: apply the inverse of the user's
 // (preferred, or first) alg to a solved cube.
-const algs = computed(() => algset.byId[props.caseKey]?.algs ?? [])
+const algs = computed(() => custom.mergedAlgs(props.caseKey))
 const preferred = computed(() => {
   const p = prefs.store[props.caseKey]
   return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
@@ -26,12 +26,16 @@ const setup = computed(() => preferred.value ? inverseScramble(preferred.value) 
 const srs = computed(() => session.srsData[props.caseKey])
 const avgTime = computed(() => srs.value?.a != null ? srs.value.a.toFixed(1) + 's' : null)
 const solveCount = computed(() => srs.value?.n ?? 0)
+
+// Play an alg from the list on the case picture.
+const cubeRef = ref(null)
+const onPlay = (alg) => cubeRef.value?.playAlg(alg)
 </script>
 
 <template>
   <div class="d-flex flex-wrap align-items-start gap-3">
     <div v-if="setup" class="cube-col flex-shrink-0 mx-auto">
-      <CubePicture :scramble="setup"/>
+      <CubePicture ref="cubeRef" :scramble="setup"/>
     </div>
     <div class="flex-grow-1 info-col">
       <div v-if="solveCount > 0" class="d-flex gap-2 mb-3" :title="$t('select.avg_time_title')">
@@ -48,7 +52,7 @@ const solveCount = computed(() => srs.value?.n ?? 0)
         <i class="bi bi-stopwatch"></i> {{ $t("select.not_solved_yet") }}
       </div>
       <CaseNote :caseKey="props.caseKey"/>
-      <SetupAndAlgs :caseKey="props.caseKey" :maxAmount="8"/>
+      <SetupAndAlgs :caseKey="props.caseKey" :maxAmount="8" :playable="!!setup" @play="onPlay"/>
     </div>
   </div>
 </template>

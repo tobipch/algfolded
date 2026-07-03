@@ -21,6 +21,23 @@ const searchText = ref('')
 const sortBy = ref('default') // 'default' | 'count' | 'avg'
 const infoKey = ref(null)
 
+// --- first-level (buffer / LTCT set) filter ---
+// Sets with many cases per group filter the grid down to one group; the text
+// search always goes over ALL cases. 'all' = no group filtering.
+const filterMode = computed(() => algset.active.statsGroupFilter ?? null)
+const groupOptions = computed(() => {
+  if (!filterMode.value) return []
+  return algset.tree.map(n => {
+    const d = algset.active.levels[0].display(n.value, {toLetter: s => ls.toLetter(s)})
+    return {value: n.value, label: d.secondary ? `${d.primary} (${d.secondary})` : d.primary}
+  })
+})
+const groupFilter = ref('all')
+// default to the first group ("normally you look at one set"); reset on set switch
+watch([() => algset.activeId, () => algset.loaded], () => {
+  groupFilter.value = groupOptions.value[0]?.value ?? 'all'
+}, {immediate: true})
+
 // Per-case aggregates from the account database. Null when logged out or the
 // API is unreachable — then the local spaced-repetition data fills in.
 const serverStats = ref(null)
@@ -66,6 +83,7 @@ const rows = computed(() => algset.cases.map(c => {
   const bestMs = srv ? srv.bestMs : null
   return {
     id: c.id,
+    group: c.path[0],
     primary: display.primary,
     secondary: display.secondary ?? '',
     path: c.path.join(' '),
@@ -75,7 +93,13 @@ const rows = computed(() => algset.cases.map(c => {
 
 const filtered = computed(() => {
   const q = searchText.value
-  if (!q.trim()) return rows.value
+  if (!q.trim()) {
+    // no search: show the picked group (the search itself spans all cases)
+    if (filterMode.value && groupFilter.value !== 'all') {
+      return rows.value.filter(r => r.group === groupFilter.value)
+    }
+    return rows.value
+  }
   return rows.value.filter(r => {
     // "UD NP": lets patterns span the set and the letter pair (e.g. "UD*P")
     const label = r.secondary ? r.secondary + ' ' + r.primary : r.primary
@@ -119,6 +143,10 @@ const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
             class="form-control search-input"
             :placeholder="$t('stats.search_placeholder')"/>
       </div>
+      <select v-if="filterMode" v-model="groupFilter" class="form-select group-select">
+        <option v-if="filterMode === 'with-all'" value="all">{{ $t('stats.filter_all_cases') }}</option>
+        <option v-for="g in groupOptions" :key="g.value" :value="g.value">{{ g.label }}</option>
+      </select>
       <select v-model="sortBy" class="form-select sort-select">
         <option value="default">{{ $t('stats.sort_default') }}</option>
         <option value="count">{{ $t('stats.sort_count') }}</option>
@@ -183,7 +211,8 @@ const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
 .search-input {
   padding-left: 32px;
 }
-.sort-select {
+.sort-select,
+.group-select {
   width: auto;
 }
 .stats-grid {

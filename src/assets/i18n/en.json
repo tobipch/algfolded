@@ -95,7 +95,8 @@
       "selfpaced_hint": "= next case (records the time and starts the next)",
       "didnt_know": "Didn't know",
       "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner",
-      "alg_detected_toast": "Alg recognized: {alg} — saved as your alg for this case"
+      "alg_detected_toast": "Alg recognized: {alg} — saved as your alg for this case",
+      "alg_added_toast": "New alg recorded: {alg} — saved as your alg for this case"
     },
     "stats_card": {
       "stats_title": "History:",
@@ -129,7 +130,12 @@
       "edit_note": "Edit note",
       "setup_moves": "Setup",
       "algorithms_collection": "Algs",
-      "choose_alg_hint": "(click an alg to make it yours)"
+      "choose_alg_hint": "(click an alg to make it yours)",
+      "add_alg_placeholder": "Add your own alg (e.g. R U R' U')",
+      "add_alg_btn": "Add algorithm",
+      "custom_alg_title": "Your own algorithm",
+      "delete_alg_title": "Remove this algorithm",
+      "play_alg_title": "Play on the cube"
     },
     "hotkeys": {
       "hotkeys": "Shortcuts",
@@ -218,6 +224,7 @@
       "sort_default": "Default order",
       "sort_count": "Most repetitions",
       "sort_avg": "Slowest first",
+      "filter_all_cases": "All cases",
       "cases_trained": "{trained}/{total} cases trained",
       "total_reps": "{count} repetitions",
       "loading": "loading…",
