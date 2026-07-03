@@ -24,6 +24,9 @@ jobs:
       - name: Fetch latest LTCT + T2C algorithms
         run: node scripts/fetch_blddb_algs.mjs
 
+      - name: Fetch latest parity algorithms
+        run: node scripts/fetch_blddb_parity_algs.mjs
+
       - name: Fetch latest 3-twist algorithms
         run: node scripts/fetch_blddb_twist_algs.mjs
 
@@ -43,7 +46,8 @@ jobs:
             Automated weekly update of algorithms from [blddb](https://github.com/nbwzx/blddb).
 
             Updates the `algs` (and, where derived, the `buffers`) in
-            `ltct_map.json`, `t2c_map.json`, `three_twists.json`, `corner_comms.json`,
-            `edge_comms.json`, `edge_flips.json` and `corner_twists2.json`.
+            `ltct_map.json`, `t2c_map.json`, `parities_map.json`,
+            `three_twists.json`, `corner_comms.json`, `edge_comms.json`,
+            `edge_flips.json` and `corner_twists2.json`.
             Scrambles are unchanged.
           delete-branch: true

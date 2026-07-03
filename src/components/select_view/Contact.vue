@@ -13,6 +13,10 @@
     <p>
       Fork of <a href="https://github.com/Roman-/zbll" target="_blank">Roman Strakhov's ZBLL Trainer</a>, adapted with permission.
     </p>
+    <p>
+      Algorithms from <a href="https://v2.blddb.net" target="_blank">BLDDB</a>
+      (<a href="https://github.com/nbwzx/blddb" target="_blank">github.com/nbwzx/blddb</a>).
+    </p>
   </div>
 </template>
 

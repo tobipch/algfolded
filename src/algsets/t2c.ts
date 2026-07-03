@@ -28,7 +28,7 @@ const STICKER_CYCLES = [
 ]
 
 // sticker -> canonical corner name (the corner's U/D facelet)
-const CORNER_OF: Record<string, string> = {}
+export const CORNER_OF: Record<string, string> = {}
 for (const cycle of STICKER_CYCLES) {
   for (const s of cycle) CORNER_OF[s] = cycle[0]
 }

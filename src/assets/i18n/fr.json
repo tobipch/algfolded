@@ -208,6 +208,7 @@
     "algset": {
       "ltct": "LTCT",
       "t2c": "T2C",
+      "parities": "Parities",
       "twists3": "3-Twists",
       "commCorner": "Commutateurs de coins",
       "commEdge": "Commutateurs d'arêtes",

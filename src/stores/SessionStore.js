@@ -12,7 +12,7 @@ import {usePreferredAlgStore} from "@/stores/PreferredAlgStore"
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore"
 import {useDisplayStore} from "@/stores/DisplayStore"
 import {i18n} from "@/locale"
-import {DEFAULT_ALGSET_ID} from "@/algsets/registry"
+import {LEGACY_ALGSET_ID} from "@/algsets/registry"
 import {readNamespaced, writeNamespaced, migrateToNamespaced,
     isFlatSession, isFlatSrs, isFlatNumber} from "@/helpers/namespaced_storage"
 
@@ -52,9 +52,9 @@ if (Array.isArray(legacyStats) && localStorage.getItem(storeKey) == null) {
 
 // Per-algset namespacing: lift any pre-multi-algset flat data into the
 // default set's slot, so each set keeps its own run / SRS history.
-migrateToNamespaced(storeKey, DEFAULT_ALGSET_ID, isFlatSession)
-migrateToNamespaced(srsKey, DEFAULT_ALGSET_ID, isFlatSrs)
-migrateToNamespaced(srsCounterKey, DEFAULT_ALGSET_ID, isFlatNumber)
+migrateToNamespaced(storeKey, LEGACY_ALGSET_ID, isFlatSession)
+migrateToNamespaced(srsKey, LEGACY_ALGSET_ID, isFlatSrs)
+migrateToNamespaced(srsCounterKey, LEGACY_ALGSET_ID, isFlatNumber)
 
 // Read a set's run slot, defaulting to an empty run and guarding old shapes.
 const loadStore = (id) => {
