@@ -2,7 +2,7 @@
 
 A timer-based trainer for **blindfolded (BLD) speedcubing algorithms**.
 
-Algfolded started as an [LTCT](https://www.speedsolving.com/wiki/index.php/LTCT) trainer and has grown into a general BLD **algset** trainer: it hosts several algorithm sets side by side, each with its own cases, scrambles and independent progress. Pick a set, select the cases you want, and drill them with a timer, spaced-repetition-style case selection, per-case notes and optional smart-cube tracking.
+Algfolded is a general BLD **algset** trainer: it hosts several algorithm sets side by side, each with its own cases, scrambles and independent progress. Pick a set, select the cases you want, and drill them with a timer, spaced-repetition-style case selection, per-case notes and optional smart-cube tracking.
 
 Fork of [Roman Strakhov's ZBLL Trainer](https://github.com/Roman-/zbll), originally adapted with permission from the original author. Algorithm data sourced from [blddb](https://github.com/nbwzx/blddb).
 
@@ -12,12 +12,12 @@ Switch between sets from the picker on the selection page. Each set keeps its **
 
 | Set | Cases | Description |
 | --- | ----- | ----------- |
-| **LTCT** (Last Target Corner Twist) | 252 | The final corner-twist case at the end of a corners BLD solve |
-| **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
 | **Corner Commutators** | 1008 | Every corner 3-cycle (3-style), grouped by buffer → second letter → case |
 | **Edge Commutators** | 1760 | Every edge 3-cycle (3-style), grouped by buffer → second letter → case |
 | **Corner 2-Twists** | 56 | Two twisted corners, grouped by buffer → case (`UFR/N`) |
 | **Edge 2-Flips** | 66 | Two flipped edges, grouped by buffer → case (`UF-UB`) |
+| **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
+| **LTCT** (Last Target Corner Twist) | 252 | The final corner-twist case at the end of a corners BLD solve |
 
 Because the app is set-agnostic, adding a new set is essentially "a data file + a small descriptor" (see `src/algsets/`).
 
