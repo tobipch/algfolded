@@ -224,37 +224,73 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // gan-web-bluetooth requests the device with the Chromium-only
     // `optionalManufacturerData` member (to read the MAC from the BLE
     // advertisement). Browsers like Bluefy on iOS reject the whole request
-    // with "Request payload could not be parsed" — retry without that member
-    // and let the MAC come from the prompt fallback instead. Only genuine
-    // parse failures retry; a cancelled chooser (NotFoundError) never does.
-    const bluefySafeRequestDevice = async (fn) => {
-        const bt = navigator.bluetooth
-        const original = bt.requestDevice.bind(bt)
+    // with "Request payload could not be parsed" — so on browsers without
+    // that feature the member is stripped up front, and as belt-and-braces
+    // any non-cancel failure retries once without it. The MAC then comes
+    // from the prompt fallback instead.
+
+    // Chromium ships watchAdvertisements alongside optionalManufacturerData;
+    // everything else (Bluefy & co.) gets the sanitized request.
+    const supportsManufacturerData = () =>
+        typeof BluetoothDevice !== 'undefined' &&
+        'watchAdvertisements' in BluetoothDevice.prototype
+
+    const withoutManufacturerData = (options) => {
+        const {optionalManufacturerData, ...rest} = options
+        return rest
+    }
+
+    const wrapRequestDevice = (original) => async (options) => {
+        const hasMd = options && 'optionalManufacturerData' in options
         try {
-            bt.requestDevice = async (options) => {
-                try {
-                    return await original(options)
-                } catch (e) {
-                    const parseError = e?.name === 'TypeError' || /parse/i.test(e?.message || '')
-                    if (parseError && options && 'optionalManufacturerData' in options) {
-                        const {optionalManufacturerData, ...rest} = options
-                        return await original(rest)
-                    }
-                    throw e
-                }
+            return await original(hasMd && !supportsManufacturerData()
+                ? withoutManufacturerData(options)
+                : options)
+        } catch (e) {
+            // a cancelled / empty chooser must never re-open the dialog
+            const cancelled = e?.name === 'NotFoundError' || e?.name === 'AbortError'
+            if (!cancelled && hasMd) {
+                return await original(withoutManufacturerData(options))
             }
-        } catch (_) { /* requestDevice not writable: proceed unwrapped */ }
-        try {
-            return await fn()
-        } finally {
-            try { bt.requestDevice = original } catch (_) {}
+            throw e
         }
+    }
+
+    // Install the wrapper once. Some browsers expose navigator.bluetooth as
+    // read-only, so fall back from plain assignment to defineProperty on the
+    // bluetooth object, then to shadowing navigator.bluetooth with a proxy.
+    let requestDevicePatched = false
+    const patchRequestDevice = () => {
+        if (requestDevicePatched || !navigator.bluetooth) return
+        const bt = navigator.bluetooth
+        const wrapped = wrapRequestDevice(bt.requestDevice.bind(bt))
+        try { bt.requestDevice = wrapped } catch (_) { /* try harder below */ }
+        if (bt.requestDevice !== wrapped) {
+            try {
+                Object.defineProperty(bt, 'requestDevice', {value: wrapped, configurable: true})
+            } catch (_) { /* try harder below */ }
+        }
+        if (bt.requestDevice !== wrapped) {
+            try {
+                // plain shadow object (a Proxy would trip invariants on a
+                // frozen target); other members are carried over bound
+                const shadow = {requestDevice: wrapped}
+                for (const k in bt) {
+                    if (k === 'requestDevice') continue
+                    const v = bt[k]
+                    shadow[k] = typeof v === 'function' ? v.bind(bt) : v
+                }
+                Object.defineProperty(navigator, 'bluetooth', {value: shadow, configurable: true})
+            } catch (_) { /* proceed unwrapped: original behaviour */ }
+        }
+        requestDevicePatched = true
     }
 
     // Connect a GAN cube via gan-web-bluetooth.
     const connectGan = async (display) => {
         const {connectGanCube} = await import('gan-web-bluetooth')
-        const conn = await bluefySafeRequestDevice(() => connectGanCube(ganMacProvider))
+        patchRequestDevice()
+        const conn = await connectGanCube(ganMacProvider)
         cube = conn
         cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
         connected.value = true
