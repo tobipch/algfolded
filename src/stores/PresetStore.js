@@ -2,13 +2,13 @@ import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {migrateLocalStorageKey} from '@/helpers/helpers'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
-import {DEFAULT_ALGSET_ID} from '@/algsets/registry'
+import {LEGACY_ALGSET_ID} from '@/algsets/registry'
 import {readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArrayMap} from '@/helpers/namespaced_storage'
 
 const localStoreKey = "ltct_presets_arrays";
 migrateLocalStorageKey("zbll2_presets_arrays", localStoreKey)            // zbll* -> ltct* (legacy rename)
 export const starredName = "⭐" // do not make it locale-based!
-migrateToNamespaced(localStoreKey, DEFAULT_ALGSET_ID, isFlatArrayMap)    // flat -> { algsetId: presets }
+migrateToNamespaced(localStoreKey, LEGACY_ALGSET_ID, isFlatArrayMap)    // flat -> { algsetId: presets }
 
 // load the active set's slot as {name -> Set}
 const loadFromLocalStorage = (algsetId) => {

@@ -47,5 +47,11 @@ const setAllCollapses = (show) => {
   z-index: 10;
   background: var(--bs-body-bg);
   border-bottom: 1px solid var(--bs-border-color);
+  /* span the full card width: cancel the card-body's horizontal padding and
+     re-add it as our own, so no content scrolls past beside the sticky bar */
+  margin-left: calc(-1 * var(--bs-card-spacer-x, 1rem));
+  margin-right: calc(-1 * var(--bs-card-spacer-x, 1rem));
+  padding-left: var(--bs-card-spacer-x, 1rem);
+  padding-right: var(--bs-card-spacer-x, 1rem);
 }
 </style>

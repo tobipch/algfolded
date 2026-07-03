@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- helper is plain JS (checkJs is off)
-import { algToFaceMoves, normalizeMoves, detectAlg } from './alg_match'
+import { algToFaceMoves, normalizeMoves, detectAlg, canonicalAlg, isValidAlg } from './alg_match'
 
 describe('normalizeMoves', () => {
   it('merges doubled turns', () => {
@@ -69,5 +69,34 @@ describe('detectAlg', () => {
     expect(detectAlg(['R', 'U2', "R'"], algs)).toBeNull()
     expect(detectAlg([], algs)).toBeNull()
     expect(detectAlg(null, algs)).toBeNull()
+  })
+})
+
+describe('canonicalAlg', () => {
+  it('equates different notations of the same alg', () => {
+    expect(canonicalAlg("R U R'")).toBe(canonicalAlg("R U R2 R"))
+    expect(canonicalAlg("M U M'")).toBe(canonicalAlg("R L' B R' L"))
+  })
+
+  it('distinguishes different algs', () => {
+    expect(canonicalAlg("R U R'")).not.toBe(canonicalAlg("R U' R'"))
+  })
+
+  it('falls back to the trimmed string for untranslatable input', () => {
+    expect(canonicalAlg('  R foo U ')).toBe('R foo U')
+  })
+})
+
+describe('isValidAlg', () => {
+  it('accepts face turns, slices, wide moves and rotations', () => {
+    expect(isValidAlg("R U R' U'")).toBe(true)
+    expect(isValidAlg("M' U2 M")).toBe(true)
+    expect(isValidAlg("y Rw U Rw'")).toBe(true)
+  })
+
+  it('rejects unknown tokens and empty/rotation-only input', () => {
+    expect(isValidAlg('R foo U')).toBe(false)
+    expect(isValidAlg('')).toBe(false)
+    expect(isValidAlg('x y2')).toBe(false)
   })
 })

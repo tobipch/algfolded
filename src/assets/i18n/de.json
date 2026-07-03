@@ -27,7 +27,13 @@
       "all": "Alle",
       "none": "Keine",
       "expand_all": "Alle aufklappen",
-      "collapse_all": "Alle zuklappen"
+      "collapse_all": "Alle zuklappen",
+      "case_info_title": "Details & Algorithmen",
+      "no_alg": "kein Algorithmus",
+      "avg_time_title": "Durchschnittszeit · Anzahl Solves",
+      "avg_time": "Ø Zeit",
+      "solves": "Solves",
+      "not_solved_yet": "Noch nicht geübt"
     },
     "presets": {
       "presets": "Voreinstellungen",
@@ -72,10 +78,10 @@
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
-      "buffer_order": "Ecken-Buffer-Reihenfolge",
-      "buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das 3-Twists- und das Ecken-Kommutator-Set neu).",
-      "edge_buffer_order": "Kanten-Buffer-Reihenfolge",
-      "edge_buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das Kanten-Kommutator-Set neu).",
+      "buffer_order": "Corner-Buffer-Reihenfolge",
+      "buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das 3-Twists- und das Corner-Commutators-Set neu).",
+      "edge_buffer_order": "Edge-Buffer-Reihenfolge",
+      "edge_buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das Edge-Commutators-Set neu).",
       "buffer_order_drag": "Zum Sortieren ziehen"
     },
     "timer": {
@@ -89,7 +95,8 @@
       "selfpaced_hint": "= nächster Fall (speichert die Zeit und startet den nächsten)",
       "didnt_know": "Nicht gewusst",
       "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird",
-      "alg_detected_toast": "Alg erkannt: {alg} — als dein Alg für diesen Fall gespeichert"
+      "alg_detected_toast": "Alg erkannt: {alg} — als dein Alg für diesen Fall gespeichert",
+      "alg_added_toast": "Neuer Alg aufgenommen: {alg} — als dein Alg für diesen Fall gespeichert"
     },
     "stats_card": {
       "stats_title": "Verlauf:",
@@ -123,7 +130,12 @@
       "edit_note": "Notiz bearbeiten",
       "setup_moves": "Einrichten",
       "algorithms_collection": "Algorithmen",
-      "choose_alg_hint": "(Alg anklicken, um ihn auszuwählen)"
+      "choose_alg_hint": "(Alg anklicken, um ihn auszuwählen)",
+      "add_alg_placeholder": "Eigenen Alg hinzufügen (z. B. R U R' U')",
+      "add_alg_btn": "Algorithmus hinzufügen",
+      "custom_alg_title": "Eigener Algorithmus",
+      "delete_alg_title": "Diesen Algorithmus entfernen",
+      "play_alg_title": "Auf dem Würfel abspielen"
     },
     "hotkeys": {
       "hotkeys": "Tastenkürzel",
@@ -195,11 +207,13 @@
     },
     "algset": {
       "ltct": "LTCT",
+      "t2c": "T2C",
+      "parities": "Parities",
       "twists3": "3-Twists",
-      "commCorner": "Ecken-Kommutatoren",
-      "commEdge": "Kanten-Kommutatoren",
-      "twists2": "Ecken 2-Twists",
-      "flips2": "Kanten 2-Flips"
+      "commCorner": "Corner-Commutators",
+      "commEdge": "Edge-Commutators",
+      "twists2": "Corner 2-Twists",
+      "flips2": "Edge 2-Flips"
     },
     "auth": {
       "login_with_wca": "Mit WCA anmelden",
@@ -208,10 +222,18 @@
     },
     "stats": {
       "title": "Fall-Statistiken",
-      "search_placeholder": "Fälle suchen — Wildcards * und ?",
+      "search_placeholder": "Fälle suchen",
+      "search_help_intro": "Durchsucht alle Fälle des Sets (unabhängig vom Filter) — nach Letterpair, Piece-Notation oder ganzer Fall-ID.",
+      "search_help_examples": "Beispiele",
+      "search_help_ex_pair": "Letterpair",
+      "search_help_ex_piece": "Piece-Notation",
+      "search_help_ex_star": "* = beliebig viele Zeichen",
+      "search_help_ex_qmark": "? = genau ein Zeichen",
+      "search_help_whole": "Mit Wildcards muss das Muster den ganzen Text treffen.",
       "sort_default": "Standard-Reihenfolge",
       "sort_count": "Meiste Wiederholungen",
       "sort_avg": "Langsamste zuerst",
+      "filter_all_cases": "Alle Fälle",
       "cases_trained": "{trained}/{total} Fälle trainiert",
       "total_reps": "{count} Wiederholungen",
       "loading": "lädt…",

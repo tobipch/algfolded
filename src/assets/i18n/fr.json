@@ -27,7 +27,13 @@
       "all": "Tout",
       "none": "Aucun",
       "expand_all": "Tout développer",
-      "collapse_all": "Tout réduire"
+      "collapse_all": "Tout réduire",
+      "case_info_title": "Détails et algorithmes",
+      "no_alg": "aucun algorithme",
+      "avg_time_title": "Temps moyen · nombre de résolutions",
+      "avg_time": "temps moyen",
+      "solves": "résolutions",
+      "not_solved_yet": "Pas encore pratiqué"
     },
     "presets": {
       "presets": "Préréglages",
@@ -89,7 +95,8 @@
       "selfpaced_hint": "= cas suivant (enregistre le temps et démarre le suivant)",
       "didnt_know": "Je ne savais pas",
       "didnt_know_tooltip": "Prioriser temporairement ce cas pour qu'il se répète plus tôt",
-      "alg_detected_toast": "Algo reconnu : {alg} — enregistré comme votre algo pour ce cas"
+      "alg_detected_toast": "Algo reconnu : {alg} — enregistré comme votre algo pour ce cas",
+      "alg_added_toast": "Nouvel algo enregistré : {alg} — défini comme votre algo pour ce cas"
     },
     "stats_card": {
       "stats_title": "Historique :",
@@ -123,7 +130,12 @@
       "edit_note": "Modifier la note",
       "setup_moves": "Configuration",
       "algorithms_collection": "Algorithmes",
-      "choose_alg_hint": "(cliquez sur un algo pour le choisir)"
+      "choose_alg_hint": "(cliquez sur un algo pour le choisir)",
+      "add_alg_placeholder": "Ajouter votre propre algo (p. ex. R U R' U')",
+      "add_alg_btn": "Ajouter l'algorithme",
+      "custom_alg_title": "Votre propre algorithme",
+      "delete_alg_title": "Supprimer cet algorithme",
+      "play_alg_title": "Jouer sur le cube"
     },
     "hotkeys": {
       "hotkeys": "Raccourcis clavier",
@@ -195,6 +207,8 @@
     },
     "algset": {
       "ltct": "LTCT",
+      "t2c": "T2C",
+      "parities": "Parities",
       "twists3": "3-Twists",
       "commCorner": "Commutateurs de coins",
       "commEdge": "Commutateurs d'arêtes",
@@ -208,10 +222,18 @@
     },
     "stats": {
       "title": "Statistiques des cas",
-      "search_placeholder": "Rechercher des cas — jokers * et ?",
+      "search_placeholder": "Rechercher des cas",
+      "search_help_intro": "Recherche dans tous les cas du set (indépendamment du filtre) — par paire de lettres, notation des pièces ou identifiant complet.",
+      "search_help_examples": "Exemples",
+      "search_help_ex_pair": "paire de lettres",
+      "search_help_ex_piece": "notation des pièces",
+      "search_help_ex_star": "* = un nombre quelconque de caractères",
+      "search_help_ex_qmark": "? = exactement un caractère",
+      "search_help_whole": "Avec des jokers, le motif doit correspondre au texte entier.",
       "sort_default": "Ordre par défaut",
       "sort_count": "Plus de répétitions",
       "sort_avg": "Les plus lents d'abord",
+      "filter_all_cases": "Tous les cas",
       "cases_trained": "{trained}/{total} cas entraînés",
       "total_reps": "{count} répétitions",
       "loading": "chargement…",

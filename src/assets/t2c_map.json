@@ -1,0 +1,5657 @@
+{
+  "DBR BDL FUR": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "BDL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "LDB",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "DBL",
+        "RDB"
+      ],
+      "DBL": [
+        "DBL",
+        "RDB",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "BDR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "DBR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U D' R' U2 R D R' U' R D' R2 U R U2 R' U R2 U' D"
+    ]
+  },
+  "DBR BDL RUF": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "BDL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "LDB",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "DBL",
+        "DBR"
+      ],
+      "DBL": [
+        "DBL",
+        "DBR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "RDB",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "BDR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R D R' U' R U R' D' R' B D R2 D' R' U' R' U B'",
+      "D L' U' M' U2 r' D R2 U' R' U' R' D' R L D'",
+      "R2 U' R' U D' R2 U' R' U R U' D R U R' D' R D R'",
+      "F R' D R D2 R D' R' D' R D2 R' F' R U' R' U",
+      "D' R' U' F R D' R' D F' R' D' R2 D R' D R' U R",
+      "R' U R' D' R U' D R B2 U2 R U' R' U2 B2"
+    ]
+  },
+  "DBR DBL FUR": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "DBL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "BDL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "LDB",
+        "RDB"
+      ],
+      "DBL": [
+        "DBL",
+        "BDR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "DBR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "RDB",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "B U' R U R D R2 D' B' R D R U' R' U R D' R'",
+      "R D' R' D R U' R' U D' R' U' R U R2 U' D R U R2",
+      "U' R U R' U' R D' R' U R2 D R2 D' R D R U' R' U",
+      "D R' L' D R U R U R2 D' r U2 M U L D'"
+    ]
+  },
+  "DBR DBL RUF": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "DBL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "BDL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "LDB",
+        "DBR"
+      ],
+      "DBL": [
+        "DBL",
+        "RDB",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "BDR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "DBR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "f' U' D L D' L2 U L f L' B L B' R B R'",
+      "z U R2 D' R D R2 D2 R U R' D R U' D R' U' z'",
+      "R' F R' F' R2 U2 r' U' r U2 B U' R' U R B'",
+      "f' U' D L D L' U L D2 L2 D L D' L f",
+      "f R D B R S' R2 F' R' U' R2 B' R2",
+      "L B' l U L' U' M' U L' U2 L U L' U B",
+      "D L U f' L B L2 B2 L F L' B L S L' D'",
+      "D L U' D' R' U' R U2 D L U' L' U2 L' D' B2",
+      "U R' D2 R U' L U R' U R U R' U2 L' D2 R",
+      "R' D' R2 D R' D' R' D R D' R' L' U' R U L D R'",
+      "R U F' U' M' B2 R B' R' B' R B' r' F U' R' U",
+      "L2 U' L2 D L U2 L' U' L' U' L D' L U L U",
+      "L U R' U L U2 R U' L' U L U R' U R U L2"
+    ]
+  },
+  "DBR LDB FUR": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "LDB",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "DBL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "BDL",
+        "RDB"
+      ],
+      "DBL": [
+        "DBL",
+        "DBR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "RDB",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "BDR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "f D' R2 D2 R' U' R D' R' U D' R' D R' f'",
+      "R D' R' U' D R' U D' R' U D r B r' U R B2 U",
+      "U R2 U R2 D' R' U2 R U R U R' D R' U' R' U2",
+      "z U R U D' R' D' R U' R' D2 R2 D' R' D R2 U' z'",
+      "U' R D' R' U D2 r D' r D' R' D2 M D' r' D'",
+      "D' L' U L2 D' L' D2 L' U' l S D' S' M'",
+      "R f R F D F' R' D' R D R' U D' F' R F R' U' f'",
+      "U' L' U' L' D L U L U D' M L2 U2 M' U' L2",
+      "f' L' D L' D' L2 D2 L' U' L D' L' U D' f",
+      "U' L' U' L' D L' U L U L U2 L' D' L2 U L2",
+      "L U' R U F' U R' U R U R' U2 R U F U' R' L'",
+      "U' L' U' L' D L U L' F B' U2 F B U F2 U D'",
+      "R2 f D2 R D S' R2 S D' F' R F R f'",
+      "R2 B R2 U R S' U2 S R' F' U F U B'",
+      "R D f R S' U2 R U' f' U' f R U' R' F' D' R'",
+      "M2 U' D' f' R f U R' M' U r' D r U' r",
+      "R2 B U R U R U2 R' U R' F' U F U B'",
+      "R D B2 r B R' B2 R S D2 S' r' D' R",
+      "F D' R D R' U F2 R F' R' F2 U' R F' D' R' D",
+      "F R D' R' U F D F2 D' F D F U' F' D' R D R'",
+      "B R' U2 R S U F R' F' U' F R' f' U' B'",
+      "R2 B R2 U R F R2 S R' B' D' R' f'",
+      "F R' D' R' D R2 D' R' U' D R' U R f R F' R' f'",
+      "R2 B U R U R U2 R2 U F R' F' R U2 B'"
+    ]
+  },
+  "DBR LDB RUF": {
+    "corners": [
+      "DBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DBR": [
+        "DBR",
+        "LDB",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "DBL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "BDL",
+        "DBR"
+      ],
+      "DBL": [
+        "DBL",
+        "BDR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "DBR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "RDB",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U D' R2 U' R U2 R' U' R2 D R' U R D' R' U2 R U' D"
+    ]
+  },
+  "DFL BDL FUR": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "BDL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "LDB",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "DBL",
+        "LDF"
+      ],
+      "DBL": [
+        "DBL",
+        "LDF",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "FDL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "DFL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U D2 R' U2 R D R' U' R D' R2 U R U2 R' U R2 U' D2",
+      "U' R U D' R' D' R D R U' D' R' U R2 D R' D R'",
+      "L2 U L' U2 L U L2 D' L U' L' D L U2 L'"
+    ]
+  },
+  "DFL BDL RUF": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "BDL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "LDB",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "DBL",
+        "DFL"
+      ],
+      "DBL": [
+        "DBL",
+        "DFL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "LDF",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "FDL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "L U f' L B L2 B2 L F L' B L S L'",
+      "R' D F2 D' R L' U L' U L U L' U' L U L",
+      "f' D' L D L2 D2 L U L' D L U' D L f"
+    ]
+  },
+  "DFL BDR FUR": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "BDR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "DBR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "RDB",
+        "LDF"
+      ],
+      "DBR": [
+        "DBR",
+        "DFL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "LDF",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "FDL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "R U' D R U D' R2 D R2 U R' D' R U' R U' R' U R'",
+      "R' U' L' U' R U2 L U2 L' U M' B2 l",
+      "z D' R' U' R' D R2 U R2 U' R U D' R2 D z'"
+    ]
+  },
+  "DFL BDR RUF": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "BDR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "DBR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "RDB",
+        "DFL"
+      ],
+      "DBR": [
+        "DBR",
+        "FDL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "DFL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "LDF",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D R' D' R U R' D R2 U' D' R' U2 R U' R' U' R D R' U' D'",
+      "U R U R2 U' R2 D R U2 R' U' R' U' R D' R"
+    ]
+  },
+  "DFL DBL FUR": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "DBL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "BDL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "LDB",
+        "LDF"
+      ],
+      "DBL": [
+        "DBL",
+        "FDL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "DFL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "LDF",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U R' D' M S' D' S r U' R' D2 R' D' R2",
+      "L S' L' B' L F' L' B2 L2 B' L' f U' L'",
+      "L' F' L F U2 L' U' L2 U L' U' L' F U' F'",
+      "L' U' L' U L U' L' U' L U' M' F U2 F' l",
+      "L' U2 F' U L F' L' U2 F U F U L F2",
+      "U' D' R D' R' U D2 L B' L U' l' B2 M B' L'",
+      "U' R' D R U R U' R' U R' D' R' D' R' D' R D' R' D2 R'",
+      "U' L2 U' L' U2 L U' L' U' L' U' L D L' U' L D' L' U'",
+      "L U L' U' L U' L2 U2 L2 U D' L U L' U' D L2"
+    ]
+  },
+  "DFL DBL RUF": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "DBL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "BDL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "LDB",
+        "DFL"
+      ],
+      "DBL": [
+        "DBL",
+        "LDF",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "FDL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "DFL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "L' U' M' U2 r' D R2 U' R' U' R' D' R L",
+      "D R' U' R U R' D R U' R2 D' R2 D R' D' R' U R D'"
+    ]
+  },
+  "DFL DBR FUR": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "DBR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "RDB",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "BDR",
+        "LDF"
+      ],
+      "DBR": [
+        "DBR",
+        "FDL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "DFL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "LDF",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U R' D R U2 R D' R2 D R U R' U' D' R U D R' D'",
+      "U R' D R U2 R D' R2 D R D' R U D R' U' D' R U",
+      "U R' D R U2 R D' R2 D R U R U' D' R' U D R D'",
+      "U R' D R U2 R D' R2 D R D' R' U D R U' D' R' U",
+      "D' R2 D L U D' R2 D R' U R U L' B2"
+    ]
+  },
+  "DFL DBR RUF": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "DBR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "RDB",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "BDR",
+        "DFL"
+      ],
+      "DBR": [
+        "DBR",
+        "LDF",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "FDL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "DFL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "R U' R U R' U R' D R U' R2 D' R2 U' D R' U D' R'",
+      "U L' F' U D L U' L2 D' L U' L D L' D' L' F L",
+      "L' S R F R' f' D' F' R' F' R F' R' F2 R D L",
+      "U R' D R S R2 F R' F' R' F R' f' U' R' D' R",
+      "U R' D R' F R2 S R F' R' F R' f' U' R' D' R",
+      "F U R f' U' f U S R U' R2 U S' U2 F'"
+    ]
+  },
+  "DFL LDB FUR": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "LDB",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "DBL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "BDL",
+        "LDF"
+      ],
+      "DBL": [
+        "DBL",
+        "DFL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "LDF",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "FDL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "D R' U' R D R D' R2 D R2 U R' D' R U' R' U R D'",
+      "R' L' D R U R U R2 D' r U2 M U L"
+    ]
+  },
+  "DFL LDB RUF": {
+    "corners": [
+      "DFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "LDB",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "DBL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "BDL",
+        "DFL"
+      ],
+      "DBL": [
+        "DBL",
+        "FDL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "DFL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "LDF",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U D2 R2 U' R U2 R' U' R2 D R' U R D' R' U2 R U' D2",
+      "L U2 L' D' L U L' D L2 U' L' U2 L U' L2"
+    ]
+  },
+  "DFL RDB FUR": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "RDB",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "BDR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "DBR",
+        "LDF"
+      ],
+      "DBR": [
+        "DBR",
+        "LDF",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "FDL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "DFL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U D R D' R' U R U R' U2 R U D R2 D' R U' R' D R D'",
+      "R' D R' U R U R U2 R' D' R2 U R2 U' R' U'",
+      "R' D R U R' S R2 S' B2 U B2 D' R' U'",
+      "U2 L' D L U L' S' L2 F2 S U F2 D' L' U"
+    ]
+  },
+  "DFL RDB RUF": {
+    "corners": [
+      "DFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFL": [
+        "DFL",
+        "RDB",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "BDR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "DBR",
+        "DFL"
+      ],
+      "DBR": [
+        "DBR",
+        "DFL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "LDF",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "FDL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D R U' D' R' U D R U' R' D' R2 D R' U2 R' D' R U'"
+    ]
+  },
+  "DFR BDL FUR": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "BDL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "LDB",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "DBL",
+        "FDR"
+      ],
+      "DBL": [
+        "DBL",
+        "FDR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "RDF",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "DFR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U R D' R' U R U R' U2 R U D R2 D' R U' R' D R",
+      "D' R' D R' U R U R U2 R' D' R2 U R2 U' R' U' D"
+    ]
+  },
+  "DFR BDL RUF": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "BDL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "LDB",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "DBL",
+        "DFR"
+      ],
+      "DBL": [
+        "DBL",
+        "DFR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "FDR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "RDF",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R U' D' R' U D R U' R' D' R2 D R' U2 R' D' R U' D"
+    ]
+  },
+  "DFR BDR FUR": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "BDR",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "DBR",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "RDB",
+        "FDR"
+      ],
+      "DBR": [
+        "DBR",
+        "DFR",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "FDR",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "RDF",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "D' L' U R U2 R' U L U' D R U' R' U R U2 R'",
+      "R U' D R U D' R2 D R2 U' R' D' R U R U' R' U R'",
+      "R2 U' R U2 R' D r' U2 r D' R2 U' R' U' R'",
+      "r' F R' U M U' R' F' R' U' R' U2 r U' R' U' r",
+      "R B' U' D' R D R2 D' R D R2 U B U' R' U R'",
+      "R D R D' R D R2 U' D' F' R U R U' R' F U R'",
+      "U' F R2 f' R U' R' f R' D R' D' F' R U R'",
+      "U' R' U R F' R' U' R U' F R' U' R F' U2 F"
+    ]
+  },
+  "DFR BDR RUF": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "BDR",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "DBR",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "RDB",
+        "DFR"
+      ],
+      "DBR": [
+        "DBR",
+        "RDF",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "DFR",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "FDR",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "U R2 U' R U2 R' U' R2 D R' U R D' R' U2 R U'"
+    ]
+  },
+  "DFR DBL FUR": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DBL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "BDL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "LDB",
+        "FDR"
+      ],
+      "DBL": [
+        "DBL",
+        "RDF",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "DFR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "FDR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U D' R' D R U2 R D' R2 D R U R' U' D' R U D R'"
+    ]
+  },
+  "DFR DBL RUF": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DBL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "BDL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "LDB",
+        "DFR"
+      ],
+      "DBL": [
+        "DBL",
+        "FDR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "RDF",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "DFR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R' D' R U D R2 U' R2 U D' R' D R U R U' R' U2"
+    ]
+  },
+  "DFR DBR FUR": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DBR",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "RDB",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "BDR",
+        "FDR"
+      ],
+      "DBR": [
+        "DBR",
+        "RDF",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "DFR",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "FDR",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "D' R' U' R D R D' R2 D R2 U R' D' R U' R' U R D"
+    ]
+  },
+  "DFR DBR RUF": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DBR",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "RDB",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "BDR",
+        "DFR"
+      ],
+      "DBR": [
+        "DBR",
+        "FDR",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "RDF",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "DFR",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "R U' F' R U R' U' R' F U D R2 D' R' D R' D' R'",
+      "R U R U R2 D r' U2 r D' R U2 R' U R2",
+      "U R F R' F' U2 R U R2 U' R U R F' U F U'",
+      "R U2 R' U' R U R' U D' L' U' R U2 R' U' L D",
+      "R' U2 R U R' U2 D' R U R' U' D L U' R U L'",
+      "U R U R U' R' U R U R' U M' F' U2 F r' U'",
+      "R' D' L U F2 U' L' U D R U2 R U R2 U' R",
+      "R' U' D r D2 r' U D' R2 D' r' F' R' F r D R",
+      "L D M S D S' l' U L D2 L D L2 U'",
+      "R U' R' B R U R' U B' R U R' B U2 B' U",
+      "U R' U L' D' R U R' D R2 U' L U R2 U2 R",
+      "R U' R U R' U' R' D R D B2 D' B2 R' U D' R'",
+      "R U' R U B' U' R2 D' R' D R2 D' R' U D B R'",
+      "r' U R U r' U2 R U R F R U M' U' R F' r"
+    ]
+  },
+  "DFR DFL FUR": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DFL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "LDF",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "FDL",
+        "FDR"
+      ],
+      "DFL": [
+        "DFL",
+        "RDF",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "DFR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "FDR",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "L' U R U2 R' U L U' D R U' R' U R U2 R' D'",
+      "U' L2 U L2 D' L' U2 L U L U L' D L' U' L'",
+      "R L' U' R' U R' U' R U R2 U' D' R U R' D R' L",
+      "R L' U' R' U R' U' R D' R' U D R2 D' R' D R' L",
+      "U R' U' R' D R' U R U R U2 R' D' R2 U R2 U2",
+      "U R U' D2 R' U' D R U' R' D' R U D2 R' U' R U' R' U2",
+      "U' F' U' R' F' U' S' U2 f R U R2 F R2 U",
+      "F' R' U F' R F' R' D' F r U' r' D F2 U' R",
+      "U' L' U' F' U' F U L U D L' F' L U' L' F L U D'",
+      "F' R' U F' R F' R' D' F U' D F2 U' R2 U R' F'",
+      "R' F R' U' R' D R2 U R2 U' R U D' R2 F' R",
+      "U' R' U R2 f' r' D R' D' R2 M' S D' F' D F R'",
+      "F R' F' R2 F' r' U F' R F' R' D' F U' D M' F",
+      "M S D' F R' D R D f' R U' R U R2 M'",
+      "F' R' F R2 M' D' R U' R' U D R2 M U' R' U R",
+      "L' F' L' f L2 F' L' F' U' F' L' S' L F' U",
+      "M F' R' F M' U' R U R B' R U' R U R2 B",
+      "M F' R' F M' U' R U R f' U L' U L U2 f",
+      "M F' R' F U' R U R B' R U' R U R2 B M'",
+      "z U' R2 D R' U D' R' D' R U' R' D2 R2 D' R U z'",
+      "F R B R' D R U' R' U' D' R U' R' U2 F' R B' R'",
+      "R U2 R' F U' F' R U' R' F' R' D R' D' R F R U'",
+      "D' B2 U' F' B L2 F B L U L D L' U' L'"
+    ]
+  },
+  "DFR DFL RUF": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "DFL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "LDF",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "FDL",
+        "DFR"
+      ],
+      "DFL": [
+        "DFL",
+        "FDR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "RDF",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "DFR",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "R' U' R U R' D R U' R2 D' R2 D R' D' R' U R"
+    ]
+  },
+  "DFR FDL FUR": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "FDL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "DFL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "LDF",
+        "FDR"
+      ],
+      "DFL": [
+        "DFL",
+        "DFR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "FDR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "RDF",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "R' U' R D R D' R2 D R2 U R' D' R U' R' U R"
+    ]
+  },
+  "DFR FDL RUF": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "FDL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "DFL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "LDF",
+        "DFR"
+      ],
+      "DFL": [
+        "DFL",
+        "RDF",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "DFR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "FDR",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U D R2 U' R U2 R' U' R2 D R' U R D' R' U2 R U' D'",
+      "L' U' D' M' U2 r' D R2 U' R' U' R' D' R D L"
+    ]
+  },
+  "DFR LDB FUR": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "LDB",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "DBL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "BDL",
+        "FDR"
+      ],
+      "DBL": [
+        "DBL",
+        "DFR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "FDR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "RDF",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U2 R U R' U' R' D' R U' D R2 U R2 U' D' R' D R",
+      "U2 R U R' U' R' D' R U' D R2 D' R U D R2 U' R",
+      "U D' R U' D R D' R2 D R' U R U R U' R' U' R2 U'"
+    ]
+  },
+  "DFR LDB RUF": {
+    "corners": [
+      "DFR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "LDB",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "DBL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "BDL",
+        "DFR"
+      ],
+      "DBL": [
+        "DBL",
+        "RDF",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "DFR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "FDR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R' D' R U R' D R2 U' D' R' U2 R U' R' U' R D R' U'",
+      "U D' R U R2 U' R2 D R U2 R' U' R' U' R D' R D",
+      "U L D' L U' L' U' L' U2 L D L2 U' L2 U L",
+      "R2 F D' R D F' R D' R D B R' U' R U B'"
+    ]
+  },
+  "DFR LDF FUR": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "LDF",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "FDL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "DFL",
+        "FDR"
+      ],
+      "DFL": [
+        "DFL",
+        "FDR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "RDF",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "DFR",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "U D R' U2 R D R' U' R D' R2 U R U2 R' U R2 U' D'",
+      "U' D' R U D' R' D' R D R U' D' R' U R2 D R' D R' D",
+      "L' D' R' D R U R U R2 D' r U2 M U D L"
+    ]
+  },
+  "DFR LDF RUF": {
+    "corners": [
+      "DFR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "LDF",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "FDL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "DFL",
+        "DFR"
+      ],
+      "DFL": [
+        "DFL",
+        "DFR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "FDR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "RDF",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "R' F R2 U' D R' U R2 U' R2 D' R U R F' R",
+      "U2 R2 U' R2 D R U2 R' U' R' U' R D' R U R U'",
+      "D R U2 R' U' R U R' U D' L' U' R U2 R' U' L",
+      "U D R' U R U' R U R' U R' U' D' R U R' D R U' D' R U' R'",
+      "L' U L' U' L' U' L D' L2 D L' U D' L' D L2 U L2",
+      "L' U D2 L U D' L' U L D L' U' D2 L U L' U L U",
+      "L2 U D' L U2 L2 U' L U' L' U' L D L2 U' L' U",
+      "U' R U F R' U' R U F' R2 F R F' R' D' F D R",
+      "R D' R U' R' U D R2 U' R' U M F' R F M'"
+    ]
+  },
+  "DFR RDB FUR": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "RDB",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "BDR",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "DBR",
+        "FDR"
+      ],
+      "DBR": [
+        "DBR",
+        "FDR",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "RDF",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "DFR",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U R' U2 R D R' U' R D' R2 U R U2 R' U R2 U'"
+    ]
+  },
+  "DFR RDB RUF": {
+    "corners": [
+      "DFR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "DFR": [
+        "DFR",
+        "RDB",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "BDR",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "DBR",
+        "DFR"
+      ],
+      "DBR": [
+        "DBR",
+        "DFR",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "FDR",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "RDF",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D' R' U' R U R' D R U' R2 D' R2 D R' D' R' U R D",
+      "U2 R2 U' R' U2 R' U' D R' U' R D' R U R U'",
+      "U R U R2 U' R2 D' R U2 R' U' D2 R' U' R D' R",
+      "R2 f' U F D' R U' R' F' U' F D f R' F' R'",
+      "U f R D R D' R' D R' D' R D f' U' B R' B'",
+      "R' U F2 D' F' D F' U2 R U R F R' F' R'",
+      "R' F D R U' R D' R' U R' F' U' R U R F R' F' R'",
+      "R' F D F' R2 D' R2 U' R D R' F D' F' R U R'",
+      "U R U' R' U' F' R' U R U' F U' R U' R' U' R' U' R",
+      "R' U' F R D' R' D F' R' D' R2 D R' D R' U R D'",
+      "B R' U' R' U' D R' U R D' R2 U' R2 U2 R B'",
+      "R' D' R U R' D R f D R' D' R2 D R' D' R' f' U'",
+      "R' F R F' R' U F R F' R' D' r U' r' U' D R",
+      "M' U R U' R' f R D R' D' F' U R' U' S' M"
+    ]
+  },
+  "UBL BDL FUR": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "BDL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "LDB",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "DBL",
+        "LUB"
+      ],
+      "DBL": [
+        "DBL",
+        "LUB",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "BUL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "UBL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U2 R D' R' U D' R U2 R' U R U R' U D R D R' U",
+      "U' L U' L' U2 L2 U' l' B L' B' M",
+      "S' L' B' L F' L' B2 L2 B' L' f U'",
+      "U' D M F' L' F l' U' L2 U2 L' U' L D'",
+      "U' L' F U' F' U' F L D' L' U L U D L' F' L",
+      "L2 F' L' U' L F L' F R' F' R U R U2 R' U L'",
+      "U L' U' F U L U2 L' U L U L' U F' U L U2",
+      "U' L U' L' U L' U' L D L' U' L D' L' U2 L U L U' L'",
+      "U L' U' L U' L2 U2 L2 U D' L U L' U' D L'",
+      "L U L U L' U L D' L U2 L' U' D L2 U' L U",
+      "D R' D R U D R' U R U R' U2 R U D' R' D' R U' D'",
+      "z R' U R' U' R2 U2 R' D' R U' R' U' D z'"
+    ]
+  },
+  "UBL BDL RUF": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "BDL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "LDB",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "DBL",
+        "UBL"
+      ],
+      "DBL": [
+        "DBL",
+        "UBL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "LUB",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "BUL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "D2 R' D' R U R' D R2 U' R' U2 R U' R' U2 D2",
+      "U2 L' D' L U L' D L2 U' L' U2 L U' L'"
+    ]
+  },
+  "UBL BDR FUR": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "BDR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "DBR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "RDB",
+        "LUB"
+      ],
+      "DBR": [
+        "DBR",
+        "UBL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "LUB",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "BUL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U' R D R' U' R D' R2 U R U2 R' U R U'"
+    ]
+  },
+  "UBL BDR RUF": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "BDR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "DBR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "RDB",
+        "UBL"
+      ],
+      "DBR": [
+        "DBR",
+        "BUL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "UBL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "LUB",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "R U F' U' R' U2 R U' R' U' R U' F U' R' U",
+      "U S R B R' F R B2 R2 B R f'",
+      "R' U F R2 S R' D R' D' R' f' R2 U' R'",
+      "z x' R U D' R U R' D R U2 R2 U R U' x z'",
+      "U R' U' R U R' U R U' R' U2 L U' R U L'",
+      "R D R' D' R' U2 R U' R' U' R U2 D R D' R' U",
+      "R U R' U R2 U2 R2 U' D R' U' R U D' R U'"
+    ]
+  },
+  "UBL DBL FUR": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DBL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "BDL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "LDB",
+        "LUB"
+      ],
+      "DBL": [
+        "DBL",
+        "BUL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "UBL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "LUB",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U2 D2 R U R' U2 R U R2 D' R U' R' D R D2"
+    ]
+  },
+  "UBL DBL RUF": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DBL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "BDL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "LDB",
+        "UBL"
+      ],
+      "DBL": [
+        "DBL",
+        "LUB",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "BUL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "UBL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U D' R' U' R U2 R' U' R2 D R' U R D' R' U D"
+    ]
+  },
+  "UBL DBR FUR": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DBR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "RDB",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "BDR",
+        "LUB"
+      ],
+      "DBR": [
+        "DBR",
+        "BUL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "UBL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "LUB",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U2 D' R U R' U2 R U R2 D' R U' R' D R D"
+    ]
+  },
+  "UBL DBR RUF": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DBR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "RDB",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "BDR",
+        "UBL"
+      ],
+      "DBR": [
+        "DBR",
+        "LUB",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "BUL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "UBL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "U R' U' R U2 R' U' R2 D R' U R D' R' U"
+    ]
+  },
+  "UBL DFL FUR": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DFL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "LDF",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "FDL",
+        "LUB"
+      ],
+      "DFL": [
+        "DFL",
+        "BUL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "UBL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "LUB",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "U2 D R U R' U2 R U R2 D' R U' R' D R D'"
+    ]
+  },
+  "UBL DFL RUF": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DFL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "LDF",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "FDL",
+        "UBL"
+      ],
+      "DFL": [
+        "DFL",
+        "LUB",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "BUL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "UBL",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U D2 R' U' R U2 R' U' R2 D R' U R D' R' U D2",
+      "U' L' U' L U2 L' U' L2 D L' U L D' L' U'"
+    ]
+  },
+  "UBL DFR FUR": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DFR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "FDR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "RDF",
+        "LUB"
+      ],
+      "DFR": [
+        "DFR",
+        "BUL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "UBL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "LUB",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "U2 R U R' U2 R U R2 D' R U' R' D R"
+    ]
+  },
+  "UBL DFR RUF": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "DFR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "FDR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "RDF",
+        "UBL"
+      ],
+      "DFR": [
+        "DFR",
+        "LUB",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "BUL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "UBL",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "U D R' U' R U2 R' U' R2 D R' U R D' R' U D'"
+    ]
+  },
+  "UBL FDL FUR": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "FDL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "DFL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "LDF",
+        "LUB"
+      ],
+      "DFL": [
+        "DFL",
+        "UBL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "LUB",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "BUL",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "U' D2 R D R' U' R D' R2 U R U2 R' U R U' D2",
+      "U L D L' U' L D' L2 U L U2 L' U L U"
+    ]
+  },
+  "UBL FDL RUF": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "FDL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "DFL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "LDF",
+        "UBL"
+      ],
+      "DFL": [
+        "DFL",
+        "BUL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "UBL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "LUB",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U R' D R U' D R' U2 R U' R' U' R U' D' R' D' R",
+      "L' U L U2 L2 U l F' L F M' U"
+    ]
+  },
+  "UBL FDR FUR": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "FDR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "RDF",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "DFR",
+        "LUB"
+      ],
+      "DFR": [
+        "DFR",
+        "LUB",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "BUL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "UBL",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "R F' R' U' D R U2 R' U R U R' U' D' R F R' U'"
+    ]
+  },
+  "UBL FDR RUF": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "FDR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "RDF",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "DFR",
+        "UBL"
+      ],
+      "DFR": [
+        "DFR",
+        "UBL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "LUB",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "BUL",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "R' D' R U R' D R2 U' R' U2 R U' R' U2"
+    ]
+  },
+  "UBL LDB FUR": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "LDB",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "DBL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "BDL",
+        "LUB"
+      ],
+      "DBL": [
+        "DBL",
+        "UBL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "LUB",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "BUL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U' D' R D R' U' R D' R2 U R U2 R' U R U' D"
+    ]
+  },
+  "UBL LDB RUF": {
+    "corners": [
+      "UBL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "LDB",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "DBL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "BDL",
+        "UBL"
+      ],
+      "DBL": [
+        "DBL",
+        "BUL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "UBL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "LUB",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U' R D' R' U' D' R U' R' U' R U2 R' U' D R D R' U2",
+      "U f' L B L2 B2 L F L' B L S",
+      "L' F L U' D' L' U' L D L' F' U F U F' L U",
+      "L U l F U F2 U' M' F' L' U L F L2",
+      "M' B L B' l U L2 U2 L U L' U",
+      "U R U R' U D2 R U D' R' U R D R' U' D2 R U R'",
+      "D' R D R' D' R' U2 R U' R' U' R U2 D R D' R' U D",
+      "U F R F' U R' U D2 R U2 F R' F' R' D2 R",
+      "R' U R' B R U' R U2 R2 B' R2 F' U F U2",
+      "L U2 L' D' L U2 L' D L U L U2 L' U L U L2",
+      "x' U' F R' U F R U' F' r' U' R U r U l'",
+      "z U D' R U R' D R U2 R2 U R U' R z'"
+    ]
+  },
+  "UBL LDF FUR": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "LDF",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "FDL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "DFL",
+        "LUB"
+      ],
+      "DFL": [
+        "DFL",
+        "LUB",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "BUL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "UBL",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "R' D R U D R' U R U R' U2 R U D' R' D' R U'",
+      "U' M F' L' F l' U' L2 U2 L' U' L",
+      "U' D R' D' R D R U2 R' U R U R' U2 D' R' D R D'",
+      "U' L' U' L U L U2 L' D' L U' L' D L U' L' U L' U' L",
+      "U' S U S' D R F U R U' R' F' M' U r' D'"
+    ]
+  },
+  "UBL LDF RUF": {
+    "corners": [
+      "UBL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "LDF",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "FDL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "DFL",
+        "UBL"
+      ],
+      "DFL": [
+        "DFL",
+        "UBL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "LUB",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "BUL",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "D R' D' R U R' D R2 U' R' U2 R U' R' U2 D'"
+    ]
+  },
+  "UBL RDB FUR": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "RDB",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "BDR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "DBR",
+        "LUB"
+      ],
+      "DBR": [
+        "DBR",
+        "LUB",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "BUL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "UBL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U' R U F' U R' U R U R' U2 R U F U' R'",
+      "f R' B' R2 B2 R' F' R B' R' S' U'",
+      "U M' B' R' B r' U' R2 U2 R' U' R U2",
+      "U R2 U' R' U R F' U2 F B' U' R' U R' B U' R",
+      "U' R D R' U2 D' R' U R U R' U2 R D R D' R'",
+      "z R U D' R' D' R U' R' D2 R2 D' R' D R2 z'"
+    ]
+  },
+  "UBL RDB RUF": {
+    "corners": [
+      "UBL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "RDB",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "BDR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "DBR",
+        "UBL"
+      ],
+      "DBR": [
+        "DBR",
+        "UBL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "LUB",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "BUL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D' R' D' R U R' D R2 U' R' U2 R U' R' U2 D"
+    ]
+  },
+  "UBL RDF FUR": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "RDF",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "DFR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "FDR",
+        "LUB"
+      ],
+      "DFR": [
+        "DFR",
+        "UBL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "LUB",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "BUL",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "U' D R D R' U' R D' R2 U R U2 R' U R U' D'"
+    ]
+  },
+  "UBL RDF RUF": {
+    "corners": [
+      "UBL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBL": [
+        "UBL",
+        "RDF",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "DFR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "FDR",
+        "UBL"
+      ],
+      "DFR": [
+        "DFR",
+        "BUL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "UBL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "LUB",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "U R F' R' U D R U' R' U' R U2 R' U D' R F R'",
+      "R' U R2 U' D M' B r' U R U' B2 D' R'",
+      "R U' B2 U B2 M' B r' U R U' B2 R'",
+      "U2 M F R F' r U R2 U2 R U R' U'",
+      "R' D' R U2 D R U' R' U' R U2 R' D' R' D R U",
+      "M' U R U2 F r' U r F' U r' D R U R' U' D'"
+    ]
+  },
+  "UBR BDL FUR": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BDL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "LDB",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "DBL",
+        "BUR"
+      ],
+      "DBL": [
+        "DBL",
+        "BUR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "RUB",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "UBR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U' D R U R D R2 D' R U' D R D' R' U R U' R' U D'"
+    ]
+  },
+  "UBR BDL RUF": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BDL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "LDB",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "DBL",
+        "UBR"
+      ],
+      "DBL": [
+        "DBL",
+        "UBR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "BUR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "RUB",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R2 D' R2 U' D' R U R' U' D R D R' D' R' U D",
+      "D R' D R U R' D' R2 U' R' U2 R L U' R' U L' U D'",
+      "S' L' U' L' U L F' U' L' U L' U' L U L' f",
+      "R U' R2 U R D' R' D f R D' R2 D2 R f' R'"
+    ]
+  },
+  "UBR BDR FUR": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BDR",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "DBR",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "RDB",
+        "BUR"
+      ],
+      "DBR": [
+        "DBR",
+        "UBR",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "BUR",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "RUB",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "D M U2 r D' R2 U R U R D R' U D'"
+    ]
+  },
+  "UBR BDR RUF": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BDR",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "DBR",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "RDB",
+        "UBR"
+      ],
+      "DBR": [
+        "DBR",
+        "RUB",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "UBR",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "BUR",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "U R' U M F R F' r U R2 U2 R",
+      "R B U B' R' S U' R2 U R F R f'",
+      "U' R' U D' R U' R U R' D R U' D' R2 D R2 U",
+      "U' R' U R U' R U R' D R U' D' R2 D R D' R U",
+      "U' R' U D' R U' R U R' U' R2 U D R' U' R2 U",
+      "U R2 U' R' D' R U R' D R2 U R U R' U2 R",
+      "U' D2 R U R' U' R D R' U D' R' D R2 D' R' U' R' U D2"
+    ]
+  },
+  "UBR BUL FUR": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BUL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "UBL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "LUB",
+        "BUR"
+      ],
+      "UBL": [
+        "UBL",
+        "UBR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "BUR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "RUB",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "R U R' U R U R' U2 R L U' R' U L'"
+    ]
+  },
+  "UBR BUL RUF": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "BUL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "UBL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "LUB",
+        "UBR"
+      ],
+      "UBL": [
+        "UBL",
+        "RUB",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "UBR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "BUR",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "R U2 R' U' R2 D R' U R D' R' U2 R' U'",
+      "U R U R' F' R U R' U' R' F R2 U R' U' R U' R'"
+    ]
+  },
+  "UBR DBL FUR": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DBL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "BDL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "LDB",
+        "BUR"
+      ],
+      "DBL": [
+        "DBL",
+        "RUB",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "UBR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "BUR",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U' D' R D R D' R' U D' R U' R' U D R2 D R2",
+      "R f R D B R' f' U' R U R2 U' B' R",
+      "R f R' F' R' F D R D R D2 R' f' R"
+    ]
+  },
+  "UBR DBL RUF": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DBL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "BDL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "LDB",
+        "UBR"
+      ],
+      "DBL": [
+        "DBL",
+        "BUR",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "RUB",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "UBR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U' R D' R' U' R' U' R2 D r' U2 M'"
+    ]
+  },
+  "UBR DBR FUR": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DBR",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "RDB",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "BDR",
+        "BUR"
+      ],
+      "DBR": [
+        "DBR",
+        "RUB",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "UBR",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "BUR",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U' R D R D' R' U D' R U' R' U D R2 D R2 D'",
+      "R D r' U2 r D' R2 U R U R D R' U R D' R'",
+      "U R U R U R' U2 R U R2 D' R U' R' D R U R' U'"
+    ]
+  },
+  "UBR DBR RUF": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DBR",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "RDB",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "BDR",
+        "UBR"
+      ],
+      "DBR": [
+        "DBR",
+        "BUR",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "RUB",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "UBR",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "U' D R D' R' U' R' U' R2 D r' U2 M' D'"
+    ]
+  },
+  "UBR DFL FUR": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DFL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "LDF",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "FDL",
+        "BUR"
+      ],
+      "DFL": [
+        "DFL",
+        "RUB",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "UBR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "BUR",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "U' R D' R' U' D' R2 U' R2 D M U2 r D R'",
+      "f R2 D R D' R f' U R U R2 D R U' R' D' R",
+      "U L D L' U' L D' L' f U' R U R2 U' R U R f'",
+      "R U R' U R L' U R' U2 R U L U2 R' U",
+      "R U' r' F M' U M F' r U R' U' L' U' L U2",
+      "R' D R U' D' F' R U2 R U R' U2 F U R'",
+      "D R' U2 R2 U R2 D R' U' R U D' R U R D'",
+      "R U R' U M F l' U2 R U L U2 R' U",
+      "U' R U R U' R U R' U' D R' U D' R2 D R' D' R",
+      "z D' R2 D2 R' U' R U D' R' D' R U' R' U R' D R' z'",
+      "z R' D R' D2 R U' R' U D2 R D' R U' R' U z'",
+      "z D R' U' R U D' R U' D R' U R D' R' U' R' U R2 z'"
+    ]
+  },
+  "UBR DFL RUF": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DFL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "LDF",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "FDL",
+        "UBR"
+      ],
+      "DFL": [
+        "DFL",
+        "BUR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "RUB",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "UBR",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U D R U' R' U2 R U' R' D' R' D R U2 R' D' R",
+      "U' D' R D' R' U' R' U' R2 D r' U2 M' D"
+    ]
+  },
+  "UBR DFR FUR": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DFR",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "FDR",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "RDF",
+        "BUR"
+      ],
+      "DFR": [
+        "DFR",
+        "RUB",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "UBR",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "BUR",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "R' U' R2 D' R2 D R2 U R' D' R U' D R' U R",
+      "U2 R' U R U F' R U R2 U R2 U2 R' F U"
+    ]
+  },
+  "UBR DFR RUF": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "DFR",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "FDR",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "RDF",
+        "UBR"
+      ],
+      "DFR": [
+        "DFR",
+        "BUR",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "RUB",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "UBR",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "U R U' R' U2 R U' R' D' R' D R U2 R' D' R D",
+      "U L D' L' U' L' U' L2 D l' U2 M U2"
+    ]
+  },
+  "UBR FDL FUR": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FDL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "DFL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "LDF",
+        "BUR"
+      ],
+      "DFL": [
+        "DFL",
+        "UBR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "BUR",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "RUB",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "R' D R U2 R' D' R D R U R' U2 R U R' U' D'",
+      "D' M U2 r D' R2 U R U R D R' U D"
+    ]
+  },
+  "UBR FDL RUF": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FDL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "DFL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "LDF",
+        "UBR"
+      ],
+      "DFL": [
+        "DFL",
+        "RUB",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "UBR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "BUR",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U' R U R' U' R D R' U D' R' D R2 D' R' U' R' U"
+    ]
+  },
+  "UBR FDR FUR": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FDR",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "RDF",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "DFR",
+        "BUR"
+      ],
+      "DFR": [
+        "DFR",
+        "BUR",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "RUB",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "UBR",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "U' D' R U R D R2 D' R U' D R D' R' U R U' R' U D"
+    ]
+  },
+  "UBR FDR RUF": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FDR",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "RDF",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "DFR",
+        "UBR"
+      ],
+      "DFR": [
+        "DFR",
+        "UBR",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "BUR",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "RUB",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "R' U' R U D' R' D R U' R2 D' R2 D R2 U R",
+      "D' R' D R U R' D' R2 U' R' U2 R L U' R' U L' U D",
+      "R' U' F R D' R' D F' R' D' R2 D R2 U R",
+      "D R' B R2 B' R' D' r' D F D' F' R D' M'",
+      "R' U' R' U' D R' U R D' R2 U' R2 U2 R",
+      "R' U' S' U' f R F' R2 B' R2 B R' U R",
+      "U S U R2 U' R' U' F' U F R' U S' U",
+      "U R' F R U R' U' R' F' R2 F' U' R' U2 R U F",
+      "U R2 U' F U' R' U' R U F' R' U' R U' R' U R' U'"
+    ]
+  },
+  "UBR FUL FUR": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FUL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "LUF",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "UFL",
+        "BUR"
+      ],
+      "UFL": [
+        "UFL",
+        "BUR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "RUB",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "UBR",
+        "FUL"
+      ]
+    },
+    "algs": [
+      "f U' R' U R' U' R2 U2 R' D' R U' R' D f'",
+      "U' F U' R' U R U F' R U R2 U R2 U2 R' U",
+      "U R' F' U' F U R S' R U R' S U R U2 R'",
+      "R' U2 R D' R U R' D R2 U' R U R U R",
+      "R' U2 R2 U R' D R2 U' R U R2 D' R' U R",
+      "U' R' U' F D R U' R' U' R U2 R' U' D' F' U2 R",
+      "R U R' D R' U R D' R U' S' U2 S U R' U",
+      "U' f R S' R' D' R U R' U r U r' U' D R U' F'",
+      "F R U F' U' R2 D' F D R2 F2 R2 F' R F'"
+    ]
+  },
+  "UBR FUL RUF": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "FUL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "LUF",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "UFL",
+        "UBR"
+      ],
+      "UFL": [
+        "UFL",
+        "UBR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "BUR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "RUB",
+        "UFL"
+      ]
+    },
+    "algs": [
+      "U' R U R' U r' F R F' M' U' R U' R'"
+    ]
+  },
+  "UBR LDB FUR": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LDB",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "DBL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "BDL",
+        "BUR"
+      ],
+      "DBL": [
+        "DBL",
+        "UBR",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "BUR",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "RUB",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "M U2 r D' R2 U R U R D R' U"
+    ]
+  },
+  "UBR LDB RUF": {
+    "corners": [
+      "UBR",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LDB",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "DBL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "BDL",
+        "UBR"
+      ],
+      "DBL": [
+        "DBL",
+        "RUB",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "UBR",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "BUR",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U' D R U R' U' R D R' U D' R' D R2 D' R' U' R' U D'",
+      "U D' R' U M F R F' r U R2 U2 R D"
+    ]
+  },
+  "UBR LDF FUR": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LDF",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "FDL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "DFL",
+        "BUR"
+      ],
+      "DFL": [
+        "DFL",
+        "BUR",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "RUB",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "UBR",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "U' R U R D R2 D' R U' D R D' R' U R U' R' U",
+      "l U2 r D' R2 U R U R D R' U L'"
+    ]
+  },
+  "UBR LDF RUF": {
+    "corners": [
+      "UBR",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LDF",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "FDL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "DFL",
+        "UBR"
+      ],
+      "DFL": [
+        "DFL",
+        "UBR",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "BUR",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "RUB",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "R' D R U R' D' R2 U' R' U2 R L U' R' U L' U",
+      "U' R U2 r' F' R' F2 R F' M' U' R U' R'",
+      "U2 L' U L f U' R U R' f' M F' L F l'",
+      "R2 M' D2 M' D' r2 D' R B2 R' D R B2 R'",
+      "R' D R D' R2 U' D R U D' R U' R' U R' U' R' U",
+      "F R U' F U' R' U2 R U F' U' R' U R U' R' F' U'",
+      "U' R' D R F' U' r B2 r' U' r B' r' F U R' D' R",
+      "D R' U' F R D' R' D F' R' D' R2 D R2 U R D'",
+      "D2 R' B R2 B' R' D' r' D F D' F' R D' M' D'",
+      "S U' R U D' R D' R' D2 R F D' R' f' R'",
+      "U2 L' U L U R U' r' F M' U' M F' r U R'",
+      "R D' r' U2 M' D' R2 U R2 U D R D R' U",
+      "U L2 D' L' U2 L' D L U2 D' L D L' U L U' L' U'",
+      "f D R2 U' R2 D' R2 D R' D' R' U D R2 D' R f'",
+      "f D R2 U' R2 D' R2 D R' U R2 U' D' R U R f'",
+      "M' U' L' F' L U L' F l U F' R U' R' U' F",
+      "z U' R U R' D R' U' D2 R U R' D2 R D' R z'",
+      "U R U R2 U' R2 D R' U' R' U R2 U' R2 U2 D' R U"
+    ]
+  },
+  "UBR LUB FUR": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LUB",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "BUL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "UBL",
+        "BUR"
+      ],
+      "UBL": [
+        "UBL",
+        "BUR",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "RUB",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "UBR",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "U R U2 R D R' U' R D' R2 U R U2 R'",
+      "R U R' U R U' R2 F' R U R U' R' F R U' R' U'"
+    ]
+  },
+  "UBR LUB RUF": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LUB",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "BUL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "UBL",
+        "UBR"
+      ],
+      "UBL": [
+        "UBL",
+        "UBR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "BUR",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "RUB",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "U R' U R U R' U2 R U R D R' U2 R D' R' U",
+      "U R U R' U R U2 R2 U L U' R U L' U'",
+      "U R' F R U R' F' M U' F2 U F r"
+    ]
+  },
+  "UBR LUF FUR": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LUF",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "UFL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "FUL",
+        "BUR"
+      ],
+      "UFL": [
+        "UFL",
+        "UBR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "BUR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "RUB",
+        "FUL"
+      ]
+    },
+    "algs": [
+      "R U' R2 D' r U2 r' D R2 U' R' U' R U' R' U",
+      "R' U' R U' R' U' R2 D r' U2 r D' R2 U' R U",
+      "U R U2 R' U2 R U R2 D' R U' R' D R U2 R U' R' U'"
+    ]
+  },
+  "UBR LUF RUF": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "LUF",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "UFL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "FUL",
+        "UBR"
+      ],
+      "UFL": [
+        "UFL",
+        "RUB",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "UBR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "BUR",
+        "UFL"
+      ]
+    },
+    "algs": [
+      "U' R U2 R2 U' R2 U' R' F U' R' U' R U F' U",
+      "R U2 R' U' S' R U' R' S R' U' F' U F R U'",
+      "f D' R U R' D R U2 R2 U R U' R U f'"
+    ]
+  },
+  "UBR RDB FUR": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "RDB",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "BDR",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "DBR",
+        "BUR"
+      ],
+      "DBR": [
+        "DBR",
+        "BUR",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "RUB",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "UBR",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "R' U2 R2 U' r' F R' F' M' U' R U'"
+    ]
+  },
+  "UBR RDB RUF": {
+    "corners": [
+      "UBR",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "RDB",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "BDR",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "DBR",
+        "UBR"
+      ],
+      "DBR": [
+        "DBR",
+        "UBR",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "BUR",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "RUB",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D R2 D' R2 U' D' R U R' U' D R D R' D' R' U",
+      "R D R' U' R D' R' U' R' U' R2 D r' U2 r D' R'",
+      "R' U R F R' U R U' F' U' F U R' U' R F' U'",
+      "R' B R2 B' R' D' r' D F D' F' R D' M' D"
+    ]
+  },
+  "UBR RDF FUR": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "RDF",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "DFR",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "FDR",
+        "BUR"
+      ],
+      "DFR": [
+        "DFR",
+        "UBR",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "BUR",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "RUB",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "D' R' D R U2 R' D' R D R U R' U2 R U R' U'",
+      "U2 M' U2 l D' L2 U L U L D L' U'"
+    ]
+  },
+  "UBR RDF RUF": {
+    "corners": [
+      "UBR",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "RDF",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "DFR",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "FDR",
+        "UBR"
+      ],
+      "DFR": [
+        "DFR",
+        "RUB",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "UBR",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "BUR",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "U' D' R U R' U' R D R' U D' R' D R2 D' R' U' R' U D",
+      "R' D R2 D' R' D R' D2 r' F' R F M' D",
+      "R U2 F R' U R U2 R' U R U F' U R' U"
+    ]
+  },
+  "UBR UBL FUR": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "UBL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "LUB",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "BUL",
+        "BUR"
+      ],
+      "UBL": [
+        "UBL",
+        "RUB",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "UBR",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "BUR",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "U' R D R' U2 R D' R' U' R' U2 R U' R' U' R U'",
+      "U L U' R' U L' U' R2 U2 R' U' R U' R' U'"
+    ]
+  },
+  "UBR UBL RUF": {
+    "corners": [
+      "UBR",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "UBL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "LUB",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "BUL",
+        "UBR"
+      ],
+      "UBL": [
+        "UBL",
+        "BUR",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "RUB",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "UBR",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "L U' R U R' L' U2 R U' R' U' R U' R'",
+      "U2 S R' F U R2 U' F' U R2 U' R S' U",
+      "U R2 U R U R D' R U' R' U' D R' U2 R' U2"
+    ]
+  },
+  "UBR UFL FUR": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "UFL",
+        "RUB"
+      ],
+      "BUR": [
+        "BUR",
+        "FUL",
+        "UBR"
+      ],
+      "RUB": [
+        "RUB",
+        "LUF",
+        "BUR"
+      ],
+      "UFL": [
+        "UFL",
+        "RUB",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "UBR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "BUR",
+        "FUL"
+      ]
+    },
+    "algs": [
+      "R U R' U M F R' F' r U' R U' R' U",
+      "R' U' R U' F U' R' U R U R' U R U' F' U2"
+    ]
+  },
+  "UBR UFL RUF": {
+    "corners": [
+      "UBR",
+      "UFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UBR": [
+        "UBR",
+        "UFL",
+        "BUR"
+      ],
+      "BUR": [
+        "BUR",
+        "FUL",
+        "RUB"
+      ],
+      "RUB": [
+        "RUB",
+        "LUF",
+        "UBR"
+      ],
+      "UFL": [
+        "UFL",
+        "BUR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "RUB",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "UBR",
+        "UFL"
+      ]
+    },
+    "algs": [
+      "U' R U R' U R U R2 D' r U2 r' D R2 U R'",
+      "R U R' F' R U R' U' R' F R U' R' F R U R U' R' F' U'",
+      "U' R' U R2 D r' U2 r D' R2 U R U R' U R"
+    ]
+  },
+  "UFL BDL FUR": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BDL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "LDB",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "DBL",
+        "FUL"
+      ],
+      "DBL": [
+        "DBL",
+        "FUL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "LUF",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "UFL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "R' U' R U R' D' R U' D R D' R2 D R U R"
+    ]
+  },
+  "UFL BDL RUF": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BDL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "LDB",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "DBL",
+        "UFL"
+      ],
+      "DBL": [
+        "DBL",
+        "UFL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "FUL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "LUF",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "U' D M' U2 r' D R2 U' R' U' R' D' R D'",
+      "L U' L' U' L U2 L' U' L2 D L' U L D' L' U' L'"
+    ]
+  },
+  "UFL BDR FUR": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BDR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "DBR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "RDB",
+        "FUL"
+      ],
+      "DBR": [
+        "DBR",
+        "UFL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "FUL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "LUF",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "U' R U R' U' D R D' R' U R2 D R2 D' R2 U' R' U",
+      "D' R2 D R U2 R D' R' U2 D R' D' R U' R' U R D",
+      "R' U2 R' D' R U R' U2 R U R' U D R U R U"
+    ]
+  },
+  "UFL BDR RUF": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BDR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "DBR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "RDB",
+        "UFL"
+      ],
+      "DBR": [
+        "DBR",
+        "LUF",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "UFL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "FUL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "R' U' R D' R' U D R2 D' R' D R' U' D' R U R' D"
+    ]
+  },
+  "UFL BUL FUR": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BUL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "UBL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "LUB",
+        "FUL"
+      ],
+      "UBL": [
+        "UBL",
+        "UFL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "FUL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "LUF",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "U2 R U' R' U' R U2 R' U' R' D' R U2 R' D R",
+      "L' U' L U' L' U2 L2 U' R' U L' U' R",
+      "U' F R' F' U' F R S U R2 U' R' f'",
+      "U2 R F' U' R' F U r F R' F' r' F' R F U"
+    ]
+  },
+  "UFL BUL RUF": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "BUL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "UBL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "LUB",
+        "UFL"
+      ],
+      "UBL": [
+        "UBL",
+        "LUF",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "UFL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "FUL",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "U2 R' U2 R' D' R U R' D R2 U' R' U2 R U"
+    ]
+  },
+  "UFL DBL FUR": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DBL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "BDL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "LDB",
+        "FUL"
+      ],
+      "DBL": [
+        "DBL",
+        "LUF",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "UFL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "FUL",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "D R' D R U R U R2 D' r U2 M U D'",
+      "L U L D L' U' L D' L2 U L U2 L' U L U L'"
+    ]
+  },
+  "UFL DBL RUF": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DBL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "BDL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "LDB",
+        "UFL"
+      ],
+      "DBL": [
+        "DBL",
+        "FUL",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "LUF",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "UFL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "L' U' L' U' L U2 L' U' L2 D L' U L D' L' U' L",
+      "U' R' U' R D' R2 U' D r' B' R2 B U2 r",
+      "U' R' U' R U' R' L U' R U2 R' U' L' U2 R",
+      "z R' D' R U R' U' D R' U D' R U' R' D R U R U' R' z'",
+      "U' R' D' F U' S R' F R2 F' R' f' U D R",
+      "F U B R2 U' R' U R' B' U' R' F' U' R' U R",
+      "F B U R2 U' R' U R' U' R' F' U' R' U R f' z",
+      "U D' R U' R' U' B R' U' R2 U' R2 U2 R B' D",
+      "U' D f U F R U R2 U' F' U R2 U2 R' f' D'",
+      "f U' R D' R' D R D' R D R' D' R2 U R' D R f'",
+      "D' R2 D L' D' R2 B2 U' B2 U D L2 U' L'",
+      "U' R D' R' U D f D' R2 D' R' D R2 f' U' R U",
+      "L' U L U B' U L' U L U' L' U' L B L' U L U2",
+      "L D L' U L D' B' L' U' L U' L' U' L U2 B L' U'",
+      "R' U' R' U' R' U R2 D' R U' R2 U R D R' U R",
+      "L D L' U L D' F' D' L' D L' D' L' D L2 F L' U'",
+      "L' U' L' U' L U2 L' U' L U' R' D R U R' D' R L",
+      "U' D' R U R2 D R2 D' R2 U' R D R' U D' R U' R' U D",
+      "D2 R' U' R U R' D R U2 D' R D R' U2 R' D' R2 D2"
+    ]
+  },
+  "UFL DBR FUR": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DBR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "RDB",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "BDR",
+        "FUL"
+      ],
+      "DBR": [
+        "DBR",
+        "LUF",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "UFL",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "FUL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "D2 R' D R U R U R2 D' r U2 M U D2",
+      "U2 L' D L U L U L2 D' l U2 M' U'"
+    ]
+  },
+  "UFL DBR RUF": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DBR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "RDB",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "BDR",
+        "UFL"
+      ],
+      "DBR": [
+        "DBR",
+        "FUL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "LUF",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "UFL",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "D' R' U' R U R' D R U2 D' R D R' U2 R' D' R2 D",
+      "U' R U R2 D R2 D' R2 U' R D R' U D' R U' R' U",
+      "U' F' R' U' R' U' R U' R' U2 R2 F R' U R",
+      "U' R U2 R2 U' R2 D' R U R' U' D R' U' R' U"
+    ]
+  },
+  "UFL DFL FUR": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DFL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "LDF",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "FDL",
+        "FUL"
+      ],
+      "DFL": [
+        "DFL",
+        "LUF",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "UFL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "FUL",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "R' D R U R U R2 D' r U2 M U"
+    ]
+  },
+  "UFL DFL RUF": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DFL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "LDF",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "FDL",
+        "UFL"
+      ],
+      "DFL": [
+        "DFL",
+        "FUL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "LUF",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "UFL",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "D R' U' R U R' D R U2 D' R D R' U2 R' D' R2 D'",
+      "D R' D' R' D R U' D R' U R U' D' R2 D' R2 U",
+      "R' D R U2 R' U R U' R' D' R U' R' L' U R U' L",
+      "R' U' R U2 r U' r' U2 R' U F' U' R U2 F U'",
+      "F2 D R2 U' R U R D2 F2 D R U' R' U R'",
+      "U' R U R2 F' R F R' F R F' U r U r' U'",
+      "L' U L' U' L U' L' F' U L U' L' U' F U' L2",
+      "D F' R' F U' D R' U R D2 F' r' D2 r F'",
+      "U M D' L F' D' F D l' U' F' L' F2 L F'",
+      "f R2 S' R U' F R F' R' U' R' U2 R F'",
+      "L2 U2 L' D' L U L' D L2 U' L' U2 L U' L",
+      "D R' U' D R2 U' R D' R' U R' D R' D' R' U R D'",
+      "U2 S' U L' F U F' U' L' U' L2 U S",
+      "U' f U F R U R2 U' F' U R2 U2 R' f'",
+      "D' L' U' L' U' L U2 L' U' L2 D L' U L D' L' U' L D"
+    ]
+  },
+  "UFL DFR FUR": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DFR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "FDR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "RDF",
+        "FUL"
+      ],
+      "DFR": [
+        "DFR",
+        "LUF",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "UFL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "FUL",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "D' R' D R U R U R2 D' r U2 M U D"
+    ]
+  },
+  "UFL DFR RUF": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "DFR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "FDR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "RDF",
+        "UFL"
+      ],
+      "DFR": [
+        "DFR",
+        "FUL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "LUF",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "UFL",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "R' U' R U R' D R U2 D' R D R' U2 R' D' R2",
+      "R U R' U' R U' R' F' U' F U M' U R U' r'",
+      "R' U' D R2 U' R D' R' U R' D R' D' R' U R",
+      "U' D R U2 R2 U' R2 D' R U R' U' D R' U' R' U D'",
+      "R' U' R2 U R2 D' R U' R' D R' U R' U' R U R",
+      "R' U' D' R U2 R' D R U' R U R U' R U R2 U'",
+      "R' D' R' D R U' D R' U R U' D' R2 D' R2 U D"
+    ]
+  },
+  "UFL FDL FUR": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "FDL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "DFL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "LDF",
+        "FUL"
+      ],
+      "DFL": [
+        "DFL",
+        "UFL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "FUL",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "LUF",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "D R2 D R U2 R D' R' U2 D R' D' R U' R' U R D'",
+      "D' L' U L D L' U' L D' L2 U L U2 L' U L U L D",
+      "L' U L' U2 L U L2 D' L U' L' D L U2 L2",
+      "R' F R U' R' U F2 M U M' F M F U' r",
+      "U' D2 R U R' U' D R D' R' U R2 D R2 D' R2 U' R' U D2",
+      "L2 U F' U L U L' U' F L U L' U L U' L",
+      "F' r U r' F U' R U2 R' U' F' r U' r' F U",
+      "R L' U R' U' R' F R F' r U' r' U L F R U' R' U"
+    ]
+  },
+  "UFL FDL RUF": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "FDL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "DFL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "LDF",
+        "UFL"
+      ],
+      "DFL": [
+        "DFL",
+        "LUF",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "UFL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "FUL",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "R' U' R D' R' U D R2 D' R' D R' U' D R U R' D'",
+      "L' U L F R' F R U R' U' F' R F' R' U R U'",
+      "R' U' R D' R' D R F' R2 D' R2 D F R2 U R",
+      "L' B U L U2 L' U L U F' L' B' L F",
+      "L' U l F U F2 U' M' F' L' U L F",
+      "U L U' L' F U2 S l F l' U f' U L' U' L2",
+      "S' L F' L' S U' R' F' R U F U' R U' R' U2",
+      "L' U' L U2 S U' F U2 F' U S' L' U L U",
+      "L' U2 L' D' L U2 L' D L U L U2 L' U L U",
+      "U' F R' U' R2 f' U' R' U2 M F r U' S U'",
+      "F' L F D S L' U' L F L' U L f' D' L2 U L",
+      "D R2 U' R' U D R2 U' R' U R U' R U D' R' D'",
+      "z U' R U R2 U' R U' R D R' U R D' R' U R z'",
+      "z U R' U' R U' R U R2 U' R U2 D' R U' R' D R z'"
+    ]
+  },
+  "UFL FDR FUR": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "FDR",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "RDF",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "DFR",
+        "FUL"
+      ],
+      "DFR": [
+        "DFR",
+        "FUL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "LUF",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "UFL",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "R U' R' U R' U' R D' R' U D R2 D' R' D R'",
+      "R U' R' U R D' R D R2 U' D' R D R' U R"
+    ]
+  },
+  "UFL FDR RUF": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "FDR",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "RDF",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "DFR",
+        "UFL"
+      ],
+      "DFR": [
+        "DFR",
+        "UFL",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "FUL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "LUF",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "U' D' M' U2 r' D R2 U' R' U' R' D' R D"
+    ]
+  },
+  "UFL LDB FUR": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LDB",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "DBL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "BDL",
+        "FUL"
+      ],
+      "DBL": [
+        "DBL",
+        "UFL",
+        "LDB"
+      ],
+      "BDL": [
+        "BDL",
+        "FUL",
+        "DBL"
+      ],
+      "LDB": [
+        "LDB",
+        "LUF",
+        "BDL"
+      ]
+    },
+    "algs": [
+      "U' D' R U R' U' D R D' R' U R2 D R2 D' R2 U' R' U D",
+      "L' U L D L' U' L D' L2 U L U2 L' U L U L"
+    ]
+  },
+  "UFL LDB RUF": {
+    "corners": [
+      "UFL",
+      "DBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LDB",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "DBL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "BDL",
+        "UFL"
+      ],
+      "DBL": [
+        "DBL",
+        "LUF",
+        "BDL"
+      ],
+      "BDL": [
+        "BDL",
+        "UFL",
+        "LDB"
+      ],
+      "LDB": [
+        "LDB",
+        "FUL",
+        "DBL"
+      ]
+    },
+    "algs": [
+      "R' U' R' D' R2 D R' U D' R' D R U' R' U R"
+    ]
+  },
+  "UFL LDF FUR": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LDF",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "FDL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "DFL",
+        "FUL"
+      ],
+      "DFL": [
+        "DFL",
+        "FUL",
+        "FDL"
+      ],
+      "LDF": [
+        "LDF",
+        "LUF",
+        "DFL"
+      ],
+      "FDL": [
+        "FDL",
+        "UFL",
+        "LDF"
+      ]
+    },
+    "algs": [
+      "D R U' R' U D' R' U' R D' R' U D R2 D' R' D R'",
+      "D R U' R' U D' R D' R D R2 U' D' R D R' U R"
+    ]
+  },
+  "UFL LDF RUF": {
+    "corners": [
+      "UFL",
+      "DFL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LDF",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "FDL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "DFL",
+        "UFL"
+      ],
+      "DFL": [
+        "DFL",
+        "UFL",
+        "LDF"
+      ],
+      "LDF": [
+        "LDF",
+        "FUL",
+        "FDL"
+      ],
+      "FDL": [
+        "FDL",
+        "LUF",
+        "DFL"
+      ]
+    },
+    "algs": [
+      "U' M' U2 r' D R2 U' R' U' R' D' R"
+    ]
+  },
+  "UFL LUB FUR": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LUB",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "BUL",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "UBL",
+        "FUL"
+      ],
+      "UBL": [
+        "UBL",
+        "FUL",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "LUF",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "UFL",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "U' R' U2 R U R2 D' R U' R' D R U2 R U2"
+    ]
+  },
+  "UFL LUB RUF": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "LUB",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "BUL",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "UBL",
+        "UFL"
+      ],
+      "UBL": [
+        "UBL",
+        "UFL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "FUL",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "LUF",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "S R U' R2 U B' U' R2 U B R' S' U'",
+      "U' R' U' R U' R' U R' U' R U R' F' R U R' U' R' F R' U'",
+      "U' R' U' R U' R' U' R U2 R' L' U R U' L U",
+      "U R' U2 R' U' D R' U' R D' R U R U R2 U2"
+    ]
+  },
+  "UFL RDB FUR": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "RDB",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "BDR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "DBR",
+        "FUL"
+      ],
+      "DBR": [
+        "DBR",
+        "FUL",
+        "BDR"
+      ],
+      "RDB": [
+        "RDB",
+        "LUF",
+        "DBR"
+      ],
+      "BDR": [
+        "BDR",
+        "UFL",
+        "RDB"
+      ]
+    },
+    "algs": [
+      "D' R U' R' U D R' U' R D' R' U D R2 D' R' D R'",
+      "D' R U' R' U D R D' R D R2 U' D' R D R' U R"
+    ]
+  },
+  "UFL RDB RUF": {
+    "corners": [
+      "UFL",
+      "DBR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "RDB",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "BDR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "DBR",
+        "UFL"
+      ],
+      "DBR": [
+        "DBR",
+        "UFL",
+        "RDB"
+      ],
+      "RDB": [
+        "RDB",
+        "FUL",
+        "BDR"
+      ],
+      "BDR": [
+        "BDR",
+        "LUF",
+        "DBR"
+      ]
+    },
+    "algs": [
+      "U' D2 M' U2 r' D R2 U' R' U' R' D' R D2",
+      "U M U2 l' D L2 U' L' U' L' D' L U2"
+    ]
+  },
+  "UFL RDF FUR": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "RDF",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "DFR",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "FDR",
+        "FUL"
+      ],
+      "DFR": [
+        "DFR",
+        "UFL",
+        "RDF"
+      ],
+      "FDR": [
+        "FDR",
+        "FUL",
+        "DFR"
+      ],
+      "RDF": [
+        "RDF",
+        "LUF",
+        "FDR"
+      ]
+    },
+    "algs": [
+      "R2 D R U2 R D' R' U2 D R' D' R U' R' U R",
+      "U' R' D' R U R' D R U R U R2 D' r U2 r' D R U",
+      "R U R2 D' r U2 r' D R U' R' U2 R U R' U R U",
+      "U' D R U R' U' D R D' R' U R2 D R2 D' R2 U' R' U D'",
+      "U R2 U' R' U R' U' R' U R' D' R U2 R' U D R",
+      "F' R' U2 R' F R2 U' R2 F' R U' R F R' U' R",
+      "U' R F' R2 F R U D R' U' R U D' F' R F"
+    ]
+  },
+  "UFL RDF RUF": {
+    "corners": [
+      "UFL",
+      "DFR"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "RDF",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "DFR",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "FDR",
+        "UFL"
+      ],
+      "DFR": [
+        "DFR",
+        "LUF",
+        "FDR"
+      ],
+      "FDR": [
+        "FDR",
+        "UFL",
+        "RDF"
+      ],
+      "RDF": [
+        "RDF",
+        "FUL",
+        "DFR"
+      ]
+    },
+    "algs": [
+      "R' U' R D' R' U D R2 D' R' D R' U' R U R'"
+    ]
+  },
+  "UFL UBL FUR": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "FUR",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "UBL",
+        "LUF"
+      ],
+      "FUL": [
+        "FUL",
+        "LUB",
+        "UFL"
+      ],
+      "LUF": [
+        "LUF",
+        "BUL",
+        "FUL"
+      ],
+      "UBL": [
+        "UBL",
+        "LUF",
+        "BUL"
+      ],
+      "LUB": [
+        "LUB",
+        "UFL",
+        "UBL"
+      ],
+      "BUL": [
+        "BUL",
+        "FUL",
+        "LUB"
+      ]
+    },
+    "algs": [
+      "U' L' U R' U' R L U2 R' U R U R' U R U",
+      "U S R B' U' R2 U B U' R2 U R' S'",
+      "U R2 D' R U' R' D R U R' U' R' U' R U R U R U' R",
+      "U' D R U2 R' U R U R' U2 D' R' D R U' R' D' R U"
+    ]
+  },
+  "UFL UBL RUF": {
+    "corners": [
+      "UFL",
+      "UBL"
+    ],
+    "twist": "RUF",
+    "variants": {
+      "UFL": [
+        "UFL",
+        "UBL",
+        "FUL"
+      ],
+      "FUL": [
+        "FUL",
+        "LUB",
+        "LUF"
+      ],
+      "LUF": [
+        "LUF",
+        "BUL",
+        "UFL"
+      ],
+      "UBL": [
+        "UBL",
+        "FUL",
+        "LUB"
+      ],
+      "LUB": [
+        "LUB",
+        "LUF",
+        "BUL"
+      ],
+      "BUL": [
+        "BUL",
+        "UFL",
+        "UBL"
+      ]
+    },
+    "algs": [
+      "R' D' R U2 R' D R U R U2 R' U R U R' U2",
+      "R' U L U' R U L2 U2 L U L' U L",
+      "U2 L' U R U' L U R2 U2 R U R' U R U2",
+      "f R U R2 U' S' R' F' U F R F' U"
+    ]
+  }
+}

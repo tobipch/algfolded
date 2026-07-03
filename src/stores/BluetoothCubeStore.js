@@ -221,10 +221,40 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         display.showToast('Connected to ' + deviceName.value, 'success')
     }
 
+    // gan-web-bluetooth requests the device with the Chromium-only
+    // `optionalManufacturerData` member (to read the MAC from the BLE
+    // advertisement). Browsers like Bluefy on iOS reject the whole request
+    // with "Request payload could not be parsed" — retry without that member
+    // and let the MAC come from the prompt fallback instead. Only genuine
+    // parse failures retry; a cancelled chooser (NotFoundError) never does.
+    const bluefySafeRequestDevice = async (fn) => {
+        const bt = navigator.bluetooth
+        const original = bt.requestDevice.bind(bt)
+        try {
+            bt.requestDevice = async (options) => {
+                try {
+                    return await original(options)
+                } catch (e) {
+                    const parseError = e?.name === 'TypeError' || /parse/i.test(e?.message || '')
+                    if (parseError && options && 'optionalManufacturerData' in options) {
+                        const {optionalManufacturerData, ...rest} = options
+                        return await original(rest)
+                    }
+                    throw e
+                }
+            }
+        } catch (_) { /* requestDevice not writable: proceed unwrapped */ }
+        try {
+            return await fn()
+        } finally {
+            try { bt.requestDevice = original } catch (_) {}
+        }
+    }
+
     // Connect a GAN cube via gan-web-bluetooth.
     const connectGan = async (display) => {
         const {connectGanCube} = await import('gan-web-bluetooth')
-        const conn = await connectGanCube(ganMacProvider)
+        const conn = await bluefySafeRequestDevice(() => connectGanCube(ganMacProvider))
         cube = conn
         cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
         connected.value = true

@@ -2,16 +2,17 @@ import {defineStore} from 'pinia'
 import {computed, reactive, ref, watch} from "vue";
 import {random_element} from "@/helpers/helpers";
 import {makeScramble} from "@/helpers/scramble_utils"
-import {detectAlg} from "@/helpers/alg_match"
+import {detectAlg, normalizeMoves} from "@/helpers/alg_match"
 import {updateEma, caseWeight, weightedRandomPick, median} from "@/helpers/srs"
 import {useSettingsStore} from "@/stores/SettingsStore"
 import {useAlgsetStore} from "@/stores/AlgsetStore"
 import {useSolveSyncStore} from "@/stores/SolveSyncStore"
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore"
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore"
+import {useCustomAlgsStore} from "@/stores/CustomAlgsStore"
 import {useDisplayStore} from "@/stores/DisplayStore"
 import {i18n} from "@/locale"
-import {DEFAULT_ALGSET_ID} from "@/algsets/registry"
+import {LEGACY_ALGSET_ID} from "@/algsets/registry"
 import {readNamespaced, writeNamespaced, migrateToNamespaced,
     isFlatSession, isFlatSrs, isFlatNumber} from "@/helpers/namespaced_storage"
 
@@ -51,9 +52,9 @@ if (Array.isArray(legacyStats) && localStorage.getItem(storeKey) == null) {
 
 // Per-algset namespacing: lift any pre-multi-algset flat data into the
 // default set's slot, so each set keeps its own run / SRS history.
-migrateToNamespaced(storeKey, DEFAULT_ALGSET_ID, isFlatSession)
-migrateToNamespaced(srsKey, DEFAULT_ALGSET_ID, isFlatSrs)
-migrateToNamespaced(srsCounterKey, DEFAULT_ALGSET_ID, isFlatNumber)
+migrateToNamespaced(storeKey, LEGACY_ALGSET_ID, isFlatSession)
+migrateToNamespaced(srsKey, LEGACY_ALGSET_ID, isFlatSrs)
+migrateToNamespaced(srsCounterKey, LEGACY_ALGSET_ID, isFlatNumber)
 
 // Read a set's run slot, defaulting to an empty run and guarding old shapes.
 const loadStore = (id) => {
@@ -307,14 +308,30 @@ export const useSessionStore = defineStore('session', () => {
             // (null when solved by keyboard/touch or when nothing matched).
             const bt = useBluetoothCubeStore()
             const solveMoves = bt.connected ? bt.consumeSolveMoves() : null
-            const algUsed = solveMoves && solveMoves.length > 0
-                ? detectAlg(solveMoves, algset.byId[key]?.algs)
-                : null
-            if (algUsed) {
+            let algUsed = null
+            if (solveMoves && solveMoves.length > 0) {
+                const customAlgs = useCustomAlgsStore()
                 const prefs = usePreferredAlgStore()
-                if (prefs.recordDetected(key, algUsed)) {
-                    useDisplayStore().showToast(
-                        i18n.global.t('timer.alg_detected_toast', {alg: algUsed}), 'success')
+                algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key))
+                if (algUsed) {
+                    if (prefs.recordDetected(key, algUsed)) {
+                        useDisplayStore().showToast(
+                            i18n.global.t('timer.alg_detected_toast', {alg: algUsed}), 'success')
+                    }
+                } else {
+                    // Unlisted solution: record it as the user's own alg for
+                    // this case. Skip long sequences — those are fumbled
+                    // solves with corrections, not an algorithm.
+                    const norm = normalizeMoves(solveMoves)
+                    if (norm.length > 0 && norm.length <= 30) {
+                        const added = customAlgs.addAlg(key, norm.join(' '))
+                        if (added) {
+                            algUsed = added
+                            prefs.recordDetected(key, added)
+                            useDisplayStore().showToast(
+                                i18n.global.t('timer.alg_added_toast', {alg: added}), 'success')
+                        }
+                    }
                 }
             }
 

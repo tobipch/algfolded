@@ -45,4 +45,11 @@ export const ltct: Algset = {
   // LTCT's cases are static (paths already baked in); nothing to derive.
   derive: (raw) => raw as AlgCase[],
   caseLabel: (c, toLetter) => parseLtctKey(c.id, toLetter).letters,
+  // Stats grid: the letter pair as the big label, the set (UU/UD/DU/DD) above
+  // it — "P" alone doesn't identify a case, "UD NP" does.
+  statsDisplay: (c, toLetter) => {
+    const p = parseLtctKey(c.id, toLetter)
+    return { primary: p.letters, secondary: p.group }
+  },
+  statsGroupFilter: true,
 }

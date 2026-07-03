@@ -27,7 +27,13 @@
       "all": "Tutti",
       "none": "Nessuno",
       "expand_all": "Espandi tutto",
-      "collapse_all": "Comprimi tutto"
+      "collapse_all": "Comprimi tutto",
+      "case_info_title": "Dettagli e algoritmi",
+      "no_alg": "nessun algoritmo",
+      "avg_time_title": "Tempo medio · numero di risoluzioni",
+      "avg_time": "tempo medio",
+      "solves": "risoluzioni",
+      "not_solved_yet": "Non ancora praticato"
     },
     "presets": {
       "presets": "Preimpostazioni",
@@ -89,7 +95,8 @@
       "selfpaced_hint": "= caso successivo (salva il tempo e avvia il prossimo)",
       "didnt_know": "Non lo sapevo",
       "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima",
-      "alg_detected_toast": "Algoritmo riconosciuto: {alg} — salvato come il tuo algoritmo per questo caso"
+      "alg_detected_toast": "Algoritmo riconosciuto: {alg} — salvato come il tuo algoritmo per questo caso",
+      "alg_added_toast": "Nuovo algoritmo registrato: {alg} — salvato come il tuo algoritmo per questo caso"
     },
     "stats_card": {
       "stats_title": "Cronologia:",
@@ -123,7 +130,12 @@
       "edit_note": "Modifica nota",
       "setup_moves": "Impostazione",
       "algorithms_collection": "Algoritmi",
-      "choose_alg_hint": "(clicca un algoritmo per sceglierlo)"
+      "choose_alg_hint": "(clicca un algoritmo per sceglierlo)",
+      "add_alg_placeholder": "Aggiungi il tuo algoritmo (es. R U R' U')",
+      "add_alg_btn": "Aggiungi algoritmo",
+      "custom_alg_title": "Il tuo algoritmo",
+      "delete_alg_title": "Rimuovi questo algoritmo",
+      "play_alg_title": "Riproduci sul cubo"
     },
     "hotkeys": {
       "hotkeys": "Scorciatoie da tastiera",
@@ -195,6 +207,8 @@
     },
     "algset": {
       "ltct": "LTCT",
+      "t2c": "T2C",
+      "parities": "Parities",
       "twists3": "3-Twists",
       "commCorner": "Commutatori degli angoli",
       "commEdge": "Commutatori degli spigoli",
@@ -208,10 +222,18 @@
     },
     "stats": {
       "title": "Statistiche dei casi",
-      "search_placeholder": "Cerca casi — caratteri jolly * e ?",
+      "search_placeholder": "Cerca casi",
+      "search_help_intro": "Cerca in tutti i casi del set (indipendentemente dal filtro) — per coppia di lettere, notazione dei pezzi o ID completo del caso.",
+      "search_help_examples": "Esempi",
+      "search_help_ex_pair": "coppia di lettere",
+      "search_help_ex_piece": "notazione dei pezzi",
+      "search_help_ex_star": "* = qualsiasi numero di caratteri",
+      "search_help_ex_qmark": "? = esattamente un carattere",
+      "search_help_whole": "Con i caratteri jolly, il modello deve corrispondere all’intero testo.",
       "sort_default": "Ordine predefinito",
       "sort_count": "Più ripetizioni",
       "sort_avg": "Prima i più lenti",
+      "filter_all_cases": "Tutti i casi",
       "cases_trained": "{trained}/{total} casi allenati",
       "total_reps": "{count} ripetizioni",
       "loading": "caricamento…",

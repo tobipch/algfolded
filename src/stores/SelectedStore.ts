@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 import { useAlgsetStore } from '@/stores/AlgsetStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
 import { casesUnder, casesMatchingPattern } from '@/algsets/selection'
-import { DEFAULT_ALGSET_ID } from '@/algsets/registry'
+import { LEGACY_ALGSET_ID } from '@/algsets/registry'
 import { readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArray } from '@/helpers/namespaced_storage'
 
 const localStoreKey = "currentLtctArray";
-migrateToNamespaced(localStoreKey, DEFAULT_ALGSET_ID, isFlatArray)
+migrateToNamespaced(localStoreKey, LEGACY_ALGSET_ID, isFlatArray)
 
 export const useSelectedStore = defineStore('selected', () => {
   const algset = useAlgsetStore()

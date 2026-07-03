@@ -208,7 +208,7 @@ onUnmounted(() => {
         </button>
         <span ref="accountWrap" class="bt-connect-wrap">
           <button
-              class="btn account-btn"
+              class="btn"
               tabindex="-1" @keydown.space.prevent=""
               :class="auth.loggedIn ? 'btn-success' : 'btn-outline-secondary'"
               @click.stop="onAccountClick"
@@ -242,13 +242,12 @@ onUnmounted(() => {
   width: auto;
   vertical-align: middle;
  }
-.account-btn {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
+/* The avatar renders 28px but only takes 24px in the layout (negative
+   margins), so the button stays exactly as tall as its 38px siblings. */
 .account-avatar {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
+  margin: -2px 0;
   border-radius: 50%;
   object-fit: cover;
   display: block;

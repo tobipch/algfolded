@@ -115,6 +115,21 @@ export const normalizeMoves = (moves) => {
   }
 }
 
+// Canonical face-turn form of an alg string, for duplicate detection across
+// different notations ("R U R'" vs "R U R2 R"). Falls back to the trimmed
+// string when the alg contains untranslatable tokens.
+export const canonicalAlg = (alg) => {
+  const faceMoves = algToFaceMoves(alg)
+  return faceMoves ? normalizeMoves(faceMoves).join(' ') : (alg || '').trim()
+}
+
+// Does the string parse as a playable/matchable alg? (all tokens known,
+// at least one actual turn)
+export const isValidAlg = (alg) => {
+  const faceMoves = algToFaceMoves(alg)
+  return faceMoves !== null && faceMoves.length > 0
+}
+
 // Which of the case's algorithms did the user just execute? Compares the
 // canonicalized executed moves against each candidate; returns the matching
 // alg exactly as written in the collection, or null.

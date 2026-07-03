@@ -90,6 +90,20 @@ onBeforeUnmount(() => {
     player = null
   }
 })
+
+// Animate an algorithm from the pictured state: the current scramble becomes
+// the setup, the alg plays on top of it (ending on a solved cube).
+const playAlg = (alg) => {
+  if (!player || !alg) return
+  const orient = (settings.store.cubeOrientation || "").trim()
+  const setup = orient ? orient + " " + props.scramble : props.scramble
+  player.experimentalSetupAlg = setup
+  player.alg = alg
+  player.jumpToStart()
+  player.play()
+}
+
+defineExpose({playAlg})
 </script>
 
 <template>

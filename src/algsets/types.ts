@@ -51,4 +51,12 @@ export interface Algset {
   // notation (e.g. "UB-FD-LB"). Return '' to hide it. When omitted, callers
   // fall back to the raw case id.
   caseSecondary?: (c: AlgCase, toLetter: ToLetter) => string
+  // Optional display for the per-case stats grid: `primary` is the big label,
+  // `secondary` the small line above it (e.g. LTCT: letter pair + set). When
+  // omitted, the grid falls back to the deepest level's display.
+  statsDisplay?: (c: AlgCase, toLetter: ToLetter) => LevelDisplay
+  // Stats grid filter over the first hierarchy level (buffer / LTCT set),
+  // always including an "all cases" option. Omitted = no filter, all cases
+  // are always shown (2-flips / 2-twists).
+  statsGroupFilter?: boolean
 }

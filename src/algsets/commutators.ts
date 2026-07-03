@@ -111,6 +111,8 @@ const makeCommAlgset = (opts: {
   // Piece notation of the three pieces: buffer + the two target stickers,
   // e.g. "UB-FD-LB" — clearer than the raw source key.
   caseSecondary: (c) => [bufferPiece(c.path[0]), ...c.path[2].split(SEP)].join('-'),
+  // Hundreds of cases per buffer: the stats grid filters by buffer.
+  statsGroupFilter: true,
 })
 
 export const cornerComms: Algset = makeCommAlgset({

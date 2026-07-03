@@ -113,4 +113,7 @@ export const threeTwists: Algset = {
     ),
   derive: (raw, deps) => partition(raw as RawTwist[], deps.bufferOrder),
   caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),
+  // Many cases per buffer group: the stats grid filters by buffer.
+  statsGroupFilter: true,
 }
+
