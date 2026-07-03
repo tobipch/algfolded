@@ -21,6 +21,11 @@ const searchText = ref('')
 const sortBy = ref('default') // 'default' | 'count' | 'avg'
 const infoKey = ref(null)
 
+// Search help box: shown while hovering the "?" icon, or pinned by clicking it.
+const helpPinned = ref(false)
+const helpHover = ref(false)
+const helpVisible = computed(() => helpPinned.value || helpHover.value)
+
 // --- first-level (buffer / LTCT set) filter ---
 // Sets with many cases per group filter the grid down to one group; the text
 // search always goes over ALL cases. 'all' = no group filtering.
@@ -91,15 +96,19 @@ const rows = computed(() => algset.cases.map(c => {
   }
 }))
 
+// The rows in the picked group ('all' = everything). The trained/reps
+// counters and the grid (when not searching) work on this scope.
+const scopedRows = computed(() => {
+  if (filterMode.value && groupFilter.value !== 'all') {
+    return rows.value.filter(r => r.group === groupFilter.value)
+  }
+  return rows.value
+})
+
 const filtered = computed(() => {
   const q = searchText.value
-  if (!q.trim()) {
-    // no search: show the picked group (the search itself spans all cases)
-    if (filterMode.value && groupFilter.value !== 'all') {
-      return rows.value.filter(r => r.group === groupFilter.value)
-    }
-    return rows.value
-  }
+  // no search: show the picked group (the search itself spans all cases)
+  if (!q.trim()) return scopedRows.value
   return rows.value.filter(r => {
     // "UD NP": lets patterns span the set and the letter pair (e.g. "UD*P")
     const label = r.secondary ? r.secondary + ' ' + r.primary : r.primary
@@ -121,8 +130,8 @@ const sorted = computed(() => {
   return list
 })
 
-const totalReps = computed(() => rows.value.reduce((sum, r) => sum + r.count, 0))
-const trainedCases = computed(() => rows.value.filter(r => r.count > 0).length)
+const totalReps = computed(() => scopedRows.value.reduce((sum, r) => sum + r.count, 0))
+const trainedCases = computed(() => scopedRows.value.filter(r => r.count > 0).length)
 
 const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
 </script>
@@ -142,9 +151,31 @@ const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
             type="search"
             class="form-control search-input"
             :placeholder="$t('stats.search_placeholder')"/>
+        <span
+            class="help-anchor"
+            @mouseenter="helpHover = true"
+            @mouseleave="helpHover = false">
+          <i
+              class="bi bi-question-circle help-icon clickable"
+              :class="{pinned: helpPinned}"
+              @click="helpPinned = !helpPinned"/>
+          <div v-if="helpVisible" class="search-help border rounded-2 shadow-sm p-2">
+            <div>{{ $t('stats.search_help_intro') }}</div>
+            <div class="fw-bold mt-2">{{ $t('stats.search_help_examples') }}</div>
+            <table class="help-examples">
+              <tbody>
+                <tr><td><code>NP</code></td><td>{{ $t('stats.search_help_ex_pair') }}</td></tr>
+                <tr><td><code>RDF</code></td><td>{{ $t('stats.search_help_ex_piece') }}</td></tr>
+                <tr><td><code>UD*P</code></td><td>{{ $t('stats.search_help_ex_star') }}</td></tr>
+                <tr><td><code>N?</code></td><td>{{ $t('stats.search_help_ex_qmark') }}</td></tr>
+              </tbody>
+            </table>
+            <div class="mt-2 opacity-75">{{ $t('stats.search_help_whole') }}</div>
+          </div>
+        </span>
       </div>
       <select v-if="filterMode" v-model="groupFilter" class="form-select group-select">
-        <option v-if="filterMode === 'with-all'" value="all">{{ $t('stats.filter_all_cases') }}</option>
+        <option value="all">{{ $t('stats.filter_all_cases') }}</option>
         <option v-for="g in groupOptions" :key="g.value" :value="g.value">{{ g.label }}</option>
       </select>
       <select v-model="sortBy" class="form-select sort-select">
@@ -155,7 +186,7 @@ const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
     </div>
 
     <div class="mb-2 small text-muted d-flex flex-wrap gap-3">
-      <span><i class="bi bi-collection me-1"/>{{ $t('stats.cases_trained', {trained: trainedCases, total: rows.length}) }}</span>
+      <span><i class="bi bi-collection me-1"/>{{ $t('stats.cases_trained', {trained: trainedCases, total: scopedRows.length}) }}</span>
       <span><i class="bi bi-arrow-repeat me-1"/>{{ $t('stats.total_reps', {count: totalReps}) }}</span>
       <span v-if="loading"><i class="bi bi-cloud-arrow-down me-1"/>{{ $t('stats.loading') }}</span>
     </div>
@@ -210,6 +241,41 @@ const fmt = (ms) => ms == null ? '—' : msToHumanReadable(ms, 1, true)
 }
 .search-input {
   padding-left: 32px;
+  padding-right: 60px; /* room for the "?" icon next to the native clear button */
+}
+.help-anchor {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  /* the transform traps the box's z-index in this stacking context, so the
+     anchor itself must sit above the (opacity-layered) stat cells */
+  z-index: 1050;
+}
+.help-icon {
+  opacity: 0.5;
+}
+.help-icon:hover,
+.help-icon.pinned {
+  opacity: 1;
+  color: var(--bs-primary);
+}
+.search-help {
+  position: absolute;
+  right: -8px;
+  top: calc(100% + 8px);
+  width: min(340px, 85vw);
+  background: var(--bs-body-bg);
+  font-size: 0.85rem;
+  z-index: 1050;
+  cursor: default;
+}
+.help-examples td {
+  padding: 1px 0;
+}
+.help-examples td:first-child {
+  padding-right: 12px;
+  white-space: nowrap;
 }
 .sort-select,
 .group-select {

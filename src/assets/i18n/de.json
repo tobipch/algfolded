@@ -78,10 +78,10 @@
       "letter_scheme": "Buchstabenschema",
       "reset_confirm": "Buchstabenschema auf Speffz zurücksetzen?",
       "smart_selection": "Intelligente Fallauswahl",
-      "buffer_order": "Ecken-Buffer-Reihenfolge",
-      "buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das 3-Twists- und das Ecken-Kommutator-Set neu).",
-      "edge_buffer_order": "Kanten-Buffer-Reihenfolge",
-      "edge_buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das Kanten-Kommutator-Set neu).",
+      "buffer_order": "Corner-Buffer-Reihenfolge",
+      "buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das 3-Twists- und das Corner-Commutators-Set neu).",
+      "edge_buffer_order": "Edge-Buffer-Reihenfolge",
+      "edge_buffer_order_hint": "Reihenfolge, in der Buffer einen Fall besitzen (gruppiert das Edge-Commutators-Set neu).",
       "buffer_order_drag": "Zum Sortieren ziehen"
     },
     "timer": {
@@ -208,10 +208,10 @@
     "algset": {
       "ltct": "LTCT",
       "twists3": "3-Twists",
-      "commCorner": "Ecken-Kommutatoren",
-      "commEdge": "Kanten-Kommutatoren",
-      "twists2": "Ecken 2-Twists",
-      "flips2": "Kanten 2-Flips"
+      "commCorner": "Corner-Commutators",
+      "commEdge": "Edge-Commutators",
+      "twists2": "Corner 2-Twists",
+      "flips2": "Edge 2-Flips"
     },
     "auth": {
       "login_with_wca": "Mit WCA anmelden",
@@ -220,7 +220,14 @@
     },
     "stats": {
       "title": "Fall-Statistiken",
-      "search_placeholder": "Fälle suchen — Wildcards * und ?",
+      "search_placeholder": "Fälle suchen",
+      "search_help_intro": "Durchsucht alle Fälle des Sets (unabhängig vom Filter) — nach Letterpair, Piece-Notation oder ganzer Fall-ID.",
+      "search_help_examples": "Beispiele",
+      "search_help_ex_pair": "Letterpair",
+      "search_help_ex_piece": "Piece-Notation",
+      "search_help_ex_star": "* = beliebig viele Zeichen",
+      "search_help_ex_qmark": "? = genau ein Zeichen",
+      "search_help_whole": "Mit Wildcards muss das Muster den ganzen Text treffen.",
       "sort_default": "Standard-Reihenfolge",
       "sort_count": "Meiste Wiederholungen",
       "sort_avg": "Langsamste zuerst",

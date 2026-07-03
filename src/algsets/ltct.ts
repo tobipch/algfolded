@@ -51,5 +51,5 @@ export const ltct: Algset = {
     const p = parseLtctKey(c.id, toLetter)
     return { primary: p.letters, secondary: p.group }
   },
-  statsGroupFilter: 'with-all',
+  statsGroupFilter: true,
 }

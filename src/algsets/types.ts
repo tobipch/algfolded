@@ -55,8 +55,8 @@ export interface Algset {
   // `secondary` the small line above it (e.g. LTCT: letter pair + set). When
   // omitted, the grid falls back to the deepest level's display.
   statsDisplay?: (c: AlgCase, toLetter: ToLetter) => LevelDisplay
-  // Stats grid filter over the first hierarchy level (buffer / LTCT set).
-  // 'with-all' additionally offers an "all cases" option; omitted = no
-  // filter, all cases are always shown (2-flips / 2-twists).
-  statsGroupFilter?: 'with-all' | 'groups-only'
+  // Stats grid filter over the first hierarchy level (buffer / LTCT set),
+  // always including an "all cases" option. Omitted = no filter, all cases
+  // are always shown (2-flips / 2-twists).
+  statsGroupFilter?: boolean
 }
