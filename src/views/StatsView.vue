@@ -92,6 +92,9 @@ const rows = computed(() => algset.cases.map(c => {
     primary: display.primary,
     secondary: display.secondary ?? '',
     path: c.path.join(' '),
+    // dash-joined piece notation (e.g. "UF-UB-UR") — only reachable via
+    // caseSecondary, the path/id use other separators
+    piece: algset.caseSecondary(c.id) ?? '',
     count, avgMs, bestMs,
   }
 }))
@@ -116,6 +119,7 @@ const filtered = computed(() => {
         || (r.secondary && matchesWildcard(q, r.secondary))
         || matchesWildcard(q, label)
         || matchesWildcard(q, r.path)
+        || (r.piece && matchesWildcard(q, r.piece))
         || matchesWildcard(q, r.id)
   })
 })
