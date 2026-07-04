@@ -55,6 +55,9 @@ const btConnectWrap = ref(null)
 const onBluetoothClick = () => {
   if (bt.connected) { bt.disconnect(); return }
   showConnectMenu.value = !showConnectMenu.value
+  // Warm the cube libraries now so picking a brand fires requestDevice
+  // promptly inside the click gesture (no slow/late chooser).
+  if (showConnectMenu.value) bt.warmupLibraries()
 }
 const connectBrand = (brand) => {
   showConnectMenu.value = false
