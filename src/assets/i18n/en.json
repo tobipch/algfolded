@@ -14,6 +14,7 @@
       "bluetooth_pause": "Pause tracking",
       "bluetooth_resume": "Resume tracking",
       "bluetooth_reset_to_solved": "Reset virtual cube to solved",
+      "menu": "Menu",
       "stats": "Statistics"
     },
     "select": {

@@ -207,6 +207,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Connect a MoYu / QiYi cube via btcube-web.
     const connectMoyu = async (display) => {
         const {connectSmartCube} = await import('btcube-web')
+        patchRequestDevice()
         const c = await connectSmartCube()
         cube = c
         cubeDisconnect = () => { try { c.commands.disconnect() } catch (_) {} }
@@ -221,39 +222,46 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         display.showToast('Connected to ' + deviceName.value, 'success')
     }
 
-    // gan-web-bluetooth requests the device with the Chromium-only
-    // `optionalManufacturerData` member (to read the MAC from the BLE
-    // advertisement). Browsers like Bluefy on iOS reject the whole request
-    // with "Request payload could not be parsed" — so on browsers without
-    // that feature the member is stripped up front, and as belt-and-braces
-    // any non-cancel failure retries once without it. The MAC then comes
-    // from the prompt fallback instead.
+    // Web Bluetooth on non-Chromium browsers (notably Bluefy on iOS) is
+    // fussy about requestDevice options in ways the cube libraries trip over:
+    //   - the GAN library passes `optionalManufacturerData`, a Chromium-only
+    //     member -> "Request payload could not be parsed";
+    //   - the QiYi library lists a numeric 16-bit service UUID (0xFFF0),
+    //     which iOS rejects -> immediate "Unknown error", no chooser;
+    //   - name-prefix filters often reveal no device in the iOS chooser.
+    // So on those browsers we rewrite the request to show every BLE device
+    // (`acceptAllDevices`) with all services reachable via `optionalServices`
+    // (numeric UUIDs normalized to canonical 128-bit strings). The user picks
+    // the cube manually; the libraries then match it by name as before.
+    // Chromium keeps the original filtered request untouched.
 
-    // Chromium ships watchAdvertisements alongside optionalManufacturerData;
-    // everything else (Bluefy & co.) gets the sanitized request.
-    const supportsManufacturerData = () =>
+    // Chromium ships watchAdvertisements; other engines (Bluefy & co.) don't.
+    const isChromiumBluetooth = () =>
         typeof BluetoothDevice !== 'undefined' &&
         'watchAdvertisements' in BluetoothDevice.prototype
 
-    const withoutManufacturerData = (options) => {
-        const {optionalManufacturerData, ...rest} = options
-        return rest
+    // BLE 16/32-bit numeric UUID -> canonical 128-bit string form.
+    const canonicalUuid = (u) =>
+        typeof u === 'number'
+            ? '0000' + (u >>> 0).toString(16).padStart(4, '0') + '-0000-1000-8000-00805f9b34fb'
+            : u
+
+    // Every service UUID mentioned anywhere in a requestDevice options object.
+    const collectServices = (options) => {
+        const out = new Set()
+        for (const f of options.filters || []) {
+            for (const s of f.services || []) out.add(canonicalUuid(s))
+        }
+        for (const s of options.optionalServices || []) out.add(canonicalUuid(s))
+        return [...out]
     }
 
     const wrapRequestDevice = (original) => async (options) => {
-        const hasMd = options && 'optionalManufacturerData' in options
-        try {
-            return await original(hasMd && !supportsManufacturerData()
-                ? withoutManufacturerData(options)
-                : options)
-        } catch (e) {
-            // a cancelled / empty chooser must never re-open the dialog
-            const cancelled = e?.name === 'NotFoundError' || e?.name === 'AbortError'
-            if (!cancelled && hasMd) {
-                return await original(withoutManufacturerData(options))
-            }
-            throw e
-        }
+        if (!options || isChromiumBluetooth()) return await original(options)
+        return await original({
+            acceptAllDevices: true,
+            optionalServices: collectServices(options),
+        })
     }
 
     // Install the wrapper once. Some browsers expose navigator.bluetooth as
