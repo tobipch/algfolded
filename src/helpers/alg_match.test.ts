@@ -100,3 +100,28 @@ describe('isValidAlg', () => {
     expect(isValidAlg('x y2')).toBe(false)
   })
 })
+
+describe('commutator notation', () => {
+  it('accepts commutator/conjugate notation as valid', () => {
+    expect(isValidAlg('[R, U]')).toBe(true)
+    expect(isValidAlg("[R U R': [D', R U R']]")).toBe(true)
+  })
+
+  it('rejects malformed commutator notation', () => {
+    expect(isValidAlg('[R, U')).toBe(false)
+    expect(isValidAlg('[R foo, U]')).toBe(false)
+  })
+
+  it('canonicalizes a commutator to the same form as its expansion', () => {
+    // the user example vs its (correct) written-out move sequence: the
+    // conjugate's A^-1 tail is "U R2 U' R'" (invert the leading R -> R')
+    expect(canonicalAlg("[R U R2' U': [D', R U R']]"))
+      .toBe(canonicalAlg("R U R2' U' D' R U R' D R U' R' U R2 U' R'"))
+  })
+
+  it('detects a commutator alg from the executed face moves', () => {
+    const exec = algToFaceMoves('[R, U]') // R U R' U'
+    expect(detectAlg(exec, ['[R, U]'])).toBe('[R, U]')
+    expect(detectAlg(['R', 'U', "R'", "U'"], ['[R, U]'])).toBe('[R, U]')
+  })
+})

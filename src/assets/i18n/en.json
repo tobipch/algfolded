@@ -135,7 +135,7 @@
       "setup_moves": "Setup",
       "algorithms_collection": "Algs",
       "choose_alg_hint": "(click an alg to make it yours)",
-      "add_alg_placeholder": "Add your own alg (e.g. R U R' U')",
+      "add_alg_placeholder": "Add your own alg — moves or [a, b] commutator",
       "add_alg_btn": "Add algorithm",
       "custom_alg_title": "Your own algorithm",
       "delete_alg_title": "Remove this algorithm",

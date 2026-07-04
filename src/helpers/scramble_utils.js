@@ -9,7 +9,7 @@ export const makeScramble = (algCase) => {
   if (!scrambles || scrambles.length === 0) {
     const algs = algCase.algs
     if (!algs || algs.length === 0) return ""
-    return inverseScramble(algs[0])
+    return inverseScramble(algToMoveString(algs[0]))
   }
 
   return random_element(scrambles);
@@ -29,9 +29,64 @@ export const inverseScramble = s => {
 export const moveFace = (m) => m[0]
 
 export const moveAmount = (m) => {
+  if (m.includes("2")) return 2   // R2 and the R2' spelling of it
   if (m.endsWith("'")) return 3
-  if (m.endsWith("2")) return 2
   return 1
+}
+
+// Expand commutator / conjugate notation into a plain move sequence:
+//   [A, B] -> A B A' B'   (commutator)
+//   [A: B] -> A B A'      (conjugate)
+// A and B are themselves sequences that may contain nested brackets. Returns a
+// space-joined move string, or null if the brackets/separators are malformed.
+export const expandCommutator = (str) => {
+  const s = (str || '').trim()
+  if (!s) return null
+  const invert = (moves) => moves.slice().reverse().map(invertMove)
+  let i = 0
+  const parseSeq = (stops) => {
+    const moves = []
+    let buf = ''
+    const flush = () => {
+      const t = buf.trim()
+      if (t) for (const tok of t.split(/\s+/)) moves.push(tok)
+      buf = ''
+    }
+    while (i < s.length) {
+      const c = s[i]
+      if (stops.includes(c)) break
+      if (c === '[') {
+        flush()
+        i++ // consume '['
+        const a = parseSeq([',', ':'])
+        const sep = s[i]
+        if (a === null || (sep !== ',' && sep !== ':')) return null
+        i++ // consume separator
+        const b = parseSeq([']'])
+        if (b === null || s[i] !== ']') return null
+        i++ // consume ']'
+        if (sep === ',') moves.push(...a, ...b, ...invert(a), ...invert(b))
+        else moves.push(...a, ...b, ...invert(a))
+      } else if (c === ']' || c === ',' || c === ':') {
+        return null // stray separator/closer at this level
+      } else {
+        buf += c
+        i++
+      }
+    }
+    flush()
+    return moves
+  }
+  const result = parseSeq([])
+  if (result === null || i < s.length) return null
+  return result.join(' ')
+}
+
+// The plain move sequence for an alg, expanding commutator notation when
+// present (otherwise the alg as-is). '' if commutator notation is malformed.
+export const algToMoveString = (alg) => {
+  if (/[[\],:]/.test(alg || '')) return expandCommutator(alg) ?? ''
+  return alg || ''
 }
 
 export const amountToMove = (face, amount) => {

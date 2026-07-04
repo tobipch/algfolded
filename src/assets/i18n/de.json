@@ -135,7 +135,7 @@
       "setup_moves": "Einrichten",
       "algorithms_collection": "Algorithmen",
       "choose_alg_hint": "(Alg anklicken, um ihn auszuwählen)",
-      "add_alg_placeholder": "Eigenen Alg hinzufügen (z. B. R U R' U')",
+      "add_alg_placeholder": "Eigenen Alg hinzufügen — Züge oder [a, b] Commutator",
       "add_alg_btn": "Algorithmus hinzufügen",
       "custom_alg_title": "Eigener Algorithmus",
       "delete_alg_title": "Diesen Algorithmus entfernen",
