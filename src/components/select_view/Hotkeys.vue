@@ -36,6 +36,10 @@
       <span class="expl">{{ $t("hotkeys.didnt_know") }}</span>
     </li>
     <li>
+      <kbd>Alt</kbd>+<kbd>H</kbd>
+      <span class="expl">{{ $t("hotkeys.show_hint") }}</span>
+    </li>
+    <li>
       <kbd>Alt</kbd>+<kbd>Y</kbd>
       <span class="expl">{{ $t("hotkeys.bluetooth_pause_toggle") }}</span>
     </li>

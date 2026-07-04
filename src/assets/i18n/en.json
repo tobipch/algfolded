@@ -97,6 +97,8 @@
       "selfpaced_hint": "= next case (records the time and starts the next)",
       "didnt_know": "Didn't know",
       "didnt_know_tooltip": "Prioritize this case temporarily so it repeats sooner",
+      "hint": "Help",
+      "hint_tooltip": "Show the algorithm for this case (Alt+H, or spin the L layer 4×)",
       "alg_detected_toast": "Alg recognized: {alg} — saved as your alg for this case",
       "alg_added_toast": "New alg recorded: {alg} — saved as your alg for this case"
     },
@@ -150,6 +152,7 @@
       "recap": "Start recap all selected cases",
       "add_to_starred": "Add selected case to starred preset",
       "didnt_know": "Mark current case as didn't know",
+      "show_hint": "Show the algorithm for the current case",
       "bluetooth_pause_toggle": "Pause / resume smart cube tracking",
       "bluetooth_reset_to_solved": "Reset virtual cube to solved",
       "navigate": "Navigate to prev/next/first/last result in stats"

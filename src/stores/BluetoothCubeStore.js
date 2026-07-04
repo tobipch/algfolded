@@ -41,6 +41,9 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Bumped each time the user performs the reset gesture (a full 360° spin of
     // the bottom layer), so the UI can show a toast.
     const resetSignal = ref(0)
+    // Bumped when the user performs the "help" gesture — a full 360° spin of the
+    // left (L) layer — so the UI can reveal the current case's algorithm.
+    const hintSignal = ref(0)
 
     // Moves of the finished solve, for algorithm detection. Set when the cube
     // reaches solved; consumed (and cleared) by the session store's stopTimer.
@@ -148,6 +151,21 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         if (last4.length === 4 && (last4.every(m => m === face) || last4.every(m => m === face + "'"))) return true
         const last2 = resetGestureMoves.slice(-2)
         if (last2.length === 2 && last2.every(m => m === face + '2')) return true
+        return false
+    }
+
+    // Detect a full 360° spin of the left (L) layer used as a "show me the
+    // algorithm" gesture: L L L L, L' L' L' L', or L2 L2. Net-identity, so it
+    // never appears in a real alg and leaves the cube state untouched.
+    let hintGestureMoves = []
+    const checkHintGesture = (move) => {
+        if (moveFace(move) !== 'L') { hintGestureMoves = []; return false }
+        hintGestureMoves.push(move)
+        if (hintGestureMoves.length > 4) hintGestureMoves = hintGestureMoves.slice(-4)
+        const last4 = hintGestureMoves.slice(-4)
+        if (last4.length === 4 && (last4.every(m => m === 'L') || last4.every(m => m === "L'"))) return true
+        const last2 = hintGestureMoves.slice(-2)
+        if (last2.length === 2 && last2.every(m => m === 'L2')) return true
         return false
     }
 
@@ -391,6 +409,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         pendingFaceTurn.value = null
         tooFarFromSolved.value = false
         resetGestureMoves = []
+        hintGestureMoves = []
         solveMoves = []
         clearIdleTimer()
         computeExpectedPatterns(kpuzzle)
@@ -426,6 +445,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         paused.value = false
         tooFarFromSolved.value = false
         resetGestureMoves = []
+        hintGestureMoves = []
         solveMoves = []
         clearIdleTimer()
         cubePattern = null
@@ -478,6 +498,18 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             return
         }
 
+        // Help gesture: a full 360° spin of the left layer reveals the alg.
+        // Net-identity, so the cube state is unchanged; strip the gesture's
+        // stray L moves from the solution recording so alg detection is intact.
+        if (checkHintGesture(move)) {
+            hintGestureMoves = []
+            if (phase.value === 'solving') {
+                while (solveMoves.length && moveFace(solveMoves[solveMoves.length - 1]) === 'L') solveMoves.pop()
+            }
+            hintSignal.value++
+            return
+        }
+
         const wasScrambling = phase.value === 'scrambling'
 
         if (phase.value === 'scrambling') {
@@ -520,6 +552,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         // the scramble keeps working.
         if (wasScrambling && phase.value === 'solving') {
             resetGestureMoves = []
+            hintGestureMoves = []
         }
 
         // Refresh the "too far from solved" hint: any move clears it and re-arms
@@ -688,7 +721,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     return {
         connected, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
-        tooFarFromSolved, resetSignal, lastSolveMoves, consumeSolveMoves,
+        tooFarFromSolved, resetSignal, hintSignal, lastSolveMoves, consumeSolveMoves,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals
     }

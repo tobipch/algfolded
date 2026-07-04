@@ -97,6 +97,8 @@
       "selfpaced_hint": "= caso successivo (salva il tempo e avvia il prossimo)",
       "didnt_know": "Non lo sapevo",
       "didnt_know_tooltip": "Dai priorità temporanea a questo caso affinché venga ripetuto prima",
+      "hint": "Aiuto",
+      "hint_tooltip": "Mostra l'algoritmo per questo caso (Alt+H, o ruota lo strato L 4×)",
       "alg_detected_toast": "Algoritmo riconosciuto: {alg} — salvato come il tuo algoritmo per questo caso",
       "alg_added_toast": "Nuovo algoritmo registrato: {alg} — salvato come il tuo algoritmo per questo caso"
     },
@@ -150,6 +152,7 @@
       "recap": "Inizia a ripassare tutti i casi selezionati",
       "add_to_starred": "Aggiungi caso selezionato a preimpostazione preferita",
       "didnt_know": "Segna il caso corrente come non saputo",
+      "show_hint": "Mostra l'algoritmo del caso corrente",
       "bluetooth_pause_toggle": "Metti in pausa / riprendi il tracciamento dello smart cube",
       "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto",
       "navigate": "Passa al risultato precedente / successivo / primo / ultimo nelle statistiche"
