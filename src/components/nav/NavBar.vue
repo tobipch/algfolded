@@ -1,6 +1,7 @@
 <script setup>
 import LangDropdown from "@/components/nav/LangDropdown.vue";
 import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
+import BtDiagnosticsModal from "@/components/nav/BtDiagnosticsModal.vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
 import {useRouter, useRoute} from "vue-router";
@@ -152,108 +153,141 @@ onUnmounted(() => {
           <i class="bi" :class="showMobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
         </button>
       <div ref="navActionsWrap" class="nav-actions d-flex align-items-center gap-1" :class="{open: showMobileMenu}">
-        <LangDropdown/>
-        <span ref="btConnectWrap" class="bt-connect-wrap">
-          <button
-              class="btn"
-              tabindex="-1" @keydown.space.prevent=""
-              :class="btBtnClass"
-              @click.stop="onBluetoothClick"
-              :title="btTooltip">
-            <i class="bi-bluetooth"/>
-          </button>
-          <div v-if="showConnectMenu && !bt.connected" class="bt-connect-menu">
-            <div class="bt-connect-menu-title">{{ $t('nav.bluetooth_select_brand') }}</div>
-            <button class="bt-connect-item" @click.stop="connectBrand('gan')">GAN</button>
-            <button class="bt-connect-item" @click.stop="connectBrand('moyu')">MoYu / QiYi</button>
-          </div>
-        </span>
-        <span v-if="bt.connected && bt.battery !== null" class="bt-battery-wrap d-flex align-items-center"
-              tabindex="0" @touchstart.prevent="">
-          <svg width="20" height="10" viewBox="0 0 20 10">
-            <rect x="0" y="0" width="17" height="10" rx="1.5" fill="none"
-                  :stroke="bt.battery <= 20 ? 'var(--bs-danger)' : 'currentColor'" stroke-width="1.2"/>
-            <rect x="17" y="3" width="2.5" height="4" rx="0.5"
-                  :fill="bt.battery <= 20 ? 'var(--bs-danger)' : 'currentColor'"/>
-            <rect v-if="bt.battery > 5" x="1.5" y="1.5" width="4" height="7" rx="0.5"
-                  :fill="bt.battery <= 20 ? 'var(--bs-danger)' : 'var(--bs-success)'"/>
-            <rect v-if="bt.battery > 33" x="6.5" y="1.5" width="4" height="7" rx="0.5"
-                  :fill="'var(--bs-success)'"/>
-            <rect v-if="bt.battery > 66" x="11.5" y="1.5" width="4" height="7" rx="0.5"
-                  :fill="'var(--bs-success)'"/>
-          </svg>
-          <span class="bt-battery-tooltip">{{ bt.battery }}%</span>
-        </span>
-        <span v-if="bt.connected" class="bt-feature-wrap" tabindex="0" @touchstart.prevent="">
-          <button
-              class="btn"
-              tabindex="-1" @keydown.space.prevent=""
-              :class="bt.paused ? 'btn-warning' : 'btn-outline-secondary'"
-              @click="bt.paused ? bt.resumeTracking() : bt.pauseTracking()">
-            <i :class="bt.paused ? 'bi-play-fill' : 'bi-pause-fill'"/>
-          </button>
-          <i class="bi-bluetooth bt-feature-badge"/>
-          <span class="bt-feature-tooltip">{{ bt.paused ? $t('nav.bluetooth_resume') : $t('nav.bluetooth_pause') }} (Alt+Y)</span>
-        </span>
-        <span v-if="bt.connected" class="bt-feature-wrap" tabindex="0" @touchstart.prevent="">
-          <button
-              class="btn btn-outline-secondary"
-              tabindex="-1" @keydown.space.prevent=""
-              @click="bt.resetToSolved()">
-            <i class="bi-arrow-counterclockwise"/>
-          </button>
-          <i class="bi-bluetooth bt-feature-badge"/>
-          <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }} (Alt+M)</span>
-        </span>
-        <button
-            class="btn btn-outline-info"
-            tabindex="-1" @keydown.space.prevent=""
-            @click="palette.openPalette()"
-            :title="$t('cmd.open') + ' (Alt+K)'">
-          <i class="bi-command"/>
-        </button>
-        <button
-            class="btn"
-            tabindex="-1" @keydown.space.prevent=""
-            :class="statsBtnClass"
-            @click="isStatsView ? router.push('select') : router.push('stats')"
-            :title="$t('nav.stats')">
-          <i class="bi-bar-chart"/>
-        </button>
-        <button
-            class="btn"
-            tabindex="-1" @keydown.space.prevent=""
-            :class="settingsBtnClass"
-            @click="isSettingsView ? closeSettings() : openSettings()"
-            :title="$t('nav.settings')">
-          <i class="bi-wrench"/>
-        </button>
-        <span ref="accountWrap" class="bt-connect-wrap">
-          <button
-              class="btn"
-              tabindex="-1" @keydown.space.prevent=""
-              :class="auth.loggedIn ? 'btn-success' : 'btn-outline-secondary'"
-              @click.stop="onAccountClick"
-              :title="auth.loggedIn ? auth.user.name : $t('auth.login_with_wca')">
-            <img v-if="auth.loggedIn && auth.user.avatarUrl"
-                 :src="auth.user.avatarUrl" class="account-avatar" alt=""/>
-            <i v-else class="bi-person-circle"/>
-          </button>
-          <div v-if="showAccountMenu && auth.loggedIn" class="bt-connect-menu">
-            <div class="bt-connect-menu-title">{{ auth.user.name }}<template v-if="auth.user.wcaId"> · {{ auth.user.wcaId }}</template></div>
-            <button class="bt-connect-item" @click.stop="showAccountMenu = false; router.push('stats')">
-              <i class="bi-bar-chart me-1"/>{{ $t('nav.stats') }}
+        <div class="nav-item">
+          <span class="nav-label">{{ $t('nav.language') }}</span>
+          <LangDropdown/>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ bt.connected ? $t('nav.bluetooth_disconnect') : $t('nav.bluetooth_connect') }}</span>
+          <span ref="btConnectWrap" class="bt-connect-wrap">
+            <button
+                class="btn"
+                tabindex="-1" @keydown.space.prevent=""
+                :class="btBtnClass"
+                @click.stop="onBluetoothClick"
+                :title="btTooltip">
+              <i class="bi-bluetooth"/>
             </button>
-            <button class="bt-connect-item" @click.stop="onLogoutClick">
-              <i class="bi-box-arrow-right me-1"/>{{ $t('auth.logout') }}
+            <div v-if="showConnectMenu && !bt.connected" class="bt-connect-menu">
+              <div class="bt-connect-menu-title">{{ $t('nav.bluetooth_select_brand') }}</div>
+              <button class="bt-connect-item" @click.stop="connectBrand('gan')">GAN</button>
+              <button class="bt-connect-item" @click.stop="connectBrand('moyu')">MoYu / QiYi</button>
+              <button class="bt-connect-item bt-connect-log" @click.stop="showConnectMenu = false; bt.openDiagnostics()">
+                <i class="bi bi-file-earmark-text me-1"/>{{ $t('nav.bluetooth_log') }}
+              </button>
+            </div>
+          </span>
+        </div>
+        <div v-if="bt.connected && bt.battery !== null" class="nav-item">
+          <span class="nav-label">{{ $t('nav.battery') }}</span>
+          <span class="bt-battery-wrap d-flex align-items-center" tabindex="0" @touchstart.prevent="">
+            <svg width="20" height="10" viewBox="0 0 20 10">
+              <rect x="0" y="0" width="17" height="10" rx="1.5" fill="none"
+                    :stroke="bt.battery <= 20 ? 'var(--bs-danger)' : 'currentColor'" stroke-width="1.2"/>
+              <rect x="17" y="3" width="2.5" height="4" rx="0.5"
+                    :fill="bt.battery <= 20 ? 'var(--bs-danger)' : 'currentColor'"/>
+              <rect v-if="bt.battery > 5" x="1.5" y="1.5" width="4" height="7" rx="0.5"
+                    :fill="bt.battery <= 20 ? 'var(--bs-danger)' : 'var(--bs-success)'"/>
+              <rect v-if="bt.battery > 33" x="6.5" y="1.5" width="4" height="7" rx="0.5"
+                    :fill="'var(--bs-success)'"/>
+              <rect v-if="bt.battery > 66" x="11.5" y="1.5" width="4" height="7" rx="0.5"
+                    :fill="'var(--bs-success)'"/>
+            </svg>
+            <span class="bt-battery-tooltip">{{ bt.battery }}%</span>
+          </span>
+        </div>
+        <div v-if="bt.connected" class="nav-item">
+          <span class="nav-label">{{ bt.paused ? $t('nav.bluetooth_resume') : $t('nav.bluetooth_pause') }}</span>
+          <span class="bt-feature-wrap" tabindex="0" @touchstart.prevent="">
+            <button
+                class="btn"
+                tabindex="-1" @keydown.space.prevent=""
+                :class="bt.paused ? 'btn-warning' : 'btn-outline-secondary'"
+                @click="bt.paused ? bt.resumeTracking() : bt.pauseTracking()">
+              <i :class="bt.paused ? 'bi-play-fill' : 'bi-pause-fill'"/>
             </button>
-          </div>
-        </span>
-        <ThemeSwitcher/>
+            <i class="bi-bluetooth bt-feature-badge"/>
+            <span class="bt-feature-tooltip">{{ bt.paused ? $t('nav.bluetooth_resume') : $t('nav.bluetooth_pause') }} (Alt+Y)</span>
+          </span>
+        </div>
+        <div v-if="bt.connected" class="nav-item">
+          <span class="nav-label">{{ $t('nav.bluetooth_reset_to_solved') }}</span>
+          <span class="bt-feature-wrap" tabindex="0" @touchstart.prevent="">
+            <button
+                class="btn btn-outline-secondary"
+                tabindex="-1" @keydown.space.prevent=""
+                @click="bt.resetToSolved()">
+              <i class="bi-arrow-counterclockwise"/>
+            </button>
+            <i class="bi-bluetooth bt-feature-badge"/>
+            <span class="bt-feature-tooltip">{{ $t('nav.bluetooth_reset_to_solved') }} (Alt+M)</span>
+          </span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ $t('cmd.open') }}</span>
+          <button
+              class="btn btn-outline-info"
+              tabindex="-1" @keydown.space.prevent=""
+              @click="palette.openPalette()"
+              :title="$t('cmd.open') + ' (Alt+K)'">
+            <i class="bi-command"/>
+          </button>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ $t('nav.stats') }}</span>
+          <button
+              class="btn"
+              tabindex="-1" @keydown.space.prevent=""
+              :class="statsBtnClass"
+              @click="isStatsView ? router.push('select') : router.push('stats')"
+              :title="$t('nav.stats')">
+            <i class="bi-bar-chart"/>
+          </button>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ $t('nav.settings') }}</span>
+          <button
+              class="btn"
+              tabindex="-1" @keydown.space.prevent=""
+              :class="settingsBtnClass"
+              @click="isSettingsView ? closeSettings() : openSettings()"
+              :title="$t('nav.settings')">
+            <i class="bi-wrench"/>
+          </button>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ auth.loggedIn ? auth.user.name : $t('auth.login_with_wca') }}</span>
+          <span ref="accountWrap" class="bt-connect-wrap">
+            <button
+                class="btn"
+                tabindex="-1" @keydown.space.prevent=""
+                :class="auth.loggedIn ? 'btn-success' : 'btn-outline-secondary'"
+                @click.stop="onAccountClick"
+                :title="auth.loggedIn ? auth.user.name : $t('auth.login_with_wca')">
+              <img v-if="auth.loggedIn && auth.user.avatarUrl"
+                   :src="auth.user.avatarUrl" class="account-avatar" alt=""/>
+              <i v-else class="bi-person-circle"/>
+            </button>
+            <div v-if="showAccountMenu && auth.loggedIn" class="bt-connect-menu">
+              <div class="bt-connect-menu-title">{{ auth.user.name }}<template v-if="auth.user.wcaId"> · {{ auth.user.wcaId }}</template></div>
+              <button class="bt-connect-item" @click.stop="showAccountMenu = false; router.push('stats')">
+                <i class="bi-bar-chart me-1"/>{{ $t('nav.stats') }}
+              </button>
+              <button class="bt-connect-item" @click.stop="onLogoutClick">
+                <i class="bi-box-arrow-right me-1"/>{{ $t('auth.logout') }}
+              </button>
+            </div>
+          </span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-label">{{ $t('nav.toggle_night_mode') }}</span>
+          <ThemeSwitcher/>
+        </div>
       </div>
       </div>
     </div>
   </nav>
+  <BtDiagnosticsModal v-if="bt.diagnosticsVisible"/>
 </template>
 
 <style scoped>
@@ -267,6 +301,14 @@ onUnmounted(() => {
 .nav-right {
   position: relative;
 }
+/* Desktop: nav-item is transparent to layout, so each control flows as a
+   direct flex child exactly as before; the labels stay hidden. */
+.nav-item {
+  display: contents;
+}
+.nav-label {
+  display: none;
+}
 @media (max-width: 575.98px) {
   .nav-actions {
     display: none !important;
@@ -274,11 +316,13 @@ onUnmounted(() => {
     top: calc(100% + 6px);
     right: 0;
     z-index: 1060;
-    flex-wrap: wrap;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: stretch;
+    width: max-content;
+    min-width: 220px;
     max-width: calc(100vw - 2 * var(--app-gutter, 12px));
     padding: 8px;
-    gap: 6px !important;
+    gap: 4px !important;
     background: var(--bs-body-bg);
     border: 1px solid var(--bs-border-color);
     border-radius: 10px;
@@ -286,6 +330,22 @@ onUnmounted(() => {
   }
   .nav-actions.open {
     display: flex !important;
+  }
+  /* Each control becomes a full-width row: label on the left, icon on the right. */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 2px 4px;
+  }
+  .nav-label {
+    display: inline;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 .logo-icon {
