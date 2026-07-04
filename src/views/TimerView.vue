@@ -4,6 +4,7 @@ import Timer from "@/components/timer/Timer.vue";
 import ResultCard from "@/components/timer/ResultCard.vue";
 import SummaryCard from "@/components/timer/SummaryCard.vue";
 import StatsCard from "@/components/timer/StatsCard.vue";
+import AlgHint from "@/components/timer/AlgHint.vue";
 import {useI18n} from 'vue-i18n'
 
 const {t} = useI18n()
@@ -54,6 +55,16 @@ const selectStore = useSelectedStore()
 const presets = usePresetsStore()
 const displayStore = useDisplayStore()
 const btStore = useBluetoothCubeStore()
+
+// --- Alg hint ("I forgot the alg") ---
+// The case currently being practised (may differ from the observed result).
+const currentSolveKey = computed(() => sessionStore.store.currentKey)
+const showHint = ref(false)
+const toggleHint = () => { showHint.value = !showHint.value }
+// L4 cube gesture reveals the alg (bumped by the bluetooth store).
+watch(() => btStore.hintSignal, (v) => { if (v) showHint.value = true })
+// Auto-hide when we move on to a different case.
+watch(currentSolveKey, () => { showHint.value = false })
 
 // Bluetooth cube auto start/stop
 watch(() => btStore.phase, (phase, oldPhase) => {
@@ -115,6 +126,14 @@ const onGlobalKeyDown = event => {
         && confirm(t("result_card.are_you_sure_to_delete"))) {
       sessionStore.deleteResult(sessionStore.observingResult)
     }
+  }
+
+  // Alt+H reveals the current case's alg. Handled before the running-timer
+  // guard below so it never stops the timer (non-interruptive help).
+  if (event.key.toLowerCase() === "h" && event.altKey) {
+    if (currentSolveKey.value) toggleHint()
+    event.preventDefault()
+    return
   }
 
   // Self-paced letter-pair mode (letter-pair display, no smart cube connected):
@@ -283,8 +302,22 @@ const onPageTouchEnd = event => {
               <span class="didnt-know-tooltip">{{ $t('timer.didnt_know_tooltip') }}</span>
             </span>
           </div>
+          <button
+              v-if="currentSolveKey"
+              class="btn btn-sm hint-btn"
+              :class="{ active: showHint }"
+              tabindex="-1"
+              :title="$t('timer.hint_tooltip')"
+              @click.stop="toggleHint"
+              @mousedown.stop=""
+              @touchstart.stop.prevent="toggleHint"
+              @keydown.space.prevent="">
+            <i class="bi bi-lightbulb"></i>
+            {{ $t("timer.hint") }}
+          </button>
           <Timer/>
         </div>
+        <AlgHint v-if="showHint && currentSolveKey" :caseKey="currentSolveKey"/>
         <div v-if="displayStore.showStatistics" class="d-sm-none d-block">
           <SummaryCard v-if="sessionStore.stats().length > 0"/>
           <div class="mt-2">
@@ -346,6 +379,22 @@ const onPageTouchEnd = event => {
   top: 8px;
   left: 8px;
   z-index: 1;
+}
+.hint-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  color: var(--bs-secondary);
+  border-color: var(--bs-secondary);
+  opacity: 0.7;
+}
+.hint-btn:hover,
+.hint-btn.active {
+  color: var(--bs-warning);
+  border-color: var(--bs-warning);
+  background: transparent;
+  opacity: 1;
 }
 .didnt-know-btn {
   color: var(--bs-secondary);

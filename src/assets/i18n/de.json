@@ -16,13 +16,6 @@
       "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen",
       "menu": "Menü",
       "battery": "Batterie",
-      "bluetooth_log": "Verbindungs-Log",
-      "diag_title": "Bluetooth-Verbindungs-Log",
-      "diag_hint": "Kopiere dies und schick es zur Analyse des Verbindungsproblems.",
-      "diag_copy": "Kopieren",
-      "diag_copied": "Kopiert!",
-      "diag_select_all": "Alles auswählen",
-      "diag_close": "Schließen",
       "stats": "Statistiken"
     },
     "select": {
@@ -104,6 +97,8 @@
       "selfpaced_hint": "= nächster Fall (speichert die Zeit und startet den nächsten)",
       "didnt_know": "Nicht gewusst",
       "didnt_know_tooltip": "Diesen Fall vorübergehend priorisieren, damit er früher wiederholt wird",
+      "hint": "Hilfe",
+      "hint_tooltip": "Zeigt den Algorithmus für diesen Fall (Alt+H, oder die L-Ebene 4× drehen)",
       "alg_detected_toast": "Alg erkannt: {alg} — als dein Alg für diesen Fall gespeichert",
       "alg_added_toast": "Neuer Alg aufgenommen: {alg} — als dein Alg für diesen Fall gespeichert"
     },
@@ -157,6 +152,7 @@
       "recap": "Wiederholung aller ausgewählten Fälle starten",
       "add_to_starred": "Ausgewählten Fall zu favorisierten Voreinstellungen hinzufügen",
       "didnt_know": "Aktuellen Fall als nicht gewusst markieren",
+      "show_hint": "Algorithmus für den aktuellen Fall anzeigen",
       "bluetooth_pause_toggle": "Smart Cube Tracking pausieren / fortsetzen",
       "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen",
       "navigate": "Zu vorherigem / nächstem / erstem / letztem Ergebnis in den Statistiken wechseln"
