@@ -14,6 +14,7 @@
       "bluetooth_pause": "Mettre en pause le suivi",
       "bluetooth_resume": "Reprendre le suivi",
       "bluetooth_reset_to_solved": "Réinitialiser le cube virtuel à l'état résolu",
+      "menu": "Menu",
       "stats": "Statistiques"
     },
     "select": {

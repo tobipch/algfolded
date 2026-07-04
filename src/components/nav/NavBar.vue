@@ -4,7 +4,7 @@ import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
 import {useRouter, useRoute} from "vue-router";
-import {computed, onMounted, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
 import {useCommandPaletteStore} from "@/stores/CommandPaletteStore";
@@ -17,6 +17,11 @@ const session = useSessionStore()
 const bt = useBluetoothCubeStore()
 const palette = useCommandPaletteStore()
 const auth = useAuthStore()
+
+// Mobile: the action buttons collapse into a hamburger panel.
+const showMobileMenu = ref(false)
+const navActionsWrap = ref(null)
+const burgerBtn = ref(null)
 
 // Account dropdown (login with WCA / logout)
 const showAccountMenu = ref(false)
@@ -49,6 +54,11 @@ const onDocClick = (e) => {
   }
   if (showAccountMenu.value && accountWrap.value && !accountWrap.value.contains(e.target)) {
     showAccountMenu.value = false
+  }
+  if (showMobileMenu.value
+      && navActionsWrap.value && !navActionsWrap.value.contains(e.target)
+      && burgerBtn.value && !burgerBtn.value.contains(e.target)) {
+    showMobileMenu.value = false
   }
 }
 const btBtnClass = computed(() => bt.connected ? 'btn-info' : 'btn-outline-secondary')
@@ -86,6 +96,9 @@ const onGlobalKeyDown = (e) => {
     e.preventDefault()
   }
 }
+// Close the mobile menu after navigating somewhere from within it.
+watch(() => route.fullPath, () => { showMobileMenu.value = false })
+
 onMounted(() => {
   window.addEventListener('keydown', onGlobalKeyDown)
   document.addEventListener('click', onDocClick)
@@ -129,7 +142,16 @@ onUnmounted(() => {
           {{ $t("nav.n_to_recap", session.casesWithZeroCount.length) }}
         </span>
       </div>
-      <div class="d-flex align-items-center justify-content-end p-0 gap-1">
+      <div class="nav-right d-flex align-items-center">
+        <button
+            ref="burgerBtn"
+            class="btn btn-outline-secondary burger-btn d-sm-none"
+            tabindex="-1" @keydown.space.prevent=""
+            :title="$t('nav.menu')"
+            @click.stop="showMobileMenu = !showMobileMenu">
+          <i class="bi" :class="showMobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
+        </button>
+      <div ref="navActionsWrap" class="nav-actions d-flex align-items-center gap-1" :class="{open: showMobileMenu}">
         <LangDropdown/>
         <span ref="btConnectWrap" class="bt-connect-wrap">
           <button
@@ -229,6 +251,7 @@ onUnmounted(() => {
         </span>
         <ThemeSwitcher/>
       </div>
+      </div>
     </div>
   </nav>
 </template>
@@ -236,6 +259,34 @@ onUnmounted(() => {
 <style scoped>
 .logoText {
   font-weight: 900;
+}
+
+/* Mobile: the action buttons collapse behind a hamburger so the bar never
+   overflows. Desktop keeps them inline (the media query below is a no-op
+   there, and the burger is d-sm-none). */
+.nav-right {
+  position: relative;
+}
+@media (max-width: 575.98px) {
+  .nav-actions {
+    display: none !important;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 1060;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100vw - 2 * var(--app-gutter, 12px));
+    padding: 8px;
+    gap: 6px !important;
+    background: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  }
+  .nav-actions.open {
+    display: flex !important;
+  }
 }
 .logo-icon {
   height: 1.4em;
