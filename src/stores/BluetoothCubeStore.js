@@ -17,55 +17,6 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const deviceName = ref(null)
     const battery = ref(null)
 
-    // --- Connection diagnostics ---------------------------------------------
-    // A running log of what happens during a connect attempt, surfaced in a
-    // copyable panel so issues on browsers we can't debug directly (e.g.
-    // Bluefy on iOS) can be understood from the device itself.
-    const diagnostics = ref([])
-    const diagnosticsVisible = ref(false)
-    const logDiag = (msg) => {
-        const ts = new Date().toISOString().slice(11, 23)
-        diagnostics.value.push(`[${ts}] ${msg}`)
-        if (diagnostics.value.length > 300) diagnostics.value.shift()
-        try { console.log('[BT]', msg) } catch (_) { /* ignore */ }
-    }
-    const clearDiagnostics = () => { diagnostics.value = [] }
-    const openDiagnostics = () => { diagnosticsVisible.value = true }
-    const closeDiagnostics = () => { diagnosticsVisible.value = false }
-
-    // JSON that survives odd option shapes: truncates the huge GAN CIC list and
-    // tags numeric service UUIDs (which some engines reject).
-    const safeJson = (obj) => {
-        try {
-            return JSON.stringify(obj, (key, value) => {
-                if (Array.isArray(value) && value.length > 12 && value.every(v => typeof v === 'number')) {
-                    return `[${value.length} numbers: ${value.slice(0, 4).join(',')}…]`
-                }
-                if (typeof value === 'number') return `#num:${value}`
-                return value
-            })
-        } catch (e) {
-            return `<unserializable: ${e?.message}>`
-        }
-    }
-
-    // Everything about the current Web Bluetooth environment, one item/line.
-    const describeEnv = () => {
-        const L = []
-        try { L.push('userAgent = ' + navigator.userAgent) } catch (_) { L.push('userAgent = <error>') }
-        L.push('navigator.bluetooth present = ' + !!navigator.bluetooth)
-        if (navigator.bluetooth) {
-            L.push('typeof requestDevice = ' + typeof navigator.bluetooth.requestDevice)
-            L.push('typeof getAvailability = ' + typeof navigator.bluetooth.getAvailability)
-        }
-        L.push('typeof BluetoothDevice = ' + (typeof BluetoothDevice))
-        try {
-            L.push("'watchAdvertisements' in BluetoothDevice.prototype = " +
-                (typeof BluetoothDevice !== 'undefined' && 'watchAdvertisements' in BluetoothDevice.prototype))
-        } catch (e) { L.push('watchAdvertisements check = <error: ' + e?.message + '>') }
-        return L.join('\n')
-    }
-
     // Scramble tracking
     // 'idle'          : nothing to track
     // 'scrambling'    : user is reproducing the scramble on the physical cube
@@ -314,26 +265,13 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // This is what makes Bluefy/iOS work — its first attempt fails ("payload
     // could not be parsed" / numeric UUID rejected), the retry succeeds.
     const wrapRequestDevice = (original) => async (options) => {
-        logDiag('requestDevice called by library. options = ' + safeJson(options))
         if (!options) return await original(options)
         try {
-            const dev = await original(options)
-            logDiag('requestDevice RESOLVED (original options). device.name = ' + (dev && dev.name))
-            return dev
+            return await original(options)
         } catch (e) {
             const cancelled = e?.name === 'NotFoundError' || e?.name === 'AbortError'
-            logDiag('original request failed. name=' + e?.name + ' message=' + e?.message + ' cancelled=' + cancelled)
             if (cancelled) throw e
-            const retry = permissiveOptions(options)
-            logDiag('retrying with permissive options -> ' + safeJson(retry))
-            try {
-                const dev = await original(retry)
-                logDiag('requestDevice RESOLVED (retry). device.name = ' + (dev && dev.name))
-                return dev
-            } catch (e2) {
-                logDiag('retry ALSO failed. name=' + e2?.name + ' message=' + e2?.message)
-                throw e2
-            }
+            return await original(permissiveOptions(options))
         }
     }
 
@@ -342,20 +280,13 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // bluetooth object, then to shadowing navigator.bluetooth with a proxy.
     let requestDevicePatched = false
     const patchRequestDevice = () => {
-        if (requestDevicePatched || !navigator.bluetooth) {
-            logDiag('patchRequestDevice: skipped (already patched=' + requestDevicePatched +
-                ', hasBluetooth=' + !!navigator.bluetooth + ')')
-            return
-        }
+        if (requestDevicePatched || !navigator.bluetooth) return
         const bt = navigator.bluetooth
         const wrapped = wrapRequestDevice(bt.requestDevice.bind(bt))
-        let how = 'none'
         try { bt.requestDevice = wrapped } catch (_) { /* try harder below */ }
-        if (bt.requestDevice === wrapped) how = 'assignment'
         if (bt.requestDevice !== wrapped) {
             try {
                 Object.defineProperty(bt, 'requestDevice', {value: wrapped, configurable: true})
-                if (bt.requestDevice === wrapped) how = 'defineProperty'
             } catch (_) { /* try harder below */ }
         }
         if (bt.requestDevice !== wrapped) {
@@ -369,11 +300,8 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
                     shadow[k] = typeof v === 'function' ? v.bind(bt) : v
                 }
                 Object.defineProperty(navigator, 'bluetooth', {value: shadow, configurable: true})
-                if (navigator.bluetooth.requestDevice === wrapped) how = 'navigator-shadow'
             } catch (_) { /* proceed unwrapped: original behaviour */ }
         }
-        const ok = navigator.bluetooth.requestDevice === wrapped
-        logDiag('patchRequestDevice: installed via "' + how + '", wrapper active = ' + ok)
         requestDevicePatched = true
     }
 
@@ -403,14 +331,9 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
 
     const connect = async (brand = 'moyu') => {
         const display = useDisplayStore()
-        clearDiagnostics()
-        logDiag('=== connect() brand=' + brand + ' ===')
-        logDiag(describeEnv())
         try {
             if (!navigator.bluetooth) {
-                logDiag('ABORT: navigator.bluetooth missing')
                 display.showToast('Bluetooth is not supported in this browser', 'danger')
-                openDiagnostics()
                 return
             }
             if (brand === 'gan') {
@@ -418,20 +341,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             } else {
                 await connectMoyu(display)
             }
-            logDiag('connect() succeeded')
         } catch (e) {
             console.error('Bluetooth connect failed:', e)
-            logDiag('connect() FAILED. name=' + e?.name + ' message=' + e?.message)
-            try { logDiag('error.toString = ' + String(e)) } catch (_) { /* ignore */ }
-            try { if (e?.stack) logDiag('error.stack = ' + e.stack) } catch (_) { /* ignore */ }
             cleanupConnection()
             if (e?.name === 'NotFoundError') {
                 display.showToast('No smart cube found. Make sure your cube is on and nearby.', 'danger')
             } else {
                 display.showToast('Failed to connect: ' + (e?.message || 'Unknown error'), 'danger')
             }
-            // Surface the log so it can be inspected / copied on-device.
-            openDiagnostics()
         }
     }
 
@@ -773,8 +690,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
         tooFarFromSolved, resetSignal, lastSolveMoves, consumeSolveMoves,
         connect, disconnect, startTracking, resetTracking,
-        pauseTracking, resumeTracking, resetToSolved, _getInternals,
-        diagnostics, diagnosticsVisible, openDiagnostics, closeDiagnostics, clearDiagnostics
+        pauseTracking, resumeTracking, resetToSolved, _getInternals
     }
 })
 

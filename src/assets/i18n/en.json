@@ -16,13 +16,6 @@
       "bluetooth_reset_to_solved": "Reset virtual cube to solved",
       "menu": "Menu",
       "battery": "Battery",
-      "bluetooth_log": "Connection log",
-      "diag_title": "Bluetooth connection log",
-      "diag_hint": "Copy this and send it over so the connection problem can be diagnosed.",
-      "diag_copy": "Copy",
-      "diag_copied": "Copied!",
-      "diag_select_all": "Select all",
-      "diag_close": "Close",
       "stats": "Statistics"
     },
     "select": {

@@ -1,7 +1,6 @@
 <script setup>
 import LangDropdown from "@/components/nav/LangDropdown.vue";
 import ThemeSwitcher from "@/components/nav/ThemeSwitcher.vue";
-import BtDiagnosticsModal from "@/components/nav/BtDiagnosticsModal.vue";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
 import {useRouter, useRoute} from "vue-router";
@@ -23,6 +22,18 @@ const auth = useAuthStore()
 const showMobileMenu = ref(false)
 const navActionsWrap = ref(null)
 const burgerBtn = ref(null)
+
+// In the mobile panel each control sits in a labelled row; make the whole row
+// (the label / empty space, not just the icon) trigger the control. Clicks
+// that already land on an interactive element are left alone, and we stop the
+// forwarded click from reaching the document handler so it doesn't
+// immediately close a menu the same tap just opened.
+const onActionsClick = (e) => {
+  if (e.target.closest('button, a, input, select')) return
+  const item = e.target.closest('.nav-item')
+  const btn = item && item.querySelector('button')
+  if (btn) { e.stopPropagation(); btn.click() }
+}
 
 // Account dropdown (login with WCA / logout)
 const showAccountMenu = ref(false)
@@ -152,7 +163,7 @@ onUnmounted(() => {
             @click.stop="showMobileMenu = !showMobileMenu">
           <i class="bi" :class="showMobileMenu ? 'bi-x-lg' : 'bi-list'"></i>
         </button>
-      <div ref="navActionsWrap" class="nav-actions d-flex align-items-center gap-1" :class="{open: showMobileMenu}">
+      <div ref="navActionsWrap" class="nav-actions d-flex align-items-center gap-1" :class="{open: showMobileMenu}" @click="onActionsClick">
         <div class="nav-item">
           <span class="nav-label">{{ $t('nav.language') }}</span>
           <LangDropdown/>
@@ -172,9 +183,6 @@ onUnmounted(() => {
               <div class="bt-connect-menu-title">{{ $t('nav.bluetooth_select_brand') }}</div>
               <button class="bt-connect-item" @click.stop="connectBrand('gan')">GAN</button>
               <button class="bt-connect-item" @click.stop="connectBrand('moyu')">MoYu / QiYi</button>
-              <button class="bt-connect-item bt-connect-log" @click.stop="showConnectMenu = false; bt.openDiagnostics()">
-                <i class="bi bi-file-earmark-text me-1"/>{{ $t('nav.bluetooth_log') }}
-              </button>
             </div>
           </span>
         </div>
@@ -287,7 +295,6 @@ onUnmounted(() => {
       </div>
     </div>
   </nav>
-  <BtDiagnosticsModal v-if="bt.diagnosticsVisible"/>
 </template>
 
 <style scoped>
@@ -331,14 +338,20 @@ onUnmounted(() => {
   .nav-actions.open {
     display: flex !important;
   }
-  /* Each control becomes a full-width row: label on the left, icon on the right. */
+  /* Each control becomes a full-width row: label on the left, icon on the
+     right. The whole row is tappable (see onActionsClick). */
   .nav-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
     width: 100%;
-    padding: 2px 4px;
+    padding: 4px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .nav-item:active {
+    background: var(--bs-secondary-bg, rgba(128, 128, 128, 0.15));
   }
   .nav-label {
     display: inline;

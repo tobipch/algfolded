@@ -16,13 +16,6 @@
       "bluetooth_reset_to_solved": "Virtuellen Würfel auf gelöst zurücksetzen",
       "menu": "Menü",
       "battery": "Batterie",
-      "bluetooth_log": "Verbindungs-Log",
-      "diag_title": "Bluetooth-Verbindungs-Log",
-      "diag_hint": "Kopiere dies und schick es zur Analyse des Verbindungsproblems.",
-      "diag_copy": "Kopieren",
-      "diag_copied": "Kopiert!",
-      "diag_select_all": "Alles auswählen",
-      "diag_close": "Schließen",
       "stats": "Statistiken"
     },
     "select": {

@@ -16,13 +16,6 @@
       "bluetooth_reset_to_solved": "Reimposta il cubo virtuale su risolto",
       "menu": "Menu",
       "battery": "Batteria",
-      "bluetooth_log": "Log di connessione",
-      "diag_title": "Log di connessione Bluetooth",
-      "diag_hint": "Copia questo e invialo per diagnosticare il problema di connessione.",
-      "diag_copy": "Copia",
-      "diag_copied": "Copiato!",
-      "diag_select_all": "Seleziona tutto",
-      "diag_close": "Chiudi",
       "stats": "Statistiche"
     },
     "select": {

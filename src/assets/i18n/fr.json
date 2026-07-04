@@ -16,13 +16,6 @@
       "bluetooth_reset_to_solved": "Réinitialiser le cube virtuel à l'état résolu",
       "menu": "Menu",
       "battery": "Batterie",
-      "bluetooth_log": "Journal de connexion",
-      "diag_title": "Journal de connexion Bluetooth",
-      "diag_hint": "Copiez ceci et envoyez-le pour diagnostiquer le problème de connexion.",
-      "diag_copy": "Copier",
-      "diag_copied": "Copié !",
-      "diag_select_all": "Tout sélectionner",
-      "diag_close": "Fermer",
       "stats": "Statistiques"
     },
     "select": {
