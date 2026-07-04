@@ -37,10 +37,14 @@ const card_bg_class = computed(() => {
 
 const groupCardRef = ref(null)
 const isCollapsed = ref(true)
+// Lazy-mount this group's leaf cases (two-level sets) only while it's open.
+const renderCases = ref(false)
 onMounted(() => {
+  const el = groupCardRef.value
   // guard against bubbled events from nested (subgroup/case) collapses
-  groupCardRef.value.addEventListener('show.bs.collapse', e => { if (e.target === groupCardRef.value) isCollapsed.value = false });
-  groupCardRef.value.addEventListener('hide.bs.collapse', e => { if (e.target === groupCardRef.value) isCollapsed.value = true });
+  el.addEventListener('show.bs.collapse', e => { if (e.target === el) { isCollapsed.value = false; renderCases.value = true } });
+  el.addEventListener('hide.bs.collapse', e => { if (e.target === el) isCollapsed.value = true });
+  el.addEventListener('hidden.bs.collapse', e => { if (e.target === el) renderCases.value = false });
 })
 
 </script>
@@ -66,7 +70,7 @@ onMounted(() => {
       class="text-center collapse multi-collapse subgroup-well"
       ref="groupCardRef"
       :id="collapseId">
-    <div v-if="childrenAreLeaves" class="row g-1">
+    <div v-if="childrenAreLeaves && renderCases" class="row g-1">
       <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
         <CaseCard :node="leaf"/>
       </div>

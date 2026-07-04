@@ -34,10 +34,16 @@ const collapseId = computed(() => `sub-${props.node.path.join('-')}`)
 
 const subgroupCardRef = ref(null)
 const isCollapsed = ref(true)
+// Lazy-mount the case cards only while the subgroup is open (kept mounted
+// during the collapse animation). Rendering every case of every subgroup up
+// front is what made big sets carry tens of thousands of DOM nodes.
+const renderCases = ref(false)
 onMounted(() => {
+  const el = subgroupCardRef.value
   // guard against bubbled events from nested (case) collapses
-  subgroupCardRef.value.addEventListener('show.bs.collapse', e => { if (e.target === subgroupCardRef.value) isCollapsed.value = false });
-  subgroupCardRef.value.addEventListener('hide.bs.collapse', e => { if (e.target === subgroupCardRef.value) isCollapsed.value = true });
+  el.addEventListener('show.bs.collapse', e => { if (e.target === el) { isCollapsed.value = false; renderCases.value = true } });
+  el.addEventListener('hide.bs.collapse', e => { if (e.target === el) isCollapsed.value = true });
+  el.addEventListener('hidden.bs.collapse', e => { if (e.target === el) renderCases.value = false });
 })
 </script>
 
@@ -66,7 +72,7 @@ onMounted(() => {
       class="collapse multi-collapse case-well"
       ref="subgroupCardRef"
       :id="collapseId">
-    <div class="row g-1">
+    <div v-if="renderCases" class="row g-1">
       <div v-for="leaf in props.node.children" :key="leaf.caseId" class="case-col">
         <CaseCard :node="leaf"/>
       </div>
