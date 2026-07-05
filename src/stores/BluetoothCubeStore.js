@@ -215,24 +215,33 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // --- Connection liveness -------------------------------------------------
     // On mobile the OS can tear down the GATT link (e.g. during an app switch)
     // without always delivering the 'gattserverdisconnected' event, which would
-    // leave the header showing "connected" while moves do nothing. Poll the GATT
-    // state, and re-check the instant the page returns to the foreground.
+    // leave the header showing "connected" while moves do nothing.
+    //
+    // `gatt.connected` is unreliable on iOS (it can momentarily read false on a
+    // perfectly good link, and right after connecting), so we treat it as dead
+    // only after several CONSECUTIVE dead readings and never during a grace
+    // period after connecting — otherwise the monitor would drop a working
+    // connection. This is a safety net, not the primary disconnect signal (the
+    // library's gattserverdisconnected / DISCONNECT events are).
     let livenessTimer = null
+    let deadReadings = 0
+    let monitorArmedAt = 0
     const gattIsLive = () => !!(gattDevice && gattDevice.gatt && gattDevice.gatt.connected)
     const checkLiveness = () => {
-        if (connected.value && gattDevice && !gattIsLive()) onGattDisconnect()
+        if (!connected.value || !gattDevice) { deadReadings = 0; return }
+        if (Date.now() - monitorArmedAt < 8000) return // settle after connect
+        deadReadings = gattIsLive() ? 0 : deadReadings + 1
+        if (deadReadings >= 3) { deadReadings = 0; onGattDisconnect() }
     }
     const startLivenessMonitor = () => {
         stopLivenessMonitor()
+        deadReadings = 0
+        monitorArmedAt = Date.now()
         livenessTimer = setInterval(checkLiveness, 3000)
     }
     const stopLivenessMonitor = () => {
         if (livenessTimer) { clearInterval(livenessTimer); livenessTimer = null }
-    }
-    if (typeof document !== 'undefined') {
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') checkLiveness()
-        })
+        deadReadings = 0
     }
 
     // GAN cubes derive their encryption key from the device MAC address. The
@@ -403,7 +412,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             if (e?.name === 'NotFoundError') {
                 display.showToast('No smart cube found. Make sure your cube is on and nearby.', 'danger')
             } else {
-                display.showToast('Failed to connect: ' + (e?.message || 'Unknown error'), 'danger')
+                // Include the error name so failures on browsers we can't debug
+                // directly (e.g. Bluefy on iOS) can be reported back.
+                const detail = [e?.name, e?.message].filter(Boolean).join(': ') || 'Unknown error'
+                display.showToast('Failed to connect: ' + detail, 'danger')
             }
         }
     }
