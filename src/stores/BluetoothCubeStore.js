@@ -203,10 +203,36 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }
     }
 
+    // An unexpected drop (device powered off / out of range / the OS tearing
+    // the link down when the page is backgrounded). Guard so it runs once.
     const onGattDisconnect = () => {
+        if (!connected.value) return
         const display = useDisplayStore()
         cleanupConnection()
-        display.showToast('Smart cube disconnected', 'info')
+        display.showToast('Smart cube connection lost — tap the bluetooth icon to reconnect', 'danger')
+    }
+
+    // --- Connection liveness -------------------------------------------------
+    // On mobile the OS can tear down the GATT link (e.g. during an app switch)
+    // without always delivering the 'gattserverdisconnected' event, which would
+    // leave the header showing "connected" while moves do nothing. Poll the GATT
+    // state, and re-check the instant the page returns to the foreground.
+    let livenessTimer = null
+    const gattIsLive = () => !!(gattDevice && gattDevice.gatt && gattDevice.gatt.connected)
+    const checkLiveness = () => {
+        if (connected.value && gattDevice && !gattIsLive()) onGattDisconnect()
+    }
+    const startLivenessMonitor = () => {
+        stopLivenessMonitor()
+        livenessTimer = setInterval(checkLiveness, 3000)
+    }
+    const stopLivenessMonitor = () => {
+        if (livenessTimer) { clearInterval(livenessTimer); livenessTimer = null }
+    }
+    if (typeof document !== 'undefined') {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') checkLiveness()
+        })
     }
 
     // GAN cubes derive their encryption key from the device MAC address. The
@@ -237,6 +263,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }))
         gattDevice = c.device || null
         gattDevice?.addEventListener('gattserverdisconnected', onGattDisconnect)
+        startLivenessMonitor()
         display.showToast('Connected to ' + deviceName.value, 'success')
     }
 
@@ -352,6 +379,8 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
         connected.value = true
         deviceName.value = conn.deviceName || 'GAN Smart Cube'
+        // The library exposes the BluetoothDevice; keep it for liveness polling.
+        gattDevice = conn.device || null
         subscriptions.push(conn.events$.subscribe(event => {
             if (event.type === 'MOVE') {
                 onMove(event.move)
@@ -361,6 +390,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
                 onGattDisconnect()
             }
         }))
+        startLivenessMonitor()
         // Ask the cube to report its hardware info and battery level.
         try { await conn.sendCubeCommand({type: 'REQUEST_HARDWARE'}) } catch (_) {}
         try { await conn.sendCubeCommand({type: 'REQUEST_BATTERY'}) } catch (_) {}
@@ -403,6 +433,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     }
 
     const cleanupConnection = () => {
+        stopLivenessMonitor()
         for (const s of subscriptions) { try { s.unsubscribe() } catch (_) {} }
         subscriptions = []
         if (gattDevice) {
