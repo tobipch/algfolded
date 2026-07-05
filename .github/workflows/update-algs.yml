@@ -33,6 +33,9 @@ jobs:
       - name: Fetch latest commutator algorithms
         run: node scripts/fetch_blddb_comm_algs.mjs
 
+      - name: Generate commutator notation for the comm sets
+        run: node scripts/generate_commutators.mjs --write
+
       - name: Fetch latest 2-flip / 2-twist algorithms
         run: node scripts/fetch_blddb_flip_twist_algs.mjs
 
