@@ -125,3 +125,24 @@ describe('commutator notation', () => {
     expect(detectAlg(['R', 'U', "R'", "U'"], ['[R, U]'])).toBe('[R, U]')
   })
 })
+
+describe('detectAlg preferred tie-break (equivalent algs)', () => {
+  // GQ / "DU LDF BUR": two listed algs that are the same moves in different
+  // notation (wide r/R vs face L/l). Executing them yields the same face turns.
+  const algL = "U2 L' U2 L U' M F' L F l'"
+  const algR = "U2 r' F2 r U' M F' r U R'"
+  const exec = algToFaceMoves(algR) // what the cube reports
+
+  it('returns the first match when no preference is given', () => {
+    expect(detectAlg(exec, [algL, algR])).toBe(algL)
+  })
+
+  it('returns the preferred alg when it is an equivalent match', () => {
+    expect(detectAlg(exec, [algL, algR], algR)).toBe(algR)
+    expect(detectAlg(exec, [algL, algR], algL)).toBe(algL)
+  })
+
+  it('ignores a preferred alg that does not match, falling back to the list', () => {
+    expect(detectAlg(exec, [algL, algR], "R U R'")).toBe(algL)
+  })
+})
