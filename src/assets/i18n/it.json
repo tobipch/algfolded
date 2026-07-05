@@ -135,7 +135,7 @@
       "setup_moves": "Impostazione",
       "algorithms_collection": "Algoritmi",
       "choose_alg_hint": "(clicca un algoritmo per sceglierlo)",
-      "add_alg_placeholder": "Aggiungi il tuo algoritmo (es. R U R' U')",
+      "add_alg_placeholder": "Aggiungi il tuo algoritmo — mosse o commutatore [a, b]",
       "add_alg_btn": "Aggiungi algoritmo",
       "custom_alg_title": "Il tuo algoritmo",
       "delete_alg_title": "Rimuovi questo algoritmo",

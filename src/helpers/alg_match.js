@@ -1,4 +1,4 @@
-import {moveFace, moveAmount, amountToMove, ROTATION_MAP, applyRotation} from '@/helpers/scramble_utils'
+import {moveFace, moveAmount, amountToMove, ROTATION_MAP, applyRotation, expandCommutator} from '@/helpers/scramble_utils'
 
 // Matching "which algorithm did the user execute" from smart-cube move
 // reports. The cube only ever reports outer-face turns in its own fixed
@@ -35,7 +35,16 @@ const rotationToken = (letter, amount) => {
 // while the user executes it. Returns null when the alg contains a token we
 // can't translate (so callers can skip matching instead of mismatching).
 export const algToFaceMoves = (alg) => {
-  const tokens = (alg || '').trim().split(/\s+/).filter(Boolean)
+  // Expand commutator / conjugate notation (e.g. "[R U R': [D, R2]]") to a
+  // plain move sequence first, so such algs are validated, deduplicated,
+  // played and detected like any other.
+  let source = alg || ''
+  if (/[[\],:]/.test(source)) {
+    const expanded = expandCommutator(source)
+    if (expanded === null) return null
+    source = expanded
+  }
+  const tokens = source.trim().split(/\s+/).filter(Boolean)
   // position (letter as written in the alg) -> physical cube face
   let mapping = {U: 'U', D: 'D', F: 'F', B: 'B', L: 'L', R: 'R'}
   const out = []

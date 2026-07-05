@@ -6,7 +6,7 @@ import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {useSessionStore} from "@/stores/SessionStore";
 import {computed, ref} from "vue";
-import {inverseScramble} from "@/helpers/scramble_utils";
+import {inverseScramble, algToMoveString} from "@/helpers/scramble_utils";
 
 const props = defineProps(['caseKey']);
 const prefs = usePreferredAlgStore();
@@ -20,16 +20,17 @@ const preferred = computed(() => {
   const p = prefs.store[props.caseKey]
   return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
 })
-const setup = computed(() => preferred.value ? inverseScramble(preferred.value) : '')
+const setup = computed(() => preferred.value ? inverseScramble(algToMoveString(preferred.value)) : '')
 
 // Practice stats from the spaced-repetition data: EMA of recent times + count.
 const srs = computed(() => session.srsData[props.caseKey])
 const avgTime = computed(() => srs.value?.a != null ? srs.value.a.toFixed(1) + 's' : null)
 const solveCount = computed(() => srs.value?.n ?? 0)
 
-// Play an alg from the list on the case picture.
+// Play an alg from the list on the case picture (commutator notation
+// expanded to plain moves for the player).
 const cubeRef = ref(null)
-const onPlay = (alg) => cubeRef.value?.playAlg(alg)
+const onPlay = (alg) => cubeRef.value?.playAlg(algToMoveString(alg))
 </script>
 
 <template>

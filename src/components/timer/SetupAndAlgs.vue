@@ -3,7 +3,7 @@ import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {computed, ref} from "vue";
-import {inverseScramble} from "@/helpers/scramble_utils";
+import {inverseScramble, algToMoveString} from "@/helpers/scramble_utils";
 import {isValidAlg} from "@/helpers/alg_match";
 
 // `playable`: show a play button per alg and emit 'play' with the alg —
@@ -32,7 +32,7 @@ const suggestedAlgs = computed(() => {
   return list
 })
 
-const setup = computed(() => preferred.value ? inverseScramble(preferred.value) : '')
+const setup = computed(() => preferred.value ? inverseScramble(algToMoveString(preferred.value)) : '')
 
 // Click an alg to make it "yours"; clicking the current pick clears the choice.
 const onAlgClick = (alg) => {

@@ -26,13 +26,18 @@ export const useCustomAlgsStore = defineStore('customAlgs', () => {
 
     const isCustom = (caseKey, alg) => algsFor(caseKey).includes(alg)
 
-    // Add an alg unless it is (canonically) already in the case's list.
+    // Add an alg. Keeps parentheses-free whitespace tidy but preserves
+    // commutator/conjugate brackets. Rejected when it is the exact same text as
+    // an existing alg, or canonically identical to one of the user's own algs.
+    // A commutator whose expansion matches a *collection* alg is still allowed —
+    // that's the point of entering the nicer notation.
     // Returns the cleaned alg string on success, null otherwise.
     const addAlg = (caseKey, alg) => {
         const cleaned = (alg || '').replace(/[()]/g, ' ').trim().replace(/\s+/g, ' ')
         if (!cleaned) return null
+        if (mergedAlgs(caseKey).includes(cleaned)) return null // exact duplicate
         const canon = canonicalAlg(cleaned)
-        if (mergedAlgs(caseKey).some(a => canonicalAlg(a) === canon)) return null
+        if (algsFor(caseKey).some(a => canonicalAlg(a) === canon)) return null // dup of own alg
         store[caseKey] = [...algsFor(caseKey), cleaned]
         persist()
         return cleaned

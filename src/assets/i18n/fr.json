@@ -135,7 +135,7 @@
       "setup_moves": "Configuration",
       "algorithms_collection": "Algorithmes",
       "choose_alg_hint": "(cliquez sur un algo pour le choisir)",
-      "add_alg_placeholder": "Ajouter votre propre algo (p. ex. R U R' U')",
+      "add_alg_placeholder": "Ajouter votre algo — coups ou commutateur [a, b]",
       "add_alg_btn": "Ajouter l'algorithme",
       "custom_alg_title": "Votre propre algorithme",
       "delete_alg_title": "Supprimer cet algorithme",
