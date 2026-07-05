@@ -215,24 +215,33 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // --- Connection liveness -------------------------------------------------
     // On mobile the OS can tear down the GATT link (e.g. during an app switch)
     // without always delivering the 'gattserverdisconnected' event, which would
-    // leave the header showing "connected" while moves do nothing. Poll the GATT
-    // state, and re-check the instant the page returns to the foreground.
+    // leave the header showing "connected" while moves do nothing.
+    //
+    // `gatt.connected` is unreliable on iOS (it can momentarily read false on a
+    // perfectly good link, and right after connecting), so we treat it as dead
+    // only after several CONSECUTIVE dead readings and never during a grace
+    // period after connecting — otherwise the monitor would drop a working
+    // connection. This is a safety net, not the primary disconnect signal (the
+    // library's gattserverdisconnected / DISCONNECT events are).
     let livenessTimer = null
+    let deadReadings = 0
+    let monitorArmedAt = 0
     const gattIsLive = () => !!(gattDevice && gattDevice.gatt && gattDevice.gatt.connected)
     const checkLiveness = () => {
-        if (connected.value && gattDevice && !gattIsLive()) onGattDisconnect()
+        if (!connected.value || !gattDevice) { deadReadings = 0; return }
+        if (Date.now() - monitorArmedAt < 8000) return // settle after connect
+        deadReadings = gattIsLive() ? 0 : deadReadings + 1
+        if (deadReadings >= 3) { deadReadings = 0; onGattDisconnect() }
     }
     const startLivenessMonitor = () => {
         stopLivenessMonitor()
+        deadReadings = 0
+        monitorArmedAt = Date.now()
         livenessTimer = setInterval(checkLiveness, 3000)
     }
     const stopLivenessMonitor = () => {
         if (livenessTimer) { clearInterval(livenessTimer); livenessTimer = null }
-    }
-    if (typeof document !== 'undefined') {
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') checkLiveness()
-        })
+        deadReadings = 0
     }
 
     // GAN cubes derive their encryption key from the device MAC address. The
@@ -309,35 +318,23 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         return [...out]
     }
 
-    // The permissive fallback: show every BLE device, keep all services
-    // reachable (numeric UUIDs normalized to strings, Chromium-only members
-    // dropped). The user picks the cube; the library matches it by name.
+    // Show every nearby BLE device with all needed services reachable (numeric
+    // UUIDs normalized to strings, Chromium-only members dropped). The user
+    // picks the cube; the library then matches it by name.
     const permissiveOptions = (options) => ({
         acceptAllDevices: true,
         optionalServices: collectServices(options),
     })
 
-    // Only the shapes that mean "this browser rejected the options object"
-    // (Bluefy/iOS: "payload could not be parsed", numeric UUID, unknown
-    // member). A cancelled chooser, missing adapter or permission error must
-    // NOT trigger a retry — that would pointlessly re-open the chooser on
-    // Chrome and make it feel slow/flaky.
-    const looksLikeOptionsRejection = (e) =>
-        e?.name === 'TypeError' ||
-        /parse|argument|member|dictionary|not a valid|expected|malformed/i.test(e?.message || '')
-
-    // Try the library's request as-is (best UX + speed on Chromium); only when
-    // the browser rejects the options shape, retry with the permissive
-    // fallback. This is what makes Bluefy/iOS work while leaving Chrome's
-    // single, immediate chooser untouched.
+    // The cube libraries request the device with narrow name-prefix filters
+    // (and, for QiYi, a numeric service UUID). Those miss many cubes and are
+    // slow/unreliable across browsers — the chooser can scan for ages and then
+    // fail with "No smart cube found". So always turn the request into an
+    // acceptAllDevices one: a single, prompt, cancellable chooser that lists
+    // the cube regardless of its advertised name.
     const wrapRequestDevice = (original) => async (options) => {
         if (!options) return await original(options)
-        try {
-            return await original(options)
-        } catch (e) {
-            if (looksLikeOptionsRejection(e)) return await original(permissiveOptions(options))
-            throw e
-        }
+        return await original(permissiveOptions(options))
     }
 
     // Install the wrapper once. Some browsers expose navigator.bluetooth as
@@ -415,7 +412,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             if (e?.name === 'NotFoundError') {
                 display.showToast('No smart cube found. Make sure your cube is on and nearby.', 'danger')
             } else {
-                display.showToast('Failed to connect: ' + (e?.message || 'Unknown error'), 'danger')
+                // Include the error name so failures on browsers we can't debug
+                // directly (e.g. Bluefy on iOS) can be reported back.
+                const detail = [e?.name, e?.message].filter(Boolean).join(': ') || 'Unknown error'
+                display.showToast('Failed to connect: ' + detail, 'danger')
             }
         }
     }

@@ -312,7 +312,9 @@ export const useSessionStore = defineStore('session', () => {
             if (solveMoves && solveMoves.length > 0) {
                 const customAlgs = useCustomAlgsStore()
                 const prefs = usePreferredAlgStore()
-                algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key))
+                // Pass the chosen alg so an equivalent alg (same moves, other
+                // notation) earlier in the list doesn't override it.
+                algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key), prefs.preferredAlg(key))
                 if (algUsed) {
                     if (prefs.recordDetected(key, algUsed)) {
                         useDisplayStore().showToast(

@@ -142,13 +142,29 @@ export const isValidAlg = (alg) => {
 // Which of the case's algorithms did the user just execute? Compares the
 // canonicalized executed moves against each candidate; returns the matching
 // alg exactly as written in the collection, or null.
-export const detectAlg = (executedMoves, algs) => {
+//
+// A case can list several algs that are the same moves written differently
+// (e.g. "U2 r' F2 r …" vs "U2 L' U2 L …" — wide vs face notation). When the
+// executed moves match more than one, `preferred` (the user's chosen alg) wins
+// so detection doesn't flip them onto an equivalent alg that merely appears
+// earlier in the list.
+/**
+ * @param {string[]|null} executedMoves
+ * @param {string[]|null|undefined} algs
+ * @param {string|null} [preferred]
+ * @returns {string|null}
+ */
+export const detectAlg = (executedMoves, algs, preferred = null) => {
   if (!executedMoves || executedMoves.length === 0) return null
   const exec = normalizeMoves(executedMoves).join(' ')
   if (exec === '') return null
-  for (const alg of algs || []) {
+  const matches = (alg) => {
     const faceMoves = algToFaceMoves(alg)
-    if (faceMoves && normalizeMoves(faceMoves).join(' ') === exec) return alg
+    return faceMoves && normalizeMoves(faceMoves).join(' ') === exec
+  }
+  if (preferred && matches(preferred)) return preferred
+  for (const alg of algs || []) {
+    if (matches(alg)) return alg
   }
   return null
 }
