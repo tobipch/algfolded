@@ -309,35 +309,23 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         return [...out]
     }
 
-    // The permissive fallback: show every BLE device, keep all services
-    // reachable (numeric UUIDs normalized to strings, Chromium-only members
-    // dropped). The user picks the cube; the library matches it by name.
+    // Show every nearby BLE device with all needed services reachable (numeric
+    // UUIDs normalized to strings, Chromium-only members dropped). The user
+    // picks the cube; the library then matches it by name.
     const permissiveOptions = (options) => ({
         acceptAllDevices: true,
         optionalServices: collectServices(options),
     })
 
-    // Only the shapes that mean "this browser rejected the options object"
-    // (Bluefy/iOS: "payload could not be parsed", numeric UUID, unknown
-    // member). A cancelled chooser, missing adapter or permission error must
-    // NOT trigger a retry — that would pointlessly re-open the chooser on
-    // Chrome and make it feel slow/flaky.
-    const looksLikeOptionsRejection = (e) =>
-        e?.name === 'TypeError' ||
-        /parse|argument|member|dictionary|not a valid|expected|malformed/i.test(e?.message || '')
-
-    // Try the library's request as-is (best UX + speed on Chromium); only when
-    // the browser rejects the options shape, retry with the permissive
-    // fallback. This is what makes Bluefy/iOS work while leaving Chrome's
-    // single, immediate chooser untouched.
+    // The cube libraries request the device with narrow name-prefix filters
+    // (and, for QiYi, a numeric service UUID). Those miss many cubes and are
+    // slow/unreliable across browsers — the chooser can scan for ages and then
+    // fail with "No smart cube found". So always turn the request into an
+    // acceptAllDevices one: a single, prompt, cancellable chooser that lists
+    // the cube regardless of its advertised name.
     const wrapRequestDevice = (original) => async (options) => {
         if (!options) return await original(options)
-        try {
-            return await original(options)
-        } catch (e) {
-            if (looksLikeOptionsRejection(e)) return await original(permissiveOptions(options))
-            throw e
-        }
+        return await original(permissiveOptions(options))
     }
 
     // Install the wrapper once. Some browsers expose navigator.bluetooth as
