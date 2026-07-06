@@ -2,6 +2,7 @@
 import Scramble from "@/components/timer/Scramble.vue";
 import Timer from "@/components/timer/Timer.vue";
 import ResultCard from "@/components/timer/ResultCard.vue";
+import LastCaseCard from "@/components/timer/LastCaseCard.vue";
 import SummaryCard from "@/components/timer/SummaryCard.vue";
 import StatsCard from "@/components/timer/StatsCard.vue";
 import AlgHint from "@/components/timer/AlgHint.vue";
@@ -22,30 +23,22 @@ const router = useRouter();
 const sessionStore = useSessionStore()
 const settings = useSettingsStore()
 const timerNotRunning = computed(() => sessionStore.timerState === TimerState.NOT_RUNNING)
-const showDidntKnow = computed(() =>
-    timerNotRunning.value
-    && sessionStore.stats().length > 0
-    && settings.store.smartSelection
-    && !sessionStore.store.recapMode
-)
+// Untimed practice: step through cases without timing them.
+const untimed = computed(() => !settings.store.timedMode)
 
+// The case the "repeat soon" (didn't know) hotkey applies to: the observed
+// result, or the case just completed when practising untimed.
 const currentResultKey = computed(() => {
+    if (untimed.value) return sessionStore.lastPracticed?.key ?? null
     const s = sessionStore.stats()
     return sessionStore.observingResult < s.length ? s[sessionStore.observingResult].key : null
 })
 
-const isDidntKnowActive = computed(() =>
-    currentResultKey.value && currentResultKey.value in sessionStore.didntKnowMap
-)
-
-const onDidntKnowClick = () => {
-    if (currentResultKey.value) {
-        if (isDidntKnowActive.value) {
-            sessionStore.unflagDidntKnow(currentResultKey.value)
-        } else {
-            sessionStore.flagDidntKnow(currentResultKey.value)
-        }
-    }
+const toggleDidntKnow = () => {
+    const key = currentResultKey.value
+    if (!key) return
+    if (key in sessionStore.didntKnowMap) sessionStore.unflagDidntKnow(key)
+    else sessionStore.flagDidntKnow(key)
 }
 const timerWrapClass = computed(() => timerNotRunning.value
         ? "timer_col align-self-start"
@@ -69,13 +62,17 @@ watch(currentSolveKey, () => { showHint.value = false })
 // Bluetooth cube auto start/stop
 watch(() => btStore.phase, (phase, oldPhase) => {
   // Timer starts when scrambling finishes (normal mode) or when the first
-  // solving move is made (letter-pair mode).
+  // solving move is made (letter-pair mode). Untimed: nothing to start.
   if ((oldPhase === 'scrambling' || oldPhase === 'awaiting_solve') && phase === 'solving') {
-    sessionStore.startTimer()
+    if (!untimed.value) sessionStore.startTimer()
   }
   if (oldPhase === 'solving' && phase === 'idle') {
-    sessionStore.stopTimer()
-    sessionStore.timerState = TimerState.NOT_RUNNING
+    if (untimed.value) {
+      sessionStore.advanceCase()
+    } else {
+      sessionStore.stopTimer()
+      sessionStore.timerState = TimerState.NOT_RUNNING
+    }
   }
   // Mid-solve reset (gesture or Alt+M): abort the running attempt without
   // recording a time so the case can be retried cleanly.
@@ -136,6 +133,14 @@ const onGlobalKeyDown = event => {
     return
   }
 
+  // Untimed practice: the spacebar just moves on to the next case.
+  if (untimed.value && event.key === " ") {
+    event.preventDefault()
+    if (event.repeat) return
+    if (sessionStore.currentScramble) sessionStore.advanceCase()
+    return
+  }
+
   // Self-paced letter-pair mode (letter-pair display, no smart cube connected):
   // the spacebar drives the flow. First press starts timing the current case;
   // every further press records its time and immediately starts the next one.
@@ -190,8 +195,8 @@ const onGlobalKeyDown = event => {
     selectStore.toggleSelected(sessionStore.stats()[sessionStore.observingResult])
   } else if (event.key === "a" && event.altKey && sessionStore.observingResult < sessionStore.stats().length) {
     presets.toggleAddRemove(starredName, sessionStore.stats()[sessionStore.observingResult].key)
-  } else if (event.key === "f" && event.altKey && sessionStore.observingResult < sessionStore.stats().length) {
-    onDidntKnowClick()
+  } else if (event.key === "f" && event.altKey) {
+    toggleDidntKnow()
   } else {
     return // do NOT prevent default
   }
@@ -234,6 +239,11 @@ onUnmounted(() => {
 });
 
 const onTimerTouchStart = event => {
+  if (untimed.value) {
+    if (sessionStore.currentScramble) sessionStore.advanceCase()
+    event.preventDefault()
+    return
+  }
   if (sessionStore.timerState === TimerState.RUNNING) {
     sessionStore.stopTimer()
   } else if (sessionStore.timerState === TimerState.NOT_RUNNING && sessionStore.currentScramble) {
@@ -243,6 +253,10 @@ const onTimerTouchStart = event => {
 }
 
 const onTimerTouchEnd = event => {
+  if (untimed.value) {
+    event.preventDefault()
+    return
+  }
   if (sessionStore.timerState === TimerState.STOPPING) {
     sessionStore.timerState = TimerState.NOT_RUNNING
   } else if (sessionStore.timerState === TimerState.READY) {
@@ -282,26 +296,6 @@ const onPageTouchEnd = event => {
             @touchstart="onTimerTouchStart"
             @touchend="onTimerTouchEnd"
         >
-          <div v-if="showDidntKnow" class="didnt-know-wrap">
-            <button
-                class="btn btn-sm didnt-know-btn"
-                :class="{ active: isDidntKnowActive }"
-                tabindex="-1"
-                @click.stop="onDidntKnowClick"
-                @mousedown.stop=""
-                @touchstart.stop.prevent="onDidntKnowClick"
-                @keydown.space.prevent="">
-              <i class="bi" :class="isDidntKnowActive ? 'bi-check-square' : 'bi-square'"></i>
-              {{ $t("timer.didnt_know") }}
-            </button>
-            <span class="didnt-know-help-wrap">
-              <i class="bi bi-question-circle ms-1 text-muted didnt-know-help"
-                 @click.stop=""
-                 @mousedown.stop=""
-                 @touchstart.stop.prevent=""></i>
-              <span class="didnt-know-tooltip">{{ $t('timer.didnt_know_tooltip') }}</span>
-            </span>
-          </div>
           <button
               v-if="currentSolveKey"
               class="btn btn-sm hint-btn"
@@ -327,7 +321,10 @@ const onPageTouchEnd = event => {
       </div>
 
       <div :class="rightColumnClass">
-        <div class="my-2">
+        <div class="my-2" v-if="untimed">
+          <LastCaseCard/>
+        </div>
+        <div class="my-2" v-else>
           <ResultCard v-if="sessionStore.stats().length > sessionStore.observingResult"/>
         </div>
         <div class="my-2" v-if="sessionStore.stats().length > 0">
@@ -374,12 +371,6 @@ const onPageTouchEnd = event => {
     padding: 70px 0;
   }
 }
-.didnt-know-wrap {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 1;
-}
 .hint-btn {
   position: absolute;
   top: 8px;
@@ -395,58 +386,5 @@ const onPageTouchEnd = event => {
   border-color: var(--bs-warning);
   background: transparent;
   opacity: 1;
-}
-.didnt-know-btn {
-  color: var(--bs-secondary);
-  border-color: var(--bs-secondary);
-  opacity: 0.7;
-}
-.didnt-know-btn:hover {
-  color: var(--bs-danger);
-  border-color: var(--bs-danger);
-  background: transparent;
-  opacity: 1;
-}
-.didnt-know-btn.active {
-  color: var(--bs-danger);
-  border-color: var(--bs-danger);
-  background: transparent;
-  opacity: 1;
-}
-.didnt-know-help-wrap {
-  position: relative;
-  display: inline-block;
-}
-.didnt-know-help {
-  cursor: pointer;
-  font-size: 0.85rem;
-}
-.didnt-know-tooltip {
-  display: none;
-  position: absolute;
-  left: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 4px 8px;
-  background: var(--bs-dark, #333);
-  color: var(--bs-light, #fff);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  white-space: nowrap;
-  z-index: 10;
-  pointer-events: none;
-}
-.didnt-know-help:hover + .didnt-know-tooltip,
-.didnt-know-help:active + .didnt-know-tooltip,
-.didnt-know-help:focus + .didnt-know-tooltip {
-  display: block;
-}
-@media (max-width: 767.98px) {
-  .didnt-know-tooltip {
-    left: 50%;
-    top: auto;
-    bottom: calc(100% + 8px);
-    transform: translateX(-50%);
-  }
 }
 </style>

@@ -84,9 +84,44 @@ export const expandCommutator = (str) => {
 
 // The plain move sequence for an alg, expanding commutator notation when
 // present (otherwise the alg as-is). '' if commutator notation is malformed.
+// The expansion is condensed ("[R' B' R: [R D R', U']]" seams as R2, not R R)
+// so setups, scrambles and playback never show back-to-back same-face moves.
 export const algToMoveString = (alg) => {
-  if (/[[\],:]/.test(alg || '')) return expandCommutator(alg) ?? ''
+  if (/[[\],:]/.test(alg || '')) {
+    const expanded = expandCommutator(alg)
+    return expanded === null ? '' : condenseMoves(expanded)
+  }
   return alg || ''
+}
+
+// Merge adjacent moves of the same base token ("R2 R" -> "R'", "x x'" -> gone;
+// works for wide/slice moves and rotations too), so a commutator expanded for
+// display reads like a hand-written alg instead of "R' B' R R D ...".
+export const condenseMoves = (moveStr) => {
+  let tokens = (moveStr || '').split(/\s+/).filter(Boolean)
+  for (;;) {
+    const out = []
+    for (const tok of tokens) {
+      const base = tok.replace(/['2]+$/, '')
+      const prev = out[out.length - 1]
+      if (prev && prev.replace(/['2]+$/, '') === base) {
+        out.pop()
+        const merged = amountToMove(base, moveAmount(prev) + moveAmount(tok))
+        if (merged) out.push(merged)
+      } else {
+        out.push(tok)
+      }
+    }
+    if (out.length === tokens.length) return out.join(' ')
+    tokens = out
+  }
+}
+
+// How an alg is shown to the user: as written (commutator notation) or — with
+// the "expanded" display setting — as the plain move sequence it stands for.
+export const displayAlg = (alg, notation) => {
+  if (notation !== 'expanded' || !/[[\],:]/.test(alg || '')) return alg
+  return algToMoveString(alg) || alg
 }
 
 export const amountToMove = (face, amount) => {

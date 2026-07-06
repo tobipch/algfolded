@@ -10,6 +10,7 @@ import { useI18n } from 'vue-i18n'
 import CubePicture from "@/components/timer/CubePicture.vue";
 import SetupAndAlgs from "@/components/timer/SetupAndAlgs.vue";
 import CaseNote from "@/components/CaseNote.vue";
+import RepeatSoonButton from "@/components/timer/RepeatSoonButton.vue";
 const { t } = useI18n()
 
 const sessionStore = useSessionStore()
@@ -75,15 +76,18 @@ const isOpen = ref(true)
       <hr class="my-1 my-sm-3">
       <div class="d-flex align-items-start">
         <div class="flex-grow-1 min-width-0">
-          <p class="card-text my-0 my-sm-1">
-            <span class="d-sm-inline-block d-none">{{$t("result_card.case")}}</span>
-            <span class="fw-bold mx-1">{{ algsetStore.caseLabel(result['key']) }}</span>
-            <small class="opacity-75" v-if="algsetStore.caseSecondary(result['key'])">({{ algsetStore.caseSecondary(result['key']) }})</small>
-            <i
-                class="bi clickable px-1"
-                :title="$t('result_card.add_to_starred') + ' (Alt+A)'"
-                :class="bookmarkIconClass"
-                @click="starClicked"/>
+          <p class="card-text my-0 my-sm-1 d-flex align-items-center flex-wrap gap-1">
+            <span class="me-auto">
+              <span class="d-sm-inline-block d-none">{{$t("result_card.case")}}</span>
+              <span class="fw-bold mx-1">{{ algsetStore.caseLabel(result['key']) }}</span>
+              <small class="opacity-75" v-if="algsetStore.caseSecondary(result['key'])">({{ algsetStore.caseSecondary(result['key']) }})</small>
+              <i
+                  class="bi clickable px-1"
+                  :title="$t('result_card.add_to_starred') + ' (Alt+A)'"
+                  :class="bookmarkIconClass"
+                  @click="starClicked"/>
+            </span>
+            <RepeatSoonButton :caseKey="result['key']"/>
           </p>
           <CaseNote :caseKey="result['key']"/>
           <div class="form-check mt-1">

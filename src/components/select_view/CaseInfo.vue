@@ -16,10 +16,7 @@ const session = useSessionStore();
 // The case as it appears on the cube: apply the inverse of the user's
 // (preferred, or first) alg to a solved cube.
 const algs = computed(() => custom.mergedAlgs(props.caseKey))
-const preferred = computed(() => {
-  const p = prefs.store[props.caseKey]
-  return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
-})
+const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 const setup = computed(() => preferred.value ? inverseScramble(algToMoveString(preferred.value)) : '')
 
 // Practice stats from the spaced-repetition data: EMA of recent times + count.

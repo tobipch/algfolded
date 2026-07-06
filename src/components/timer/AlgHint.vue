@@ -3,6 +3,8 @@ import {computed} from "vue";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
+import {useSettingsStore} from "@/stores/SettingsStore";
+import {displayAlg} from "@/helpers/scramble_utils";
 
 // A non-interruptive "I forgot the alg" card: shows the case's preferred
 // algorithm large, plus any alternatives below it. Triggered by the help
@@ -11,15 +13,14 @@ const props = defineProps(['caseKey']);
 const algset = useAlgsetStore();
 const custom = useCustomAlgsStore();
 const prefs = usePreferredAlgStore();
+const settings = useSettingsStore();
 
 const label = computed(() => algset.caseLabel(props.caseKey))
 const secondary = computed(() => algset.caseSecondary(props.caseKey))
 const algs = computed(() => custom.mergedAlgs(props.caseKey))
-const preferred = computed(() => {
-  const p = prefs.store[props.caseKey]
-  return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
-})
+const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 const others = computed(() => algs.value.filter(a => a !== preferred.value))
+const show = (alg) => displayAlg(alg, settings.store.algNotation)
 </script>
 
 <template>
@@ -28,10 +29,10 @@ const others = computed(() => algs.value.filter(a => a !== preferred.value))
       <span class="alg-hint-label">{{ label }}</span>
       <small v-if="secondary" class="alg-hint-secondary">{{ secondary }}</small>
     </div>
-    <div v-if="preferred" class="alg-hint-main font-monospace">{{ preferred }}</div>
+    <div v-if="preferred" class="alg-hint-main font-monospace">{{ show(preferred) }}</div>
     <div v-else class="alg-hint-none fst-italic">{{ $t('select.no_alg') }}</div>
     <ul v-if="others.length" class="alg-hint-others font-monospace">
-      <li v-for="a in others" :key="a">{{ a }}</li>
+      <li v-for="a in others" :key="a">{{ show(a) }}</li>
     </ul>
   </div>
 </template>
