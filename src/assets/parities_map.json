@@ -411,7 +411,7 @@
       "U' D R U' R U R' F' R U R' U' R' F R2 U' R2 U D'",
       "y' R U' R U R' F' R U R' U' R' F R2 U' R2 y",
       "F U2 R U R' F' R U R' U' R' F R2 U' R' U F'",
-      "U L F' L2 U L U L' U' L F L' U' L"
+      "U r U' r2 F r U L' U' L F L' U' L"
     ]
   },
   "UBL RDB UF UR": {
@@ -723,6 +723,7 @@
   "UBR FUL UF UL": {
     "algs": [
       "U' L U L' U' L F L' U' L U L F' L2 U2",
+      "U' r B r' U' r U r' U' L U r U' r' L' U2",
       "U2 L' U2 R U' R' U2 R L U' R' U'",
       "U' R' U2 R L U' R' U L' U2 R",
       "U' r' U' F R' F' R2 U' R' U2 r",
@@ -783,7 +784,7 @@
       "L' U L U L' U' L F L' U' L U L F' L'",
       "U2 D R U' R U R' F' R U R' U' R' F R2 U' R2 U2 D'",
       "y' U' R U' R U R' F' R U R' U' R' F R2 U' R2 U y",
-      "L F' L2 U L U L' U' L F L' U' L U"
+      "r U' r2 F r U L' U' L F L' U' L U"
     ]
   },
   "UBR LUB FU UR": {
@@ -1139,8 +1140,7 @@
   "UFL BDR UF UL": {
     "algs": [
       "U D' R U' R' U' R U R' F' R U R' U' R' F R U' D",
-      "U D' R' F R2 U' R' U' R U R' F' R U R' U2 D",
-      "U' f R D R' U R U' D' R2 U R U' R f' U"
+      "U D' R' F R2 U' R' U' R U R' F' R U R' U2 D"
     ]
   },
   "UFL BDR UF UR": {
@@ -1471,6 +1471,7 @@
   "UFL UBL UF UL": {
     "algs": [
       "L' U' L F L' U' L U L F' L2 U L U",
+      "r' F' r F r' F' r U r U' r2 F r U",
       "R F' R' U R' U F U' F' U' R2 F R' U'",
       "U' L' U R' U2 L U' L' U2 R L",
       "U' L' U' L2 F L' U' L' U L F' L' U L"
@@ -1783,6 +1784,7 @@
     "algs": [
       "U2 D' R' F R2 U' R' U' R U R' F' R U R' U D",
       "f R D R' U R U' D' R2 U R U' R f'",
+      "f R D R' U R U' D' R2 U R U' R B' z'",
       "U' D' R U' R' F R U' R' U R U R2 F' R U2 D"
     ]
   },
@@ -3572,7 +3574,7 @@
       "L' U2 L U2 L' U' L2 F' L' U' L' U L F",
       "z U2 R U R2 U' D' R U R' D R2 U z'",
       "U R' D R U' R' D' R2 U R' F' R U R' U' R' F R2 U' R' U'",
-      "f U2 R U R2 U' D' R U R' D R2 U f'",
+      "f U2 R U R2 U' D' R U R' D R2 U B' z'",
       "F R U R U2 R' U' R U' R' U R' U R U R' F' U'"
     ]
   },
@@ -3897,8 +3899,8 @@
       "U2 R' U L' U' R L U2 L' U' L",
       "z U' R U R2 U' D' R U R' D R2 z'",
       "U2 R' U R U2 R2 M F R F' r",
-      "f U' R U R2 U' D' R U R' D R2 f'",
       "f U' R U R2 U' D' R U R' D R2 B' z'",
+      "f U' R U R2 U' D' R U R' D R2 f'",
       "L' U L U2 R' L' U L U' R U2",
       "r' U' R2 M' U R' F' R U R' U' R' F R2 U' R' U' r' U r"
     ]
@@ -4368,8 +4370,8 @@
       "U R' U R U' x' U L' U L U2 R U' R' U x",
       "U R' U l F' U L' U L U2 R U' R' U x",
       "U x' R' F R F' U L' U L U2 R U' R' U x",
-      "U R' U R2 U R2 U' R2 D R2 U' R2 U R2 D' R U'",
       "R U R' U R U2 R2 F' R U R' U' R' F R2 U' R' U2 R",
+      "U R' U R2 U R2 U' R2 D R2 U' R2 U R2 D' R U'",
       "U' D R D' R2 F' R U R' f R f' R' U' F R2 U",
       "U R2 F R D R2 D' R' F' R' U R2 U' R2 U' R U'",
       "R U2 R2 F2 r F' r U r2 F2 R U R U2 R'",
@@ -5082,6 +5084,7 @@
   "UFR UFL UF UR": {
     "algs": [
       "U L' U' L F L' U' L U L F' L2 U L",
+      "U r' F' r F r' F' r U r U' r2 F r",
       "U' D R2 D' R2 U R D R' D' R U' R' U R'",
       "U' R' M' F R F' R U2 r' U r U2 r' U",
       "U2 R' U L' U2 R U' R' U2 R L U",
