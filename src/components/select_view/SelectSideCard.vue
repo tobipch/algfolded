@@ -4,12 +4,14 @@ import {useRouter} from "vue-router";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
+import {useSettingsStore} from "@/stores/SettingsStore";
 import SideAccordion from "@/components/select_view/SideAccordion.vue";
 
 const router = useRouter();
 const selected = useSelectedStore();
 const session = useSessionStore()
 const algset = useAlgsetStore()
+const settings = useSettingsStore()
 // also disabled until the active set's cases have loaded (scrambles need them)
 const btnDisabled = computed(() => selected.totalCasesSelected() === 0 || !algset.loaded)
 
@@ -48,6 +50,19 @@ const startRecap = () => {
       >
         {{ $t("select.recap") }}
       </button>
+
+      <div class="form-check my-1" :title="$t('select.timed_title')">
+        <input
+            class="form-check-input styled"
+            type="checkbox"
+            id="timedModeCheck"
+            tabindex="-1" @keydown.space.prevent=""
+            v-model="settings.store.timedMode">
+        <label class="form-check-label" for="timedModeCheck">
+          <i class="bi bi-stopwatch"></i>
+          {{ $t("select.timed") }}
+        </label>
+      </div>
 
       <SideAccordion/>
 

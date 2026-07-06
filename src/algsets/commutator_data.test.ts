@@ -9,33 +9,39 @@ import edgeComms from '@/assets/edge_comms.json'
 
 type CommData = Record<string, { algs: string[] }>
 
-// Generated commutators (algs[0]) must (a) parse via the app's own expander and
-// (b) have the exact same effect on the cube as the expanded alg they were
-// derived from (algs[1]). (a) is checked for every case; (b) — which needs a
-// cube engine — is checked on a sample to keep the test quick. This guards the
-// generate_commutators.mjs output against the runtime parser.
+// The comm sets ship their algs in commutator notation (decomposed in place by
+// generate_commutators.mjs, like blddb.net). This guards that output against
+// the app's own parser: (a) notation coverage stays high, (b) every notation
+// alg parses via the app's expander, and (c) — on a sample, since it needs a
+// cube engine — all algs of a case still have the identical cube effect, so a
+// notation alg can never mean something different from its siblings.
 const check = (data: CommData, label: string) => {
-  const withComm = Object.entries(data).filter(([, v]) => /[[\],:]/.test(v.algs?.[0] ?? ''))
+  const cases = Object.entries(data).filter(([, v]) => (v.algs?.length ?? 0) > 0)
+  const allAlgs = cases.flatMap(([, v]) => v.algs)
+  const notated = allAlgs.filter((a) => /[[\],:]/.test(a))
 
   describe(`${label} commutator data`, () => {
-    it('has commutators for (nearly) every case', () => {
-      expect(withComm.length).toBeGreaterThan(0)
+    it('most algs are in commutator notation', () => {
+      expect(notated.length / allAlgs.length).toBeGreaterThan(0.9)
     })
 
-    it('every commutator parses as a valid alg', () => {
-      const invalid = withComm.filter(([, v]) => !isValidAlg(v.algs[0])).map(([id, v]) => `${id}: ${v.algs[0]}`)
+    it('every commutator-notation alg parses as a valid alg', () => {
+      const invalid = notated.filter((a) => !isValidAlg(a))
       expect(invalid.slice(0, 10)).toEqual([])
     })
 
-    it('sampled commutators have the same cube effect as their expanded alg', async () => {
+    it('sampled cases: every alg has the same cube effect as the first', async () => {
       const kpuzzle = await puzzles['3x3x3'].kpuzzle()
       const solved = kpuzzle.defaultPattern()
-      const sample = withComm.filter((_, i) => i % Math.ceil(withComm.length / 60) === 0)
+      const sample = cases.filter((_, i) => i % Math.ceil(cases.length / 60) === 0)
       const bad: string[] = []
       for (const [id, v] of sample) {
-        const commMoves = algToMoveString(v.algs[0])
-        const same = solved.applyAlg(commMoves).isIdentical(solved.applyAlg(v.algs[1]))
-        if (!same) bad.push(`${id}: ${v.algs[0]} != ${v.algs[1]}`)
+        const ref = solved.applyAlg(algToMoveString(v.algs[0]))
+        for (const alg of v.algs.slice(1)) {
+          if (!solved.applyAlg(algToMoveString(alg)).isIdentical(ref)) {
+            bad.push(`${id}: ${alg} != ${v.algs[0]}`)
+          }
+        }
       }
       expect(bad).toEqual([])
     })

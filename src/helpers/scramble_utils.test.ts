@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- helper is plain JS
-import { expandCommutator, algToMoveString, moveAmount, inverseScramble } from './scramble_utils'
+import { expandCommutator, algToMoveString, moveAmount, inverseScramble,
+  condenseMoves, displayAlg } from './scramble_utils'
 
 describe('moveAmount', () => {
   it('reads R, R2, R\' and the R2\' spelling of R2', () => {
@@ -48,5 +49,32 @@ describe('commutator + inverse round-trips', () => {
   it('a conjugate and its expansion invert to the same scramble', () => {
     const expanded = expandCommutator("[R U R': U2]")
     expect(inverseScramble(expanded)).toBe(inverseScramble("R U R' U2 R U' R'"))
+  })
+})
+
+describe('condenseMoves', () => {
+  it('merges adjacent same-base moves', () => {
+    expect(condenseMoves("R' B' R R D R' U' R D' R' U R' B R"))
+      .toBe("R' B' R2 D R' U' R D' R' U R' B R")
+    expect(condenseMoves('R2 R')).toBe("R'")
+    expect(condenseMoves("x x'")).toBe('')
+    expect(condenseMoves('l l U')).toBe('l2 U')
+  })
+
+  it('collapses cascading cancellations', () => {
+    expect(condenseMoves("U R R' U")).toBe('U2')
+  })
+})
+
+describe('displayAlg', () => {
+  it('keeps notation in commutator mode, expands in expanded mode', () => {
+    const alg = "[R' B' R: [R D R', U']]"
+    expect(displayAlg(alg, 'commutator')).toBe(alg)
+    expect(displayAlg(alg, 'expanded')).toBe("R' B' R2 D R' U' R D' R' U R' B R")
+  })
+
+  it('leaves plain algs alone in both modes', () => {
+    expect(displayAlg("R U R'", 'expanded')).toBe("R U R'")
+    expect(displayAlg("R U R'", 'commutator')).toBe("R U R'")
   })
 })

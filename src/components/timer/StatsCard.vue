@@ -56,7 +56,7 @@ const isOpen = ref(false)
             {{ msToHumanReadable(stat["ms"], settings.store.timerPrecision) }}
           </span>{{ stat["i"] === sessionStore.stats().length - 1 ? "" : ", " }}
         </span>
-        <div v-if="sessionStore.stats().length === 0 && sessionStore.timerState !== TimerState.RUNNING">
+        <div v-if="settings.store.timedMode && sessionStore.stats().length === 0 && sessionStore.timerState !== TimerState.RUNNING">
           {{t("stats_card.hold_spacebar_hint")}}
         </div>
       </div>

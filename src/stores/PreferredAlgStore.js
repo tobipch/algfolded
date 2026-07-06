@@ -4,6 +4,7 @@ import {useAlgsetStore} from '@/stores/AlgsetStore'
 import {useAuthStore} from '@/stores/AuthStore'
 import {apiFetch} from '@/helpers/api'
 import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
+import {canonicalAlg} from '@/helpers/alg_match'
 
 const localStorageKey = 'algfoldedPreferredAlgs'
 
@@ -38,6 +39,21 @@ export const usePreferredAlgStore = defineStore('preferredAlgs', () => {
     // The explicitly chosen alg for a case, or null when the default applies.
     const preferredAlg = (caseKey) => store[caseKey] ?? null
 
+    // The user's pick resolved against the case's current alg list, falling
+    // back to the list's first alg. Matches canonically too, so a choice made
+    // before the collection switched notation (expanded -> commutator) still
+    // finds the same algorithm in its new spelling.
+    const resolvePreferred = (caseKey, algs) => {
+        const p = store[caseKey]
+        if (p != null) {
+            if (algs.includes(p)) return p
+            const c = canonicalAlg(p)
+            const match = algs.find(a => canonicalAlg(a) === c)
+            if (match) return match
+        }
+        return algs[0] ?? null
+    }
+
     const setPreferred = (caseKey, alg) => {
         if (alg == null) delete store[caseKey]
         else store[caseKey] = alg
@@ -63,5 +79,5 @@ export const usePreferredAlgStore = defineStore('preferredAlgs', () => {
     watch(() => auth.loggedIn, (isIn) => { if (isIn) pullFromServer() })
     pullFromServer()
 
-    return {store, preferredAlg, setPreferred, recordDetected}
+    return {store, preferredAlg, resolvePreferred, setPreferred, recordDetected}
 })

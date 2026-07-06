@@ -10,6 +10,9 @@ const sessionStore = useSessionStore()
 const currentTime = ref(Date.now())
 const settings = useSettingsStore()
 
+// Untimed practice: no clock — show how many cases were done instead.
+const untimed = computed(() => !settings.store.timedMode)
+
 watchEffect(() => {
   if (sessionStore.timerState === TimerState.RUNNING) {
     const interval = setInterval(() => {
@@ -58,7 +61,14 @@ const classByState = computed(() => {
 </script>
 
 <template>
-  <h3
+  <div v-if="untimed" class="text-center noselect p-4">
+    <div class="untimed-count" :style="{ fontFamily : settings.store.timerFont + ', monospace' }">
+      <i class="bi bi-stopwatch untimed-icon"></i>
+      {{ $t("timer.untimed_label", sessionStore.untimedCount) }}
+    </div>
+    <div class="text-muted small mt-2">{{ $t("timer.untimed_hint") }}</div>
+  </div>
+  <h3 v-else
       :style="{ fontSize: settings.store.timerFontSize + 'px', fontFamily : settings.store.timerFont + ', monospace' }"
       class="timer text-center noselect d-block p-4" :class="classByState">
     {{timerLabel}}
@@ -87,5 +97,13 @@ const classByState = computed(() => {
 }
 .stopping {
   color: var(--bs-danger)
+}
+.untimed-count {
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+.untimed-icon {
+  opacity: 0.5;
+  margin-right: 0.25rem;
 }
 </style>

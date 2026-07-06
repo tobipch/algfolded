@@ -39,7 +39,8 @@ const showResetHint = computed(() =>
 const isTracking = computed(() => bt.connected && bt.phase !== 'idle' && !letterPairMode.value)
 
 // Self-paced flow: letter-pair mode without a smart cube -> the spacebar drives.
-const selfPaced = computed(() => letterPairMode.value && !bt.connected)
+// (Untimed practice shows its own "space = next case" hint under the counter.)
+const selfPaced = computed(() => letterPairMode.value && !bt.connected && settings.store.timedMode)
 
 // Simplify a list of {text, type} by merging adjacent same-face moves
 function simplifyMoves(items) {

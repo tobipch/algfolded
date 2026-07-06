@@ -3,8 +3,9 @@ import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {computed, ref} from "vue";
-import {inverseScramble, algToMoveString} from "@/helpers/scramble_utils";
+import {inverseScramble, algToMoveString, displayAlg} from "@/helpers/scramble_utils";
 import {isValidAlg} from "@/helpers/alg_match";
+import {useSettingsStore} from "@/stores/SettingsStore";
 
 // `playable`: show a play button per alg and emit 'play' with the alg —
 // the parent (case info modal) animates it on its twisty player.
@@ -13,15 +14,16 @@ const emit = defineEmits(['play']);
 const algset = useAlgsetStore();
 const prefs = usePreferredAlgStore();
 const custom = useCustomAlgsStore();
+const settings = useSettingsStore();
 
 const collectionAlgs = computed(() => algset.byId[props.caseKey]?.algs ?? [])
 const algs = computed(() => custom.mergedAlgs(props.caseKey))
 
+// Render an alg per the notation display setting (commutator vs expanded).
+const show = (alg) => displayAlg(alg, settings.store.algNotation)
+
 // The alg the user picked for this case; falls back to the collection's first.
-const preferred = computed(() => {
-  const p = prefs.store[props.caseKey]
-  return p && algs.value.includes(p) ? p : (algs.value[0] ?? null)
-})
+const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 
 // Keep the collection order (capped at maxAmount), but always show the
 // user's own algs and keep the preferred alg visible past the cutoff.
@@ -78,7 +80,7 @@ const addAlg = () => {
           @click="onAlgClick(alg)"
       >
         <i class="bi me-1" :class="alg === preferred ? 'bi-check-circle-fill text-success' : 'bi-circle opacity-50'"/>
-        <span class="alg-text">{{alg}}</span>
+        <span class="alg-text">{{show(alg)}}</span>
         <i
             v-if="custom.isCustom(props.caseKey, alg)"
             class="bi bi-person-fill ms-1 opacity-50"

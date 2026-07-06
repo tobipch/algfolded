@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {computed, reactive, ref, watch} from "vue";
 import {random_element} from "@/helpers/helpers";
-import {makeScramble} from "@/helpers/scramble_utils"
+import {makeScramble, displayAlg} from "@/helpers/scramble_utils"
 import {detectAlg, normalizeMoves} from "@/helpers/alg_match"
 import {updateEma, caseWeight, weightedRandomPick, median} from "@/helpers/srs"
 import {useSettingsStore} from "@/stores/SettingsStore"
@@ -252,6 +252,8 @@ export const useSessionStore = defineStore('session', () => {
         store.stats = [];
         observingResult.value = 0
         sessionStartedAt.value = 0
+        untimedCount.value = 0
+        lastPracticed.value = null
     }
 
     // Switching algset: persist the run/SRS we're leaving and load the one we're
@@ -272,6 +274,8 @@ export const useSessionStore = defineStore('session', () => {
         for (const k of Object.keys(didntKnowMap)) delete didntKnowMap[k]
         observingResult.value = Math.max(0, store.stats.length - 1)
         timerState.value = TimerState.NOT_RUNNING
+        untimedCount.value = 0
+        lastPracticed.value = null
     })
 
     // when the competitor places his hands on the timer (aka holds spacebar)
@@ -296,6 +300,43 @@ export const useSessionStore = defineStore('session', () => {
         timerState.value = TimerState.RUNNING;
     }
 
+    // Smart cube: which algorithm the cube actually saw for this attempt
+    // (null when solved by keyboard/touch or when nothing matched). Also keeps
+    // the user's preferred alg up to date and records unlisted solutions as
+    // custom algs — for timed and untimed practice alike.
+    const detectExecutedAlg = (key) => {
+        const bt = useBluetoothCubeStore()
+        const solveMoves = bt.connected ? bt.consumeSolveMoves() : null
+        if (!solveMoves || solveMoves.length === 0) return null
+        const customAlgs = useCustomAlgsStore()
+        const prefs = usePreferredAlgStore()
+        const show = (a) => displayAlg(a, useSettingsStore().store.algNotation)
+        // Pass the chosen alg so an equivalent alg (same moves, other
+        // notation) earlier in the list doesn't override it.
+        let algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key), prefs.preferredAlg(key))
+        if (algUsed) {
+            if (prefs.recordDetected(key, algUsed)) {
+                useDisplayStore().showToast(
+                    i18n.global.t('timer.alg_detected_toast', {alg: show(algUsed)}), 'success')
+            }
+        } else {
+            // Unlisted solution: record it as the user's own alg for
+            // this case. Skip long sequences — those are fumbled
+            // solves with corrections, not an algorithm.
+            const norm = normalizeMoves(solveMoves)
+            if (norm.length > 0 && norm.length <= 30) {
+                const added = customAlgs.addAlg(key, norm.join(' '))
+                if (added) {
+                    algUsed = added
+                    prefs.recordDetected(key, added)
+                    useDisplayStore().showToast(
+                        i18n.global.t('timer.alg_added_toast', {alg: show(added)}), 'success')
+                }
+            }
+        }
+        return algUsed
+    }
+
     const stopTimer = () => {
         const index = store.stats.length
         if (!sessionStartedAt.value) sessionStartedAt.value = Date.now()
@@ -303,39 +344,8 @@ export const useSessionStore = defineStore('session', () => {
             const key = store.currentKey
             const ms = Date.now() - timerStarted.value
             const clientId = makeClientId()
-
-            // Smart cube: which algorithm the cube actually saw for this solve
-            // (null when solved by keyboard/touch or when nothing matched).
             const bt = useBluetoothCubeStore()
-            const solveMoves = bt.connected ? bt.consumeSolveMoves() : null
-            let algUsed = null
-            if (solveMoves && solveMoves.length > 0) {
-                const customAlgs = useCustomAlgsStore()
-                const prefs = usePreferredAlgStore()
-                // Pass the chosen alg so an equivalent alg (same moves, other
-                // notation) earlier in the list doesn't override it.
-                algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key), prefs.preferredAlg(key))
-                if (algUsed) {
-                    if (prefs.recordDetected(key, algUsed)) {
-                        useDisplayStore().showToast(
-                            i18n.global.t('timer.alg_detected_toast', {alg: algUsed}), 'success')
-                    }
-                } else {
-                    // Unlisted solution: record it as the user's own alg for
-                    // this case. Skip long sequences — those are fumbled
-                    // solves with corrections, not an algorithm.
-                    const norm = normalizeMoves(solveMoves)
-                    if (norm.length > 0 && norm.length <= 30) {
-                        const added = customAlgs.addAlg(key, norm.join(' '))
-                        if (added) {
-                            algUsed = added
-                            prefs.recordDetected(key, added)
-                            useDisplayStore().showToast(
-                                i18n.global.t('timer.alg_added_toast', {alg: added}), 'success')
-                        }
-                    }
-                }
-            }
+            const algUsed = detectExecutedAlg(key)
 
             store.stats.push({
                 "i": index,
@@ -377,6 +387,26 @@ export const useSessionStore = defineStore('session', () => {
         observingResult.value = index
     }
 
+    // --- Untimed practice -------------------------------------------------
+    // Cases done this session (in-memory; shown where the timer would be) and
+    // the case just completed (drives the "last case" card with its algs).
+    const untimedCount = ref(0)
+    const lastPracticed = ref(null) // {key, scramble} | null
+
+    // Complete the current case without recording a time: still runs smart-cube
+    // alg detection, counts the case for recap progress, then moves on.
+    const advanceCase = () => {
+        if (store.currentKey == null) return
+        const key = store.currentKey
+        detectExecutedAlg(key)
+        store.keysCount[key]++
+        untimedCount.value++
+        lastPracticed.value = {key, scramble: store.currentScramble}
+        // A "repeat soon" flag has done its job once the case came up again.
+        unflagDidntKnow(key)
+        setRandomCase()
+    }
+
     watch(store, () => { writeNamespaced(storeKey, algset.activeId, store) })
 
     const startRecap = () => {
@@ -410,6 +440,7 @@ export const useSessionStore = defineStore('session', () => {
 
     return { store, srsData, didntKnowMap, sessionStartedAt, clearSession, setSelectedKeys, stats, deleteResult,
         observingResult, timerStarted, timerState, getTimerReady, startTimer, stopTimer,
-        startRecap, currentScramble, casesWithZeroCount, flagDidntKnow, unflagDidntKnow
+        startRecap, currentScramble, casesWithZeroCount, flagDidntKnow, unflagDidntKnow,
+        untimedCount, lastPracticed, advanceCase
     }
 });

@@ -16,6 +16,10 @@ const defaultSettings = {
     cubeOrientation: "",
     letterPairMode: false,
     smartSelection: true,
+    // start practice with the timer ("timed") or just step through cases
+    timedMode: true,
+    // how algorithms are displayed: "commutator" notation or "expanded" moves
+    algNotation: "commutator",
     slownessPower: 2,
     recencyDecay: 0.5,
     // buffer order for the 3-twists and corner-commutator algsets (shared)

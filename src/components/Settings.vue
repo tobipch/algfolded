@@ -103,6 +103,17 @@ const onDoneBtnClicked = () => router.push({name: route.query.from === 'timer' ?
             <label class="form-check-label" for="smartSelection">{{ $t("settings.smart_selection") }}</label>
           </div>
         </div>
+
+        <div class="mb-2">
+          <label for="algNotation" class="form-label">{{ $t("settings.alg_notation") }}</label>
+          <select
+              class="mx-2" tabindex="-1" @keydown.space.prevent=""
+              v-model="settings.store.algNotation" id="algNotation">
+            <option value="commutator">{{ $t("settings.alg_notation_commutator") }}</option>
+            <option value="expanded">{{ $t("settings.alg_notation_expanded") }}</option>
+          </select>
+          <small class="text-muted d-block mt-1">{{ $t("settings.alg_notation_hint") }}</small>
+        </div>
       </section>
 
       <!-- Lettering -->
