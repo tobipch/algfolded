@@ -84,8 +84,13 @@ export const expandCommutator = (str) => {
 
 // The plain move sequence for an alg, expanding commutator notation when
 // present (otherwise the alg as-is). '' if commutator notation is malformed.
+// The expansion is condensed ("[R' B' R: [R D R', U']]" seams as R2, not R R)
+// so setups, scrambles and playback never show back-to-back same-face moves.
 export const algToMoveString = (alg) => {
-  if (/[[\],:]/.test(alg || '')) return expandCommutator(alg) ?? ''
+  if (/[[\],:]/.test(alg || '')) {
+    const expanded = expandCommutator(alg)
+    return expanded === null ? '' : condenseMoves(expanded)
+  }
   return alg || ''
 }
 
@@ -116,8 +121,7 @@ export const condenseMoves = (moveStr) => {
 // the "expanded" display setting — as the plain move sequence it stands for.
 export const displayAlg = (alg, notation) => {
   if (notation !== 'expanded' || !/[[\],:]/.test(alg || '')) return alg
-  const expanded = expandCommutator(alg)
-  return expanded === null ? alg : condenseMoves(expanded)
+  return algToMoveString(alg) || alg
 }
 
 export const amountToMove = (face, amount) => {

@@ -43,6 +43,14 @@ describe('algToMoveString', () => {
     expect(algToMoveString('[R, U]')).toBe("R U R' U'")
     expect(algToMoveString("R U R'")).toBe("R U R'")
   })
+
+  it('condenses the seams of an expanded commutator (never R R / R\' R\')', () => {
+    // UFR AB: [R' B' R: [R D R', U']] — the conjugate seam must merge to R2,
+    // and its inverse (the setup shown to the user) must merge as well.
+    const moves = algToMoveString("[R' B' R: [R D R', U']]")
+    expect(moves).toBe("R' B' R2 D R' U' R D' R' U R' B R")
+    expect(inverseScramble(moves)).toBe("R' B' R U' R D R' U R D' R2 B R")
+  })
 })
 
 describe('commutator + inverse round-trips', () => {
