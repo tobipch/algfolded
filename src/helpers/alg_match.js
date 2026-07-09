@@ -132,6 +132,35 @@ export const canonicalAlg = (alg) => {
   return faceMoves ? normalizeMoves(faceMoves).join(' ') : (alg || '').trim()
 }
 
+// How much execution intent a spelling carries: commutator/conjugate
+// notation (2) > wide/slice/rotation moves (1) > plain outer turns (0).
+// The plain face-turn spelling is mechanically derivable from the richer
+// ones (that is exactly what algToFaceMoves does), so when two spellings
+// are the same moves, the richer one is the better representative.
+export const notationRichness = (alg) => {
+  const s = (alg || '').trim()
+  if (/[[\],:]/.test(s)) return 2
+  const plain = s.split(/\s+/).filter(Boolean)
+    .every(t => FACES.has(t.replace(/['2]+$/, '')))
+  return plain ? 0 : 1
+}
+
+// Collapse canonically-equivalent spellings of the same algorithm into one
+// list entry — blddb lists e.g. "D L D' ..." and "D r F' ..." (identical
+// moves, wide vs face notation) as two algs. Keeps the order of first
+// occurrence; within a group the spelling with the richest notation wins.
+export const dedupeAlgs = (algs) => {
+  const byCanon = new Map()
+  for (const alg of algs || []) {
+    const canon = canonicalAlg(alg)
+    const cur = byCanon.get(canon)
+    if (cur === undefined || notationRichness(alg) > notationRichness(cur)) {
+      byCanon.set(canon, alg) // re-setting a key keeps its list position
+    }
+  }
+  return [...byCanon.values()]
+}
+
 // Does the string parse as a playable/matchable alg? (all tokens known,
 // at least one actual turn)
 export const isValidAlg = (alg) => {

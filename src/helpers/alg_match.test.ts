@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- helper is plain JS (checkJs is off)
-import { algToFaceMoves, normalizeMoves, detectAlg, canonicalAlg, isValidAlg } from './alg_match'
+import { algToFaceMoves, normalizeMoves, detectAlg, canonicalAlg, isValidAlg, dedupeAlgs, notationRichness } from './alg_match'
 
 describe('normalizeMoves', () => {
   it('merges doubled turns', () => {
@@ -123,6 +123,46 @@ describe('commutator notation', () => {
     const exec = algToFaceMoves('[R, U]') // R U R' U'
     expect(detectAlg(exec, ['[R, U]'])).toBe('[R, U]')
     expect(detectAlg(['R', 'U', "R'", "U'"], ['[R, U]'])).toBe('[R, U]')
+  })
+})
+
+describe('notationRichness', () => {
+  it('ranks commutator > wide/slice/rotation > plain', () => {
+    expect(notationRichness('[R, U]')).toBe(2)
+    expect(notationRichness("r U r'")).toBe(1)
+    expect(notationRichness("M' U2 M")).toBe(1)
+    expect(notationRichness("y R U R' y'")).toBe(1)
+    expect(notationRichness("R U R'")).toBe(0)
+  })
+})
+
+describe('dedupeAlgs', () => {
+  // JWF / "DU DFL BUL": blddb lists the same algorithm in face and wide
+  // notation; only one of them should survive, and it should be the wide
+  // spelling (the one carrying the execution intent) regardless of order.
+  const algFace = "D L D' L2 U L U2 L' U L2 D L' U D'"
+  const algWide = "D r F' r2 F r U2 r' F r2 F r' U D'"
+
+  it('collapses equivalent spellings, keeping the richer notation', () => {
+    expect(dedupeAlgs([algFace, algWide])).toEqual([algWide])
+    expect(dedupeAlgs([algWide, algFace])).toEqual([algWide])
+  })
+
+  it('keeps the position of the first occurrence', () => {
+    expect(dedupeAlgs([algFace, "R U R'", algWide])).toEqual([algWide, "R U R'"])
+  })
+
+  it('prefers commutator notation over its expansion', () => {
+    expect(dedupeAlgs(["R U R' U'", '[R, U]'])).toEqual(['[R, U]'])
+  })
+
+  it('keeps genuinely different algs and equally-plain first spellings', () => {
+    expect(dedupeAlgs(["R U R'", "R U' R'"])).toEqual(["R U R'", "R U' R'"])
+    expect(dedupeAlgs(["R U R'", 'R U R2 R'])).toEqual(["R U R'"])
+  })
+
+  it('passes untranslatable algs through as distinct entries', () => {
+    expect(dedupeAlgs(['R foo U', 'R bar U'])).toEqual(['R foo U', 'R bar U'])
   })
 })
 
