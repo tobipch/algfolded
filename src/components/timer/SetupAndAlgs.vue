@@ -1,5 +1,4 @@
 <script setup>
-import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {computed, ref} from "vue";
@@ -11,12 +10,10 @@ import {useSettingsStore} from "@/stores/SettingsStore";
 // the parent (case info modal) animates it on its twisty player.
 const props = defineProps(['caseKey', 'maxAmount', 'playable']);
 const emit = defineEmits(['play']);
-const algset = useAlgsetStore();
 const prefs = usePreferredAlgStore();
 const custom = useCustomAlgsStore();
 const settings = useSettingsStore();
 
-const collectionAlgs = computed(() => algset.byId[props.caseKey]?.algs ?? [])
 const algs = computed(() => custom.mergedAlgs(props.caseKey))
 
 // Render an alg per the notation display setting (commutator vs expanded).
@@ -25,14 +22,10 @@ const show = (alg) => displayAlg(alg, settings.store.algNotation)
 // The alg the user picked for this case; falls back to the collection's first.
 const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 
-// Keep the collection order (capped at maxAmount), but always show the
+// Keep the merged-list order (capped at maxAmount), but always show the
 // user's own algs and keep the preferred alg visible past the cutoff.
-const suggestedAlgs = computed(() => {
-  const list = collectionAlgs.value.slice(0, props.maxAmount)
-  for (const a of custom.algsFor(props.caseKey)) list.push(a)
-  if (preferred.value && !list.includes(preferred.value)) list.push(preferred.value)
-  return list
-})
+const suggestedAlgs = computed(() => algs.value.filter((a, i) =>
+    i < props.maxAmount || custom.isCustom(props.caseKey, a) || a === preferred.value))
 
 const setup = computed(() => preferred.value ? inverseScramble(algToMoveString(preferred.value)) : '')
 

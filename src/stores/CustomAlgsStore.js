@@ -1,7 +1,7 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
-import {canonicalAlg} from '@/helpers/alg_match'
+import {canonicalAlg, dedupeAlgs, notationRichness} from '@/helpers/alg_match'
 import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
 
 const localStorageKey = 'algfoldedCustomAlgs'
@@ -18,26 +18,30 @@ export const useCustomAlgsStore = defineStore('customAlgs', () => {
 
     const algsFor = (caseKey) => store[caseKey] ?? []
 
-    // The full alg list for a case: the collection's algs plus the user's own.
-    const mergedAlgs = (caseKey) => [
+    // The full alg list for a case: the collection's algs plus the user's own,
+    // with canonically-equivalent spellings collapsed to one entry (a custom
+    // alg in richer notation replaces the collection spelling it stands for).
+    const mergedAlgs = (caseKey) => dedupeAlgs([
         ...(algset.byId[caseKey]?.algs ?? []),
         ...algsFor(caseKey),
-    ]
+    ])
 
     const isCustom = (caseKey, alg) => algsFor(caseKey).includes(alg)
 
     // Add an alg. Keeps parentheses-free whitespace tidy but preserves
-    // commutator/conjugate brackets. Rejected when it is the exact same text as
-    // an existing alg, or canonically identical to one of the user's own algs.
-    // A commutator whose expansion matches a *collection* alg is still allowed —
-    // that's the point of entering the nicer notation.
+    // commutator/conjugate brackets. Rejected when it is canonically identical
+    // to an existing alg without bringing richer notation — such an entry
+    // would be swallowed by mergedAlgs' dedupe and never show up. Entering a
+    // *collection* alg in nicer notation (commutator for a plain sequence) is
+    // still allowed — that's the point — and replaces it in the merged list.
     // Returns the cleaned alg string on success, null otherwise.
     const addAlg = (caseKey, alg) => {
         const cleaned = (alg || '').replace(/[()]/g, ' ').trim().replace(/\s+/g, ' ')
         if (!cleaned) return null
-        if (mergedAlgs(caseKey).includes(cleaned)) return null // exact duplicate
         const canon = canonicalAlg(cleaned)
         if (algsFor(caseKey).some(a => canonicalAlg(a) === canon)) return null // dup of own alg
+        const coll = (algset.byId[caseKey]?.algs ?? []).find(a => canonicalAlg(a) === canon)
+        if (coll && notationRichness(cleaned) <= notationRichness(coll)) return null
         store[caseKey] = [...algsFor(caseKey), cleaned]
         persist()
         return cleaned

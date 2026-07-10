@@ -3,6 +3,8 @@ import { defineStore } from 'pinia'
 import type { AlgCase } from '@/algsets/types'
 import { ALGSETS, DEFAULT_ALGSET_ID, getAlgset } from '@/algsets/registry'
 import { buildTree } from '@/algsets/tree'
+// @ts-ignore -- helper is plain JS (checkJs is off)
+import { dedupeAlgs } from '@/helpers/alg_match'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
 
@@ -30,10 +32,13 @@ export const useAlgsetStore = defineStore('algset', () => {
   // 3-twists), so they update reactively when those change.
   const cases = computed<AlgCase[]>(() => {
     if (rawData.value === null) return []
-    return active.value.derive(rawData.value, {
+    const derived = active.value.derive(rawData.value, {
       bufferOrder: settings.store.bufferOrder,
       edgeBufferOrder: settings.store.edgeBufferOrder,
     })
+    // Collections list the same algorithm in several spellings (wide vs
+    // face notation); collapse those so every consumer sees one alg.
+    return derived.map((c) => ({ ...c, algs: dedupeAlgs(c.algs) }))
   })
 
   const byId = computed<Record<string, AlgCase>>(() => {

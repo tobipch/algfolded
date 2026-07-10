@@ -312,8 +312,11 @@ export const useSessionStore = defineStore('session', () => {
         const prefs = usePreferredAlgStore()
         const show = (a) => displayAlg(a, useSettingsStore().store.algNotation)
         // Pass the chosen alg so an equivalent alg (same moves, other
-        // notation) earlier in the list doesn't override it.
-        let algUsed = detectAlg(solveMoves, customAlgs.mergedAlgs(key), prefs.preferredAlg(key))
+        // notation) earlier in the list doesn't override it. Resolve it
+        // against the (deduplicated) list first, so a preference stored in a
+        // spelling the list no longer carries converges to the listed one.
+        const merged = customAlgs.mergedAlgs(key)
+        let algUsed = detectAlg(solveMoves, merged, prefs.resolvePreferred(key, merged))
         if (algUsed) {
             if (prefs.recordDetected(key, algUsed)) {
                 useDisplayStore().showToast(
