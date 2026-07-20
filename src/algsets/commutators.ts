@@ -111,6 +111,12 @@ const makeCommAlgset = (opts: {
   // Piece notation of the three pieces: buffer + the two target stickers,
   // e.g. "UB-FD-LB" — clearer than the raw source key.
   caseSecondary: (c) => [bufferPiece(c.path[0]), ...c.path[2].split(SEP)].join('-'),
+  // The inverse cycle swaps the two targets; it contains the same pieces, so
+  // partition() files it under the same buffer -> only the targets flip.
+  inversePath: ([buffer, , pair]) => {
+    const [t1, t2] = pair.split(SEP)
+    return [buffer, t2, t2 + SEP + t1]
+  },
   // Hundreds of cases per buffer: the stats grid filters by buffer.
   statsGroupFilter: true,
 })

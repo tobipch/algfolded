@@ -84,6 +84,20 @@ describe('commutators partition', () => {
     expect(cornerComms.caseSecondary!(c2, toLetter)).toBe('DFR-UBL-LUB')
   })
 
+  it('maps a case path to its inverse (targets swapped, same buffer)', () => {
+    // A cycle and its inverse contain the same pieces, so both partition to
+    // the same buffer; inversePath must yield exactly the inverse's path.
+    const raw: Record<string, RawComm> = {
+      fwd: { algs: ['a'], scrambles: [], buffers: { UFR: ['UBL', 'LUF'] } },
+      rev: { algs: ['a'], scrambles: [], buffers: { UFR: ['LUF', 'UBL'] } },
+    }
+    const cases = partition(raw, DEFAULT_CORNER_BUFFER_ORDER)
+    const fwd = cases.find((c) => c.id === 'fwd')!
+    const rev = cases.find((c) => c.id === 'rev')!
+    expect(cornerComms.inversePath!(fwd.path)).toEqual(rev.path)
+    expect(cornerComms.inversePath!(rev.path)).toEqual(fwd.path)
+  })
+
   it('keeps a stable id per case regardless of buffer order', () => {
     const raw: Record<string, RawComm> = {
       'corner-case-1': { algs: ['a'], scrambles: [], buffers: { UFR: ['UBL', 'LUF'] } },

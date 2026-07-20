@@ -2,7 +2,7 @@ import {reactive, watch} from 'vue'
 import { defineStore } from 'pinia'
 import { useAlgsetStore } from '@/stores/AlgsetStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
-import { casesUnder, casesMatchingPattern } from '@/algsets/selection'
+import { casesUnder, casesMatchingPattern, inverseCaseIds } from '@/algsets/selection'
 import { LEGACY_ALGSET_ID } from '@/algsets/registry'
 import { readNamespaced, writeNamespaced, migrateToNamespaced, isFlatArray } from '@/helpers/namespaced_storage'
 
@@ -55,6 +55,16 @@ export const useSelectedStore = defineStore('selected', () => {
     store.keys = algset.cases.filter((c) => !sel.has(c.id)).map((c) => c.id)
   }
 
+  // Add the inverse of every selected case (commutator sets: AB -> BA). Only
+  // available for algsets that define inversePath.
+  const canAddInverses = () => algset.active.inversePath !== undefined
+  const addInverses = () => {
+    const inv = algset.active.inversePath
+    if (!inv) return
+    const ids = inverseCaseIds(algset.cases, store.keys, inv)
+    store.keys = [...new Set([...store.keys, ...ids])]
+  }
+
   // ---- wildcard selection ----
   const matchingIds = (query: string): string[] =>
     casesMatchingPattern(algset.cases, algset.active.levels, ls.toLetter, query)
@@ -97,6 +107,6 @@ export const useSelectedStore = defineStore('selected', () => {
   return {store, addNode, removeNode, numSelectedUnder,
     addCase, removeCase, isCaseSelected,
     toggleSelected, totalCasesSelected, applyFromPreset,
-    selectAll, deselectAll, invertSelection,
+    selectAll, deselectAll, invertSelection, canAddInverses, addInverses,
     countMatching, selectByPattern, addByPattern, removeByPattern}
 });

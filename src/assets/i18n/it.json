@@ -30,6 +30,8 @@
       "algset": "Set di algoritmi",
       "all": "Tutti",
       "none": "Nessuno",
+      "add_inverses": "+ Inversi",
+      "add_inverses_title": "Seleziona anche l'inverso di ogni caso selezionato (es. AB → BA)",
       "expand_all": "Espandi tutto",
       "collapse_all": "Comprimi tutto",
       "case_info_title": "Dettagli e algoritmi",

@@ -30,6 +30,8 @@
       "algset": "Algset",
       "all": "Alle",
       "none": "Keine",
+      "add_inverses": "+ Inverse",
+      "add_inverses_title": "Zu jedem ausgewählten Case auch den inversen Case auswählen (z. B. AB → BA)",
       "expand_all": "Alle aufklappen",
       "collapse_all": "Alle zuklappen",
       "case_info_title": "Details & Algorithmen",

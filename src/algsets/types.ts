@@ -51,6 +51,10 @@ export interface Algset {
   // notation (e.g. "UB-FD-LB"). Return '' to hide it. When omitted, callers
   // fall back to the raw case id.
   caseSecondary?: (c: AlgCase, toLetter: ToLetter) => string
+  // Optional: hierarchy path of a case's inverse (e.g. a commutator with the
+  // targets swapped, AB -> BA). Defining this enables the "also select
+  // inverses" toolbar action; sets without a meaningful inverse omit it.
+  inversePath?: (path: string[]) => string[]
   // Optional display for the per-case stats grid: `primary` is the big label,
   // `secondary` the small line above it (e.g. LTCT: letter pair + set). When
   // omitted, the grid falls back to the deepest level's display.
