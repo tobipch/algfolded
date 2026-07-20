@@ -27,6 +27,11 @@ const setAllCollapses = (show) => {
               :disabled="selected.totalCasesSelected() === 0" @click="selected.deselectAll()">
         {{ $t("select.none") }}
       </button>
+      <button v-if="selected.canAddInverses()" class="btn btn-sm btn-outline-secondary" tabindex="-1"
+              @keydown.space.prevent="" :title="$t('select.add_inverses_title')"
+              :disabled="selected.totalCasesSelected() === 0" @click="selected.addInverses()">
+        {{ $t("select.add_inverses") }}
+      </button>
       <span class="vr mx-1"></span>
       <button class="btn btn-sm btn-outline-secondary" tabindex="-1" @keydown.space.prevent=""
               :title="$t('select.expand_all')" @click="setAllCollapses(true)">

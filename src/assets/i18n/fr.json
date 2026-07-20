@@ -30,6 +30,8 @@
       "algset": "Jeu d'algos",
       "all": "Tout",
       "none": "Aucun",
+      "add_inverses": "+ Inverses",
+      "add_inverses_title": "Sélectionner aussi l'inverse de chaque cas sélectionné (p. ex. AB → BA)",
       "expand_all": "Tout développer",
       "collapse_all": "Tout réduire",
       "case_info_title": "Détails et algorithmes",

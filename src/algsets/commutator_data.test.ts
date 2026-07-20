@@ -7,7 +7,7 @@ import { puzzles } from 'cubing/puzzles'
 import cornerComms from '@/assets/corner_comms.json'
 import edgeComms from '@/assets/edge_comms.json'
 
-type CommData = Record<string, { algs: string[] }>
+type CommData = Record<string, { algs: string[]; buffers: Record<string, string[]> }>
 
 // The comm sets ship their algs in commutator notation (decomposed in place by
 // generate_commutators.mjs, like blddb.net). This guards that output against
@@ -28,6 +28,20 @@ const check = (data: CommData, label: string) => {
     it('every commutator-notation alg parses as a valid alg', () => {
       const invalid = notated.filter((a) => !isValidAlg(a))
       expect(invalid.slice(0, 10)).toEqual([])
+    })
+
+    it('every cycle has its inverse in the data (targets swapped)', () => {
+      // The "also select inverses" action relies on the reversed cycle being a
+      // real case: buffer [t1, t2] must exist as buffer [t2, t1] somewhere.
+      const cycles = new Set(
+        Object.values(data).flatMap((v) =>
+          Object.entries(v.buffers).map(([b, [t1, t2]]) => `${b} ${t1} ${t2}`)),
+      )
+      const missing = Object.entries(data).flatMap(([id, v]) =>
+        Object.entries(v.buffers)
+          .filter(([b, [t1, t2]]) => !cycles.has(`${b} ${t2} ${t1}`))
+          .map(([b, [t1, t2]]) => `${id}: no inverse for ${b} ${t1} ${t2}`))
+      expect(missing.slice(0, 10)).toEqual([])
     })
 
     it('sampled cases: every alg has the same cube effect as the first', async () => {
