@@ -44,14 +44,14 @@ async function generateOneScramble(kpuzzle, inverseAlgStr, solve){
     const pattern=kpuzzle.defaultPattern().applyAlg(new Alg(ipre+" "+inverseAlgStr));
     const sol=await solve(pattern);
     const raw=new Alg(pre).concat(sol.invert()).experimentalSimplify({cancel:true});
-    const scr=normalizeNotation(cancelParallelMoves(raw.toString()));
+    const scr=cancelParallelMoves(normalizeNotation(raw.toString()));
     if(moveCount(scr)>=MIN_LENGTH)return scr;
   }
   const pre=generatePremoves(MAX_PREMOVES),ipre=invertMoves(pre);
   const pattern=kpuzzle.defaultPattern().applyAlg(new Alg(ipre+" "+inverseAlgStr));
   const sol=await solve(pattern);
   const raw=new Alg(pre).concat(sol.invert()).experimentalSimplify({cancel:true});
-  return normalizeNotation(cancelParallelMoves(raw.toString()));
+  return cancelParallelMoves(normalizeNotation(raw.toString()));
 }
 
 // scramble is valid if scramble + alg returns to solved (ignoring centers).

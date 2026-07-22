@@ -120,6 +120,8 @@ Algorithm and scramble data live in `src/assets/` and are produced by the script
 node scripts/fetch_blddb_algs.mjs    # refreshes ltct_map.json algs + regenerates t2c_map.json from blddb
 node scripts/generate_scrambles.mjs
 node scripts/verify_scrambles.mjs
+node scripts/generate_t2c_scrambles.mjs
+node scripts/verify_t2c_scrambles.mjs
 
 # 3-Twists
 node scripts/generate_twists.mjs
@@ -135,7 +137,9 @@ node scripts/fetch_blddb_flip_twist_algs.mjs   # builds/refreshes edge_flips.jso
 node scripts/generate_flip_twist_scrambles.mjs # adds scrambles (idempotent/resumable)
 
 # Parities
-node scripts/fetch_blddb_parity_algs.mjs    # (re)generates parities_map.json from blddb (no scrambles needed)
+node scripts/fetch_blddb_parity_algs.mjs    # (re)generates parities_map.json from blddb (keeps scrambles)
+node scripts/generate_parity_scrambles.mjs
+node scripts/verify_parity_scrambles.mjs
 ```
 
 The sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every case is decoded by cube geometry and re-expressed from each configurable buffer, so the `fetch_blddb_*.mjs` scripts double as importers (they only update `algs`/`buffers`, leaving scrambles intact).

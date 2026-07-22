@@ -12,7 +12,7 @@
  * Usage: node scripts/fetch_blddb_parity_algs.mjs
  */
 
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const BLDDB_URL =
   "https://raw.githubusercontent.com/nbwzx/blddb/v2/public/data/parityManmade.json";
@@ -57,6 +57,18 @@ async function main() {
   const blddbData = await res.json();
   console.log(`  Got ${Object.keys(blddbData).length} blddb entries.`);
 
+  // Keep the pre-generated scrambles (generate_parity_scrambles.mjs) across
+  // regenerations: they depend on the case geometry, not the algorithm text.
+  let previousScrambles = {};
+  try {
+    const previous = JSON.parse(readFileSync(MAP_PATH, "utf-8"));
+    for (const [id, c] of Object.entries(previous)) {
+      if (c.scrambles && c.scrambles.length > 0) previousScrambles[id] = c.scrambles;
+    }
+  } catch {
+    // no existing map — nothing to preserve
+  }
+
   const map = {};
   for (const [blddbKey, entries] of Object.entries(blddbData)) {
     const [c1, c2, c3, c4] = blddbKey.split("");
@@ -76,6 +88,7 @@ async function main() {
     const [e1, e2] = normalizeEdgePair(...eRaw);
     const id = `${corner1} ${corner2} ${e1} ${e2}`;
     map[id] = { algs: allAlgs };
+    if (previousScrambles[id]) map[id].scrambles = previousScrambles[id];
   }
 
   const ids = Object.keys(map).sort();
