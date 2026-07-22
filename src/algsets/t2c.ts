@@ -16,7 +16,7 @@ export interface RawT2c {
 
 // Corner stickers in clockwise order starting from the U/D facelet (same
 // table as CORNER_CYCLES in scripts/fetch_blddb_algs.mjs).
-const STICKER_CYCLES = [
+export const STICKER_CYCLES = [
   ['UFR', 'RUF', 'FUR'],
   ['UFL', 'FUL', 'LUF'],
   ['UBL', 'LUB', 'BUL'],

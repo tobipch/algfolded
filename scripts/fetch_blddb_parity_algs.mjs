@@ -1,11 +1,13 @@
 /**
  * Fetch parity algorithms from blddb and (re)generate parities_map.json.
  *
- * A parity alg swaps the corner buffer with one corner target and, at the
- * same time, two edges (memo swap / pseudo swap). blddb keys are 4 Chichu
- * letters: [edge 1][edge 2][corner buffer][corner target] — edges and
- * corners use separate letter tables. Orientation is encoded in the sticker
- * names (e.g. UF-UB vs UF-BU = flipped swap).
+ * A parity alg swaps two corner stickers and, at the same time, two edge
+ * stickers (memo swap / pseudo swap). blddb keys are 4 Chichu letters:
+ * [edge 1][edge 2][corner 1][corner 2] — edges and corners use separate
+ * letter tables, and orientation is encoded in the sticker names (e.g.
+ * UF-UB vs UF-BU = flipped swap). blddb has no buffer notion here: it names
+ * the corner pair canonically (U/D sticker first) — which corner acts as the
+ * buffer is derived at runtime in src/algsets/parities.ts.
  *
  * Usage: node scripts/fetch_blddb_parity_algs.mjs
  */
@@ -59,9 +61,9 @@ async function main() {
   for (const [blddbKey, entries] of Object.entries(blddbData)) {
     const [c1, c2, c3, c4] = blddbKey.split("");
     const eRaw = [edgeOf[c1], edgeOf[c2]];
-    const cornerBuffer = cornerOf[c3];
-    const cornerTarget = cornerOf[c4];
-    if (!eRaw[0] || !eRaw[1] || !cornerBuffer || !cornerTarget) {
+    const corner1 = cornerOf[c3];
+    const corner2 = cornerOf[c4];
+    if (!eRaw[0] || !eRaw[1] || !corner1 || !corner2) {
       throw new Error(`Undecodable parity key "${blddbKey}"`);
     }
 
@@ -72,7 +74,7 @@ async function main() {
     if (allAlgs.length === 0) continue;
 
     const [e1, e2] = normalizeEdgePair(...eRaw);
-    const id = `${cornerBuffer} ${cornerTarget} ${e1} ${e2}`;
+    const id = `${corner1} ${corner2} ${e1} ${e2}`;
     map[id] = { algs: allAlgs };
   }
 
