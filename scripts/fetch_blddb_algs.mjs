@@ -8,7 +8,8 @@
  * case geometry, not the specific algorithm text.
  *
  * T2C: the non-J keys of the same file are LTCTs of other buffers whose
- * twisted corner is UFR ("T2C"). They are fully regenerated: each key
+ * twisted corner is UFR ("T2C"). They are fully regenerated (carrying the
+ * pre-generated scrambles over by case id): each key
  * `[X][Y][K|L]` encodes (canonical sticker of corner X, target sticker on
  * corner Y, UFR twist RUF/FUR); the case state — and from it all six
  * 3-target memo variants (one per possible start sticker) — follows from
@@ -124,6 +125,19 @@ function decodeT2cKey(blddbKey) {
 
 /** Regenerate t2c_map.json from the non-J entries of the blddb data. */
 function generateT2c(blddbData) {
+  // Keep the pre-generated scrambles (generate_t2c_scrambles.mjs) across
+  // regenerations: like for LTCT they depend on the case geometry, not the
+  // specific algorithm text.
+  let previousScrambles = {};
+  try {
+    const previous = JSON.parse(readFileSync(T2C_PATH, "utf-8"));
+    for (const [id, c] of Object.entries(previous)) {
+      if (c.scrambles && c.scrambles.length > 0) previousScrambles[id] = c.scrambles;
+    }
+  } catch {
+    // no existing map — nothing to preserve
+  }
+
   const map = {};
   for (const [blddbKey, entries] of Object.entries(blddbData)) {
     if (blddbKey.startsWith("J")) continue;
@@ -139,6 +153,7 @@ function generateT2c(blddbData) {
     // stable, buffer-order-independent id: blddb's canonical representation
     const id = `${t1} ${t2} ${twist}`;
     map[id] = { corners, twist, variants, algs: allAlgs };
+    if (previousScrambles[id]) map[id].scrambles = previousScrambles[id];
   }
 
   const ids = Object.keys(map).sort();

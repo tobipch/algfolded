@@ -120,6 +120,8 @@ Algorithm and scramble data live in `src/assets/` and are produced by the script
 node scripts/fetch_blddb_algs.mjs    # refreshes ltct_map.json algs + regenerates t2c_map.json from blddb
 node scripts/generate_scrambles.mjs
 node scripts/verify_scrambles.mjs
+node scripts/generate_t2c_scrambles.mjs
+node scripts/verify_t2c_scrambles.mjs
 
 # 3-Twists
 node scripts/generate_twists.mjs
