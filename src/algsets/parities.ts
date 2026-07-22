@@ -21,6 +21,12 @@ const lettersOf = (segment: string, toLetter: ToLetter): string =>
 
 const speffz = (s: string): string => SPEFFZ[s] ?? s
 
+// The raw data names corner buffers canonically (DFR, DFL, DBL); the trainer
+// shows those buffers as the sticker they're tracked by (RDF, FDL, LDB),
+// consistent with the corner commutators' buffer order.
+const BUFFER_STICKER: Record<string, string> = { DFR: 'RDF', DFL: 'FDL', DBL: 'LDB' }
+const bufferSticker = (v: string): string => BUFFER_STICKER[v] ?? v
+
 // Edge-swap groups: UF-UR (the standard pseudo swap) first, then the other
 // swaps of the UF piece, then everything else — Speffz-ordered within.
 const edgeSortKey = (e1: string, e2: string): string => {
@@ -59,8 +65,9 @@ export const parities: Algset = {
   name: 'algset.parities',
   usesLetterScheme: true,
   levels: [
-    // Stufe 1: the corner buffer, ordered by the settings' buffer order.
-    { id: 'buffer', display: (v, ctx) => ({ primary: v, secondary: ctx.toLetter(v) }) },
+    // Stufe 1: the corner buffer (as its tracked sticker), ordered by the
+    // settings' buffer order.
+    { id: 'buffer', display: (v, ctx) => ({ primary: bufferSticker(v), secondary: ctx.toLetter(bufferSticker(v)) }) },
     // Stufe 2: the edge swap ("UF-UR" first), with its letters as secondary.
     { id: 'edgeSwap', display: (v, ctx) => ({ primary: v.split(SEP).join('-'), secondary: lettersOf(v, ctx.toLetter) }) },
     // Stufe 3: the case — just the corner target letter.
@@ -76,7 +83,7 @@ export const parities: Algset = {
   caseSecondary: (c) => c.path[1].split(SEP).join('-'),
   statsDisplay: (c, toLetter) => ({
     primary: toLetter(c.path[2]),
-    secondary: `${c.path[0]} ${c.path[1].split(SEP).join('-')}`,
+    secondary: `${bufferSticker(c.path[0])} ${c.path[1].split(SEP).join('-')}`,
   }),
   statsGroupFilter: true,
 }

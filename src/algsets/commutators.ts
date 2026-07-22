@@ -36,12 +36,6 @@ export const SPEFFZ: Record<string, string> = {
   DF: 'U', DR: 'V', DB: 'W', DL: 'X',
 }
 
-// Buffer stickers whose name isn't already the canonical piece name. The first
-// level shows the buffer in piece notation (e.g. UFR, UBL / UF, UB), so these
-// two corner buffers map from their tracked sticker to their corner.
-const BUFFER_PIECE: Record<string, string> = { RDF: 'DFR', FDL: 'DFL' }
-const bufferPiece = (v: string): string => BUFFER_PIECE[v] ?? v
-
 // Path segments join stickers with this separator so each piece translates
 // independently (e.g. "UFR·LUB" -> two letters).
 const SEP = '·'
@@ -99,18 +93,18 @@ const makeCommAlgset = (opts: {
   name: opts.name,
   usesLetterScheme: true,
   levels: [
-    // Stufe 1: buffer, shown in piece notation (UFR / UF, not its letter).
-    // Stufe 2: the second (first-target) letter. Stufe 3: the case letter pair.
-    { id: 'buffer', display: (v, ctx) => ({ primary: bufferPiece(v), secondary: ctx.toLetter(v) }) },
+    // Stufe 1: buffer, shown as its tracked sticker (UFR, RDF / UF, not its
+    // letter). Stufe 2: the second (first-target) letter. Stufe 3: the pair.
+    { id: 'buffer', display: (v, ctx) => ({ primary: v, secondary: ctx.toLetter(v) }) },
     { id: 'secondLetter', display: (v, ctx) => ({ primary: ctx.toLetter(v) }) },
     { id: 'case', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
   ],
   load: opts.load,
   derive: (rawData, deps) => partition(rawData as Record<string, RawComm>, opts.order(deps)),
   caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),
-  // Piece notation of the three pieces: buffer + the two target stickers,
-  // e.g. "UB-FD-LB" — clearer than the raw source key.
-  caseSecondary: (c) => [bufferPiece(c.path[0]), ...c.path[2].split(SEP)].join('-'),
+  // Piece notation of the three pieces: buffer sticker + the two target
+  // stickers, e.g. "UB-FD-LB" — clearer than the raw source key.
+  caseSecondary: (c) => [c.path[0], ...c.path[2].split(SEP)].join('-'),
   // The inverse cycle swaps the two targets; it contains the same pieces, so
   // partition() files it under the same buffer -> only the targets flip.
   inversePath: ([buffer, , pair]) => {

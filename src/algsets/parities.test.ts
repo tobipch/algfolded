@@ -58,4 +58,23 @@ describe('parities partition', () => {
     expect(d.primary).toBe('P')
     expect(d.secondary).toBe('UFR UF-UB')
   })
+
+  it('shows D-layer buffers as their tracked sticker (RDF/FDL/LDB)', () => {
+    const dRaw: Record<string, RawParity> = {
+      'DFR UBL UF UR': { algs: ['a5'] },
+      'DFL UBL UF UR': { algs: ['a6'] },
+      'DBL UBL UF UR': { algs: ['a7'] },
+    }
+    const cases = partition(dRaw, DEFAULT_ORDER)
+    const display = (c: (typeof cases)[number]) => parities.levels[0].display(c.path[0], { toLetter })
+    const byId = (id: string) => cases.find((c) => c.id === id)!
+
+    const dfr = display(byId('DFR UBL UF UR'))
+    expect(dfr.primary).toBe('RDF')
+    expect(dfr.secondary).toBe('P')
+    expect(display(byId('DFL UBL UF UR')).primary).toBe('FDL')
+    expect(display(byId('DBL UBL UF UR')).primary).toBe('LDB')
+    // the stats grid secondary uses the sticker too
+    expect(parities.statsDisplay!(byId('DFR UBL UF UR'), toLetter).secondary).toBe('RDF UF-UR')
+  })
 })
