@@ -60,13 +60,13 @@ describe('commutators partition', () => {
     expect(letters(partition(raw, reordered)[0])[0]).toBe('UFL') // now UFL wins
   })
 
-  it('shows the DFR/DFL buffers in piece notation, not their sticker', () => {
+  it('shows the DFR/DFL buffers as their tracked sticker (RDF/FDL)', () => {
     const raw: Record<string, RawComm> = {
       // Only the RDF (=DFR corner) buffer is present here.
       w: { algs: ['alg'], scrambles: [], buffers: { RDF: ['UBL', 'LUB'] } },
     }
     const [c] = partition(raw, DEFAULT_CORNER_BUFFER_ORDER)
-    expect(letters(c)[0]).toBe('DFR')
+    expect(letters(c)[0]).toBe('RDF')
   })
 
   it('exposes piece notation as the secondary label (buffer-t1-t2)', () => {
@@ -76,12 +76,12 @@ describe('commutators partition', () => {
     }
     const [c] = partition(raw, ['UB', 'UF'])
     expect(cornerComms.caseSecondary!(c, toLetter)).toBe('UB-FD-LB')
-    // the DFR buffer shows piece notation, not its RDF sticker
+    // the DFR-corner buffer shows its tracked RDF sticker
     const raw2: Record<string, RawComm> = {
       m: { algs: ['a'], scrambles: [], buffers: { RDF: ['UBL', 'LUB'] } },
     }
     const [c2] = partition(raw2, ['RDF'])
-    expect(cornerComms.caseSecondary!(c2, toLetter)).toBe('DFR-UBL-LUB')
+    expect(cornerComms.caseSecondary!(c2, toLetter)).toBe('RDF-UBL-LUB')
   })
 
   it('maps a case path to its inverse (targets swapped, same buffer)', () => {
