@@ -18,31 +18,32 @@ Switch between sets from the picker on the selection page. Each set keeps its **
 | **Edge 2-Flips** | 66 | Two flipped edges, grouped by buffer → case (`UF-UB`) |
 | **3-Twists** | 112 | Three corners twisted in the same direction, grouped by buffer |
 | **LTCT** (Last Target Corner Twist) | 252 | The final corner-twist case at the end of a corners BLD solve |
+| **T2C** (Twisted 2 Corners) | 126 | "Two corners left and your buffer is twisted": LTCT cases of the non-UFR buffers whose twisted corner is UFR, solved as a 3-target sequence from the next buffer |
+| **Parities** | 802 | Corner parity algs that swap the corner buffer with a target and two edges with each other (memo swap / pseudo swap), grouped by buffer → edge swap → target letter |
 
 Because the app is set-agnostic, adding a new set is essentially "a data file + a small descriptor" (see `src/algsets/`).
 
 ## Core features
 
-- **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance.
+- **Case selection UI** — expand groups/subgroups, select individual cases or whole branches, and see each case's letters at a glance. For the commutator sets, a **"+ Inverses"** button also selects the inverse of every selected case (AB → BA).
 - **Command palette** (`Alt+K` or the ⌘ navbar button) — a PowerToys-style quick-action box: navigate, switch algset, toggle settings/theme/language, load presets, connect the smart cube, and run **wildcard selections**. Type a pattern with `*` (e.g. `UU*E`, several space-separated), `+`/`-` to add/remove from the selection, or `#`/`@`/`>` to filter to algsets/presets/commands.
 - **Timer with stats** — per-solve history, inline notes, delete/inspect individual results, and a session summary (solve count, unique cases, total/mean time, sparkline, slowest cases with one-click re-practice).
 - **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings, for **both corners and edges**. The scheme drives the letters shown everywhere, including the 3-twists and commutator letters, so the whole app speaks your lettering.
 - **WCA account & cloud sync** — sign in with your WCA account; solves are stored in a database so your history follows you across devices.
 - **Statistics overview** — a mobile-friendly grid of all cases with average time and repetition count, searchable with `*`/`?` wildcards.
 - **Your alg per case** — pick the algorithm you actually use for each case (click it in any case detail); with a smart cube the executed alg is recognized automatically.
-- **Custom letter scheme** — edit your sticker→letter mapping (Speffz by default) in settings. The scheme drives the letters shown everywhere, including the 3-twists letters, so the whole app speaks your lettering.
 - **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets.
 - **Notes** — attach a personal note to any case.
 - **Interactive 3D cube** — touch/drag to rotate; configurable solving orientation.
 - **Unified light/dark theme** and **four languages** (EN, DE, FR, IT).
 
-### Buffer order (3-twists, commutators, 2-flips & 2-twists)
+### Buffer order
 
-The 3-twists, commutator, 2-twist and 2-flip sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
+Most sets are grouped by **buffer**. In settings you can reorder the buffer priority — by **drag-and-drop** or the up/down buttons — and the sets **re-partition live**: each case is assigned to its highest-priority buffer, so the grouping and the case letters follow your preferred buffer order.
 
-There are two buffer lists: a **corner** order (3-twists, corner commutators, corner 2-twists) and a separate **edge** order (edge commutators, edge 2-flips). A case only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner commutator set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
+There are two buffer lists: a **corner** order (3-twists, corner commutators, corner 2-twists, parities, T2C) and a separate **edge** order (edge commutators, edge 2-flips). The D-layer corner buffers are named by their tracked sticker (`RDF`, `FDL`), and case targets are expressed from that sticker. A case only shows up under its highest-priority buffer — later buffers list only the cases their earlier buffers don't already cover, so the corner commutator set counts down 378 → 270 → 180 → 108 → 54 → 18 across the default order and the edge set 440 → 360 → … → 8.
 
-The 2-piece sets can also consist of exactly the two never-configured back pieces (`DBR`+`DBL`, or `BR`+`BL`); those get an implicit lowest-priority fallback buffer so every case is still reachable.
+Some cases consist only of never-configured pieces: the 2-piece sets can pair exactly the two back pieces (`DBR`+`DBL`, or `BR`+`BL`), and the parity set contains cases whose buffer corner is `DBL` (tracked from `LDB`). Those get an implicit lowest-priority fallback buffer so every case is still reachable.
 
 ### Smart case selection
 
@@ -55,7 +56,7 @@ Turn it off in settings for plain uniform-random practice.
 
 ### "Didn't know" button
 
-After a solve, mark a case as forgotten — this temporarily boosts its priority (×5) so it returns sooner. The penalty clears automatically after the next successful solve.
+After a solve, mark a case as forgotten — its estimated time is temporarily set to 5× the median so it returns much sooner. The penalty clears automatically after the next successful solve.
 
 ### Recap mode
 
@@ -115,12 +116,14 @@ npm run typecheck  # vue-tsc
 Algorithm and scramble data live in `src/assets/` and are produced by the scripts in `scripts/`:
 
 ```bash
-# LTCT
+# LTCT + T2C
+node scripts/fetch_blddb_algs.mjs    # refreshes ltct_map.json algs + regenerates t2c_map.json from blddb
 node scripts/generate_scrambles.mjs
 node scripts/verify_scrambles.mjs
 
 # 3-Twists
 node scripts/generate_twists.mjs
+node scripts/fetch_blddb_twist_algs.mjs     # refreshes the algs from blddb (matched by cube geometry)
 node scripts/generate_twist_scrambles.mjs
 
 # Commutators (edges & corners)
@@ -130,6 +133,9 @@ node scripts/generate_comm_scrambles.mjs    # adds scrambles (idempotent/resumab
 # 2-Flips (edges) & 2-Twists (corners)
 node scripts/fetch_blddb_flip_twist_algs.mjs   # builds/refreshes edge_flips.json + corner_twists2.json from blddb
 node scripts/generate_flip_twist_scrambles.mjs # adds scrambles (idempotent/resumable)
+
+# Parities
+node scripts/fetch_blddb_parity_algs.mjs    # (re)generates parities_map.json from blddb (no scrambles needed)
 ```
 
 The sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every case is decoded by cube geometry and re-expressed from each configurable buffer, so the `fetch_blddb_*.mjs` scripts double as importers (they only update `algs`/`buffers`, leaving scrambles intact).
