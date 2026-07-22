@@ -117,7 +117,7 @@ async function generateOneScramble(kpuzzle, inverseAlgStr, solve) {
     // Use experimentalSimplify to cancel adjacent same-face moves, fix X2' notation
     const rawAlg = new Alg(premoves).concat(solution.invert());
     const simplified = rawAlg.experimentalSimplify({ cancel: true });
-    const scramble = normalizeNotation(cancelParallelMoves(simplified.toString()));
+    const scramble = cancelParallelMoves(normalizeNotation(simplified.toString()));
 
     if (moveCount(scramble) >= MIN_LENGTH) {
       return scramble;
@@ -131,7 +131,7 @@ async function generateOneScramble(kpuzzle, inverseAlgStr, solve) {
   const solution = await solve(pattern);
   const rawAlg = new Alg(premoves).concat(solution.invert());
   const simplified = rawAlg.experimentalSimplify({ cancel: true });
-  return normalizeNotation(cancelParallelMoves(simplified.toString()));
+  return cancelParallelMoves(normalizeNotation(simplified.toString()));
 }
 
 async function main() {

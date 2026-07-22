@@ -137,7 +137,9 @@ node scripts/fetch_blddb_flip_twist_algs.mjs   # builds/refreshes edge_flips.jso
 node scripts/generate_flip_twist_scrambles.mjs # adds scrambles (idempotent/resumable)
 
 # Parities
-node scripts/fetch_blddb_parity_algs.mjs    # (re)generates parities_map.json from blddb (no scrambles needed)
+node scripts/fetch_blddb_parity_algs.mjs    # (re)generates parities_map.json from blddb (keeps scrambles)
+node scripts/generate_parity_scrambles.mjs
+node scripts/verify_parity_scrambles.mjs
 ```
 
 The sets are fully data-driven from [blddb](https://github.com/nbwzx/blddb): every case is decoded by cube geometry and re-expressed from each configurable buffer, so the `fetch_blddb_*.mjs` scripts double as importers (they only update `algs`/`buffers`, leaving scrambles intact).

@@ -1,32 +1,32 @@
 /**
- * Verify that generated T2C scrambles produce correct case states.
- * Checks: edges = [1,0,2,3,...,11] with all-zero orientation (UF↔UR swap),
- * corners match the expected state from inverse(algorithm), and no scramble
- * is just the inverse of one of the case's algs (the point of pre-generating
- * them is that they carry no hint of the algorithm).
+ * Verify that generated parity scrambles produce correct case states.
+ * Checks: edges and corners match the expected state from inverse(algorithm)
+ * — a corner swap plus an edge swap — and no scramble is just the inverse of
+ * one of the case's algs (the point of pre-generating them is that they
+ * carry no hint of the algorithm).
  */
 
 import { readFileSync } from "node:fs";
 import { puzzles } from "cubing/puzzles";
 import { Alg } from "cubing/alg";
 
-const MAP_PATH = new URL("../src/assets/t2c_map.json", import.meta.url);
-const EXPECTED_EDGES = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-const EXPECTED_EDGE_ORIENT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+const MAP_PATH = new URL("../src/assets/parities_map.json", import.meta.url);
 
-const t2cMap = JSON.parse(readFileSync(MAP_PATH, "utf-8"));
+const parityMap = JSON.parse(readFileSync(MAP_PATH, "utf-8"));
 const kpuzzle = await puzzles["3x3x3"].kpuzzle();
 
 let checked = 0;
 let errors = 0;
 const SAMPLE_SIZE = Infinity; // check every scramble of every case
 
-for (const [key, caseData] of Object.entries(t2cMap)) {
+for (const [key, caseData] of Object.entries(parityMap)) {
   if (!caseData.algs || caseData.algs.length === 0) continue;
 
-  // Expected corner state
+  // Expected state
   const inverseAlg = new Alg(caseData.algs[0]).invert();
   const expectedPattern = kpuzzle.defaultPattern().applyAlg(inverseAlg);
+  const expectedEdgePieces = [...expectedPattern.patternData.EDGES.pieces];
+  const expectedEdgeOrient = [...expectedPattern.patternData.EDGES.orientation];
   const expectedCornerPieces = [...expectedPattern.patternData.CORNERS.pieces];
   const expectedCornerOrient = [...expectedPattern.patternData.CORNERS.orientation];
 
@@ -52,8 +52,8 @@ for (const [key, caseData] of Object.entries(t2cMap)) {
 
     // Check edges
     const edgesOk =
-      JSON.stringify(edgePieces) === JSON.stringify(EXPECTED_EDGES) &&
-      JSON.stringify(edgeOrient) === JSON.stringify(EXPECTED_EDGE_ORIENT);
+      JSON.stringify(edgePieces) === JSON.stringify(expectedEdgePieces) &&
+      JSON.stringify(edgeOrient) === JSON.stringify(expectedEdgeOrient);
 
     // Check corners
     const cornersOk =
@@ -68,7 +68,7 @@ for (const [key, caseData] of Object.entries(t2cMap)) {
       console.error(`FAIL: ${key} scramble[${i}]: ${scramble}`);
       if (!edgesOk) {
         console.error(`  Edges: got [${edgePieces}] orient [${edgeOrient}]`);
-        console.error(`  Expected: [${EXPECTED_EDGES}] orient [${EXPECTED_EDGE_ORIENT}]`);
+        console.error(`  Expected: [${expectedEdgePieces}] orient [${expectedEdgeOrient}]`);
       }
       if (!cornersOk) {
         console.error(`  Corners: got [${cornerPieces}] orient [${cornerOrient}]`);
@@ -82,9 +82,9 @@ for (const [key, caseData] of Object.entries(t2cMap)) {
   }
 }
 
-console.log(`\nVerified ${checked} scrambles across ${Object.keys(t2cMap).length} cases.`);
+console.log(`\nVerified ${checked} scrambles across ${Object.keys(parityMap).length} cases.`);
 if (errors === 0) {
-  console.log("ALL PASSED — every scramble produces the correct T2C state.");
+  console.log("ALL PASSED — every scramble produces the correct parity state.");
 } else {
   console.error(`${errors} FAILURES found.`);
 }
