@@ -2,11 +2,12 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import jsonRaw from './scripts/vite-plugin-json-raw.mjs'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '',
-  plugins: [vue()],
+  plugins: [vue(), jsonRaw()],
   server: {
     // The API lives in Vercel functions (api/). Run `vercel dev` (port 3000)
     // next to `npm run dev` to get a working backend locally.

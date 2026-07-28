@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { edgeFlips, cornerTwists2, type RawFlipTwist } from './flip_twist'
 

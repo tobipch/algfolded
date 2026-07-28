@@ -1,6 +1,7 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {migrateLocalStorageKey} from '@/helpers/helpers'
+import {readJson, writeJson} from '@/helpers/namespaced_storage'
 
 export const fontsList = ["Roboto Mono", "Courier New", "Ubuntu Mono", "Arial", "Helvetica",
     "sans-serif", "Times", "serif",]
@@ -34,7 +35,7 @@ migrateLocalStorageKey("zbllTrainerSettings", localStorageKey)
 export const useSettingsStore = defineStore('settings', () => {
     // merge defaults so settings saved before a new key existed still get it
     const store = reactive(
-        {...defaultSettings, ...(JSON.parse(localStorage.getItem(localStorageKey)) || {})}
+        {...defaultSettings, ...readJson(localStorageKey, {})}
     )
 
     const resetDefaults = () => {
@@ -44,7 +45,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }
 
     watch(() => store, () => {
-        localStorage.setItem(localStorageKey, JSON.stringify(store))
+        writeJson(localStorageKey, store)
     }, {deep: true})
 
     return { resetDefaults, store }

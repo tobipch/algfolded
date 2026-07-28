@@ -3,17 +3,14 @@ import { defineStore } from 'pinia'
 import type { AlgCase } from '@/algsets/types'
 import { ALGSETS, DEFAULT_ALGSET_ID, getAlgset } from '@/algsets/registry'
 import { buildTree } from '@/algsets/tree'
-// @ts-ignore -- helper is plain JS (checkJs is off)
-import { dedupeAlgs } from '@/helpers/alg_match'
 import { useSettingsStore } from '@/stores/SettingsStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
+import { readString, writeString } from '@/helpers/namespaced_storage'
 
 const activeIdKey = 'ltct_active_algset'
 
 const getInitialId = (): string => {
-  const stored = (typeof localStorage !== 'undefined' && localStorage)
-    ? localStorage.getItem(activeIdKey)
-    : null
+  const stored = readString(activeIdKey)
   return stored && getAlgset(stored) ? stored : DEFAULT_ALGSET_ID
 }
 
@@ -30,15 +27,21 @@ export const useAlgsetStore = defineStore('algset', () => {
 
   // Cases are derived from the raw data + settings (e.g. the buffer order for
   // 3-twists), so they update reactively when those change.
+  //
+  // The algs are handed through as the collection spells them. Collections do
+  // list the same algorithm in several spellings (wide vs face notation) and
+  // that has to be collapsed before anything is shown — but the place that
+  // shows algs, CustomAlgsStore.mergedAlgs, has to run dedupeAlgs anyway to
+  // merge in the user's own algs. Doing it here as well meant canonicalising
+  // every alg of every case on load and on every buffer-order change: ~1600
+  // cases and 8000 algs for the edge commutators, all of it thrown away again
+  // by the per-case pass.
   const cases = computed<AlgCase[]>(() => {
     if (rawData.value === null) return []
-    const derived = active.value.derive(rawData.value, {
+    return active.value.derive(rawData.value, {
       bufferOrder: settings.store.bufferOrder,
       edgeBufferOrder: settings.store.edgeBufferOrder,
     })
-    // Collections list the same algorithm in several spellings (wide vs
-    // face notation); collapse those so every consumer sees one alg.
-    return derived.map((c) => ({ ...c, algs: dedupeAlgs(c.algs) }))
   })
 
   const byId = computed<Record<string, AlgCase>>(() => {
@@ -73,9 +76,7 @@ export const useAlgsetStore = defineStore('algset', () => {
     rawData.value = null
     rawData.value = await set.load()
     loaded.value = true
-    if (typeof localStorage !== 'undefined' && localStorage) {
-      localStorage.setItem(activeIdKey, id)
-    }
+    writeString(activeIdKey, id)
   }
 
   return { activeId, active, cases, byId, tree, loaded, activate, caseLabel, caseSecondary }

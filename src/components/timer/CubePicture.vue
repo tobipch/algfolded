@@ -2,12 +2,18 @@
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
-const props = defineProps(['scramble'])
+// Always 3D. The 2D net cubing offers instead would skip its (large) 3D
+// chunk, but it unfolds the cube into six flat faces and you can no longer
+// tell which case you are looking at without reading it sticker by sticker —
+// which is the whole job of this picture.
+const props = defineProps({
+  scramble: { type: String, default: '' },
+})
 const settings = useSettingsStore()
 const containerDiv = ref(null)
 let player = null
 
-// Load the (heavy) 3D engine only when a cube is actually rendered.
+// Load the twisty engine only when a cube is actually rendered.
 let TwistyPlayerClass = null
 let createToken = 0
 

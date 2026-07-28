@@ -1,5 +1,6 @@
 import type { AlgCase, Algset } from '@/algsets/types'
 import { parseLtctKey } from '@/helpers/helpers'
+import { parseRaw } from '@/algsets/load_json'
 
 // Shape of an entry in the (legacy) ltct_map.json data file.
 interface RawEntry {
@@ -39,8 +40,8 @@ export const ltct: Algset = {
   ],
   // Lazy: the data file is only fetched when this set is activated.
   load: () =>
-    import('@/assets/ltct_map.json').then((m) =>
-      normalize((m.default as unknown) as Record<string, RawEntry>),
+    import('@/assets/ltct_map.json?raw').then((m) =>
+      normalize(parseRaw<Record<string, RawEntry>>(m.default)),
     ),
   // LTCT's cases are static (paths already baked in); nothing to derive.
   derive: (raw) => raw as AlgCase[],

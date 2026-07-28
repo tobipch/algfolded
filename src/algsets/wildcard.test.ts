@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { casesMatchingPattern, caseSearchString } from './selection'
 import { ltct } from './ltct'

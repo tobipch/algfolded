@@ -2,16 +2,13 @@ import {defineStore} from 'pinia'
 import {ref, watch} from 'vue'
 import {apiFetch} from '@/helpers/api'
 import {useAuthStore} from '@/stores/AuthStore'
+import {writeJson, readJson} from '@/helpers/namespaced_storage'
 
 const queueKey = 'algfolded_solve_queue'
 
 const loadQueue = () => {
-    try {
-        const q = JSON.parse(localStorage.getItem(queueKey) || '[]')
-        return Array.isArray(q) ? q : []
-    } catch (_) {
-        return []
-    }
+    const q = readJson(queueKey, [])
+    return Array.isArray(q) ? q : []
 }
 
 // Pushes solves to the backend so they land in the account's database.
@@ -25,7 +22,7 @@ export const useSolveSyncStore = defineStore('solveSync', () => {
     // Bumped after every successful flush so views can refresh server stats.
     const syncedSignal = ref(0)
 
-    const persist = () => localStorage.setItem(queueKey, JSON.stringify(queue.value))
+    const persist = () => writeJson(queueKey, queue.value)
 
     const flush = async () => {
         if (syncing.value || !auth.loggedIn || queue.value.length === 0) return

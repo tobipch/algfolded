@@ -3,10 +3,13 @@ import {defineStore} from 'pinia'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
 import {useAuthStore} from '@/stores/AuthStore'
 import {apiFetch} from '@/helpers/api'
-import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
+import {readNamespaced, writeNamespaced, splitCombinedKey} from '@/helpers/namespaced_storage'
 import {canonicalAlg} from '@/helpers/alg_match'
 
 const localStorageKey = 'algfoldedPreferredAlgs'
+
+// One key per algset (was one combined key holding every algset's slot).
+splitCombinedKey(localStorageKey)
 
 // Which algorithm the user actually uses for each case (map caseKey -> alg).
 // Kept in localStorage (namespaced per algset, like notes) and mirrored to

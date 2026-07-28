@@ -1,6 +1,7 @@
 import type { AlgCase, Algset } from '@/algsets/types'
 import type { ToLetter } from '@/helpers/helpers'
 import { SPEFFZ } from '@/algsets/commutators'
+import { parseRaw } from '@/algsets/load_json'
 
 // A raw 2-flip / 2-twist case as stored in the data files. Buffer-order-
 // independent: `buffers` maps every piece in the case (by its tracked buffer
@@ -70,7 +71,7 @@ export const edgeFlips: Algset = {
     { id: 'case', display: (v) => ({ primary: v }) },
   ],
   load: () =>
-    import('@/assets/edge_flips.json').then((m) => (m.default as unknown) as Record<string, RawFlipTwist>),
+    import('@/assets/edge_flips.json?raw').then((m) => parseRaw<Record<string, RawFlipTwist>>(m.default)),
   derive: (raw, deps) =>
     partition(raw as Record<string, RawFlipTwist>, withExtras(deps.edgeBufferOrder, EXTRA_EDGES),
       (buffer, other) => `${buffer}-${other}`),
@@ -97,7 +98,7 @@ export const cornerTwists2: Algset = {
     { id: 'case', display: (v, ctx) => ({ primary: twistCaseDisplay(v, ctx.toLetter) }) },
   ],
   load: () =>
-    import('@/assets/corner_twists2.json').then((m) => (m.default as unknown) as Record<string, RawFlipTwist>),
+    import('@/assets/corner_twists2.json?raw').then((m) => parseRaw<Record<string, RawFlipTwist>>(m.default)),
   derive: (raw, deps) =>
     partition(raw as Record<string, RawFlipTwist>, withExtras(deps.bufferOrder, EXTRA_CORNERS),
       (buffer, other) => `${bufferPiece(buffer)}/${other}`),

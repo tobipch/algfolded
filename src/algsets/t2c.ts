@@ -1,6 +1,7 @@
 import type { AlgCase, Algset } from '@/algsets/types'
 import type { ToLetter } from '@/helpers/helpers'
 import { SPEFFZ } from '@/algsets/commutators'
+import { parseRaw } from '@/algsets/load_json'
 
 // T2C: LTCT cases of the non-UFR buffers whose twisted corner is UFR — the
 // situation "two corners left + your buffer is twisted". Solved as a 3-target
@@ -88,8 +89,8 @@ export const t2c: Algset = {
     { id: 'case', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
   ],
   load: () =>
-    import('@/assets/t2c_map.json').then(
-      (m) => (m.default as unknown) as Record<string, RawT2c>,
+    import('@/assets/t2c_map.json?raw').then(
+      (m) => parseRaw<Record<string, RawT2c>>(m.default),
     ),
   derive: (raw, deps) => partition(raw as Record<string, RawT2c>, deps.bufferOrder),
   caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),

@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- helper is plain JS
 import { expandCommutator, algToMoveString, moveAmount, inverseScramble,

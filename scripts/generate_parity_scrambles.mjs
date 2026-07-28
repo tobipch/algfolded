@@ -19,7 +19,7 @@ import { puzzles } from "cubing/puzzles";
 import { Alg } from "cubing/alg";
 import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
 
-const SCRAMBLES_PER_CASE = 20;
+const SCRAMBLES_PER_CASE = 12;
 const MIN_LENGTH = 14;
 const MAX_PREMOVES = 10;
 const INITIAL_PREMOVES = 3;

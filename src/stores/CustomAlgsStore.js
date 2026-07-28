@@ -2,9 +2,12 @@ import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
 import {canonicalAlg, dedupeAlgs, notationRichness} from '@/helpers/alg_match'
-import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
+import {readNamespaced, writeNamespaced, splitCombinedKey} from '@/helpers/namespaced_storage'
 
 const localStorageKey = 'algfoldedCustomAlgs'
+
+// One key per algset (was one combined key holding every algset's slot).
+splitCombinedKey(localStorageKey)
 
 // User-added algorithms per case (map caseKey -> [algs]), on top of the
 // collection that ships with the algset. Fed by the "add your own alg" input
@@ -28,20 +31,35 @@ export const useCustomAlgsStore = defineStore('customAlgs', () => {
 
     const isCustom = (caseKey, alg) => algsFor(caseKey).includes(alg)
 
-    // Add an alg. Keeps parentheses-free whitespace tidy but preserves
-    // commutator/conjugate brackets. Rejected when it is canonically identical
-    // to an existing alg without bringing richer notation — such an entry
+    // Whitespace/parentheses tidy-up shared by addAlg and blockingAlg, so both
+    // judge exactly the same string.
+    const clean = (alg) => (alg || '').replace(/[()]/g, ' ').trim().replace(/\s+/g, ' ')
+
+    // The already-known alg that stops `alg` from being added, or null when it
+    // can be added. An alg is blocked when it is canonically identical to one
+    // the case already lists without bringing richer notation — such an entry
     // would be swallowed by mergedAlgs' dedupe and never show up. Entering a
     // *collection* alg in nicer notation (commutator for a plain sequence) is
     // still allowed — that's the point — and replaces it in the merged list.
-    // Returns the cleaned alg string on success, null otherwise.
-    const addAlg = (caseKey, alg) => {
-        const cleaned = (alg || '').replace(/[()]/g, ' ').trim().replace(/\s+/g, ' ')
+    // Returned (rather than just a boolean) so the UI can point at the alg the
+    // input collides with; it is often hidden past the list's display cutoff,
+    // which is what makes a bare "rejected" flag so puzzling.
+    const blockingAlg = (caseKey, alg) => {
+        const cleaned = clean(alg)
         if (!cleaned) return null
         const canon = canonicalAlg(cleaned)
-        if (algsFor(caseKey).some(a => canonicalAlg(a) === canon)) return null // dup of own alg
+        const own = algsFor(caseKey).find(a => canonicalAlg(a) === canon)
+        if (own) return own
         const coll = (algset.byId[caseKey]?.algs ?? []).find(a => canonicalAlg(a) === canon)
-        if (coll && notationRichness(cleaned) <= notationRichness(coll)) return null
+        if (coll && notationRichness(cleaned) <= notationRichness(coll)) return coll
+        return null
+    }
+
+    // Add an alg. Returns the cleaned alg string on success, null when it is
+    // blocked (see blockingAlg) or empty.
+    const addAlg = (caseKey, alg) => {
+        const cleaned = clean(alg)
+        if (!cleaned || blockingAlg(caseKey, cleaned)) return null
         store[caseKey] = [...algsFor(caseKey), cleaned]
         persist()
         return cleaned
@@ -61,5 +79,5 @@ export const useCustomAlgsStore = defineStore('customAlgs', () => {
         Object.assign(store, fresh)
     })
 
-    return {store, algsFor, mergedAlgs, isCustom, addAlg, removeAlg}
+    return {store, algsFor, mergedAlgs, isCustom, blockingAlg, addAlg, removeAlg}
 })

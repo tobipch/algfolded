@@ -1,5 +1,6 @@
 import type { AlgCase, Algset } from '@/algsets/types'
 import type { ToLetter } from '@/helpers/helpers'
+import { parseRaw } from '@/algsets/load_json'
 
 // A raw 3-twist from three_twists.json: 3 corners all twisted the same
 // direction. The grouping (buffer / first / second twist) is derived at
@@ -108,8 +109,8 @@ export const threeTwists: Algset = {
     { id: 'case', display: (v, ctx) => ({ primary: lettersOf(v, ctx.toLetter) }) },
   ],
   load: () =>
-    import('@/assets/three_twists.json').then(
-      (m) => Object.values((m.default as unknown) as Record<string, RawTwist>),
+    import('@/assets/three_twists.json?raw').then(
+      (m) => Object.values(parseRaw<Record<string, RawTwist>>(m.default)),
     ),
   derive: (raw, deps) => partition(raw as RawTwist[], deps.bufferOrder),
   caseLabel: (c, toLetter) => lettersOf(c.path[c.path.length - 1], toLetter),

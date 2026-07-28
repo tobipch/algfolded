@@ -60,11 +60,43 @@ export const matchesWildcard = (pattern: string, text: string): boolean => {
 // One-time migration of a renamed localStorage key (oldKey -> newKey).
 // Copies the old value to the new key if the new key isn't set yet, then drops the old key.
 export const migrateLocalStorageKey = (oldKey: string, newKey: string): void => {
-    if (typeof localStorage === 'undefined' || !localStorage) return
-    const oldVal = localStorage.getItem(oldKey)
-    if (oldVal === null) return
-    if (localStorage.getItem(newKey) === null) {
-        localStorage.setItem(newKey, oldVal)
+    // Runs at module scope, so it must not throw: storage can be blocked
+    // outright (privacy modes) or full, and neither is worth a blank page.
+    try {
+        if (typeof localStorage === 'undefined' || !localStorage) return
+        const oldVal = localStorage.getItem(oldKey)
+        if (oldVal === null) return
+        if (localStorage.getItem(newKey) === null) {
+            localStorage.setItem(newKey, oldVal)
+        }
+        localStorage.removeItem(oldKey)
+    } catch { /* nothing to migrate, nothing to crash over */ }
+}
+
+// Copy text to the clipboard. The async Clipboard API needs a secure context,
+// which self-hosted / LAN setups over plain http don't get, so fall back to a
+// hidden textarea + execCommand there. Resolves to whether it worked.
+export const copyToClipboard = async (text: string): Promise<boolean> => {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text)
+            return true
+        } catch {
+            // denied or insecure context — try the legacy path below
+        }
     }
-    localStorage.removeItem(oldKey)
+    try {
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.setAttribute('readonly', '')
+        // off-screen but still focusable, and never scroll the page to it
+        ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0'
+        document.body.appendChild(ta)
+        ta.select()
+        const ok = document.execCommand('copy')
+        document.body.removeChild(ta)
+        return ok
+    } catch {
+        return false
+    }
 }

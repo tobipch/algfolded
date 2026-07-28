@@ -146,9 +146,13 @@
       "choose_alg_hint": "(clicca un algoritmo per sceglierlo)",
       "add_alg_placeholder": "Aggiungi il tuo algoritmo — mosse o commutatore [a, b]",
       "add_alg_btn": "Aggiungi algoritmo",
+      "add_alg_duplicate": "Questo algoritmo è già nell'elenco (evidenziato in rosso) — le stesse mosse, magari scritte in modo diverso.",
+      "add_alg_unparseable": "Non è stato possibile leggerlo. Usa mosse come R U' F2, mosse wide/slice (Rw, M, x) o commutatori come [R U R', D2].",
       "custom_alg_title": "Il tuo algoritmo",
       "delete_alg_title": "Rimuovi questo algoritmo",
       "play_alg_title": "Riproduci sul cubo",
+      "copy_alg_title": "Copia algoritmo",
+      "copy_alg_copied": "Copiato",
       "repeat_soon": "Ripeti presto",
       "repeat_soon_tooltip": "Caso non saputo? Segnalo e la selezione intelligente lo riproporrà prima. Clicca di nuovo per annullare."
     },

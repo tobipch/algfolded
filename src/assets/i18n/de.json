@@ -146,9 +146,13 @@
       "choose_alg_hint": "(Alg anklicken, um ihn auszuwählen)",
       "add_alg_placeholder": "Eigenen Alg hinzufügen — Züge oder [a, b] Commutator",
       "add_alg_btn": "Algorithmus hinzufügen",
+      "add_alg_duplicate": "Dieser Algorithmus steht bereits in der Liste (rot markiert) — dieselben Züge, evtl. anders geschrieben.",
+      "add_alg_unparseable": "Konnte nicht gelesen werden. Erlaubt sind Züge wie R U' F2, Wide-/Slice-Züge (Rw, M, x) und Commutatoren wie [R U R', D2].",
       "custom_alg_title": "Eigener Algorithmus",
       "delete_alg_title": "Diesen Algorithmus entfernen",
       "play_alg_title": "Auf dem Würfel abspielen",
+      "copy_alg_title": "Algorithmus kopieren",
+      "copy_alg_copied": "Kopiert",
       "repeat_soon": "Bald wiederholen",
       "repeat_soon_tooltip": "Fall nicht gewusst? Markieren – die intelligente Fallauswahl fragt ihn bald wieder ab. Nochmals klicken macht es rückgängig."
     },

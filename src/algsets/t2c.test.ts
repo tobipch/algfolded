@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { partition, chooseStart, t2c, type RawT2c } from './t2c'
 
