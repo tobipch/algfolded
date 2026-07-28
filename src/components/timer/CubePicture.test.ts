@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { setActivePinia, createPinia } from 'pinia'
 
-// The cube thumbnail. What matters here is which renderer it asks for: the 3D
-// one pulls cubing's largest chunk (~500 KB) and is only worth it where the
-// user actually plays algs on the cube. Everywhere else it must stay 2D.
+// The cube thumbnail. It renders 3D everywhere: cubing's 2D alternative would
+// avoid a ~500 KB chunk, but it draws the cube as an unfolded net, and then the
+// picture no longer tells you at a glance which case you are on.
 
 const constructed: Record<string, unknown>[] = []
 
@@ -37,15 +37,9 @@ beforeEach(() => {
 })
 
 describe('renderer choice', () => {
-  it('renders a still 2D picture by default', async () => {
+  it('renders the cube in 3D, not as a 2D net', async () => {
     await mountCube({ scramble: "R U R'" })
     expect(constructed).toHaveLength(1)
-    expect(constructed[0].visualization).toBe('2D')
-    expect(constructed[0].experimentalDragInput).toBe('none')
-  })
-
-  it('renders 3D only when explicitly interactive', async () => {
-    await mountCube({ scramble: "R U R'", interactive: true })
     expect(constructed[0].visualization).toBe('3D')
     expect(constructed[0].experimentalDragInput).toBe('auto')
   })

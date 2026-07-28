@@ -2,14 +2,12 @@
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
-// `interactive`: this cube gets played on (the case modal animates algs
-// through playAlg) and is draggable, so it needs the 3D engine. Left off, the
-// cube is a still picture of the case and renders as a 2D net, which skips
-// cubing's 3D chunk entirely — that chunk is the single biggest download in
-// the app, and a thumbnail doesn't earn it.
+// Always 3D. The 2D net cubing offers instead would skip its (large) 3D
+// chunk, but it unfolds the cube into six flat faces and you can no longer
+// tell which case you are looking at without reading it sticker by sticker —
+// which is the whole job of this picture.
 const props = defineProps({
   scramble: { type: String, default: '' },
-  interactive: { type: Boolean, default: false },
 })
 const settings = useSettingsStore()
 const containerDiv = ref(null)
@@ -65,12 +63,12 @@ const createPlayer = async () => {
   player = new TwistyPlayerClass({
     puzzle: "3x3x3",
     alg: alg,
-    visualization: props.interactive ? "3D" : "2D",
+    visualization: "3D",
     hintFacelets: "none",
     backView: "none",
     background: "none",
     controlPanel: "none",
-    experimentalDragInput: props.interactive ? "auto" : "none",
+    experimentalDragInput: "auto",
   })
 
   player.style.width = `${cubePictureSize.value}px`

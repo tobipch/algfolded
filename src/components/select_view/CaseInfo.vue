@@ -33,7 +33,7 @@ const onPlay = (alg) => cubeRef.value?.playAlg(algToMoveString(alg))
 <template>
   <div class="d-flex flex-wrap align-items-start gap-3">
     <div v-if="setup" class="cube-col flex-shrink-0 mx-auto">
-      <CubePicture ref="cubeRef" :scramble="setup" interactive/>
+      <CubePicture ref="cubeRef" :scramble="setup"/>
     </div>
     <div class="flex-grow-1 info-col">
       <div v-if="solveCount > 0" class="d-flex gap-2 mb-3" :title="$t('select.avg_time_title')">
