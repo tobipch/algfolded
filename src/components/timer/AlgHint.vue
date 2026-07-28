@@ -52,7 +52,7 @@ onUnmounted(() => { if (copiedTimer) clearTimeout(copiedTimer) })
           :aria-label="$t('result_card.copy_alg_title')"
           tabindex="-1"
           @click.stop="copyAlg(preferred)">
-        <i class="bi" :class="copiedAlg === preferred ? 'bi-check-lg' : 'bi-clipboard'"/>
+        <i class="bi" :class="copiedAlg === preferred ? 'bi-check-lg' : 'bi-copy'"/>
       </button>
     </div>
     <div v-else class="alg-hint-none fst-italic">{{ $t('select.no_alg') }}</div>
@@ -67,7 +67,7 @@ onUnmounted(() => { if (copiedTimer) clearTimeout(copiedTimer) })
             :aria-label="$t('result_card.copy_alg_title')"
             tabindex="-1"
             @click.stop="copyAlg(a)">
-          <i class="bi" :class="copiedAlg === a ? 'bi-check-lg' : 'bi-clipboard'"/>
+          <i class="bi" :class="copiedAlg === a ? 'bi-check-lg' : 'bi-copy'"/>
         </button>
       </li>
     </ul>

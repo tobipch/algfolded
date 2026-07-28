@@ -141,7 +141,7 @@ watch(() => props.caseKey, () => {
               :aria-label="$t('result_card.copy_alg_title')"
               tabindex="-1"
               @click.stop="copyAlg(alg)">
-            <i class="bi" :class="copiedAlg === alg ? 'bi-check-lg' : 'bi-clipboard'"/>
+            <i class="bi" :class="copiedAlg === alg ? 'bi-check-lg' : 'bi-copy'"/>
           </button>
           <button
               v-if="props.playable"
