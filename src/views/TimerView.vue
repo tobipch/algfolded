@@ -376,15 +376,19 @@ const onPageTouchEnd = event => {
   top: 8px;
   right: 8px;
   z-index: 1;
-  color: var(--bs-secondary);
-  border-color: var(--bs-secondary);
-  opacity: 0.7;
+  /* readable in both modes — see --alg-quiet-* in theme.css */
+  color: var(--alg-quiet-color, #4a5163);
+  border-color: var(--alg-quiet-border, #8087a0);
 }
 .hint-btn:hover,
+.hint-btn:focus-visible {
+  color: var(--bs-body-color);
+  border-color: var(--bs-warning);
+  background: var(--alg-quiet-hover-bg, transparent);
+}
 .hint-btn.active {
   color: var(--bs-warning);
   border-color: var(--bs-warning);
-  background: transparent;
-  opacity: 1;
+  background: var(--alg-quiet-hover-bg, transparent);
 }
 </style>

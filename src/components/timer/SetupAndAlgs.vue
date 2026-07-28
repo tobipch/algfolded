@@ -1,7 +1,7 @@
 <script setup>
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {inverseScramble, algToMoveString, displayAlg} from "@/helpers/scramble_utils";
 import {isValidAlg} from "@/helpers/alg_match";
 import {useSettingsStore} from "@/stores/SettingsStore";
@@ -22,10 +22,16 @@ const show = (alg) => displayAlg(alg, settings.store.algNotation)
 // The alg the user picked for this case; falls back to the collection's first.
 const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 
+// Algs pulled above the display cutoff on demand — currently the entry a
+// rejected input turned out to be a duplicate of, which is usually buried in
+// the hidden tail of the list.
+const revealed = ref(new Set())
+
 // Keep the merged-list order (capped at maxAmount), but always show the
-// user's own algs and keep the preferred alg visible past the cutoff.
+// user's own algs and keep the preferred / revealed algs visible past the cutoff.
 const suggestedAlgs = computed(() => algs.value.filter((a, i) =>
-    i < props.maxAmount || custom.isCustom(props.caseKey, a) || a === preferred.value))
+    i < props.maxAmount || custom.isCustom(props.caseKey, a) || a === preferred.value
+    || revealed.value.has(a)))
 
 const setup = computed(() => preferred.value ? inverseScramble(algToMoveString(preferred.value)) : '')
 
@@ -41,17 +47,37 @@ const removeCustom = (alg) => {
 
 // --- "add your own alg" input ---
 const newAlg = ref('')
-const inputInvalid = ref(false)
+// Why the last attempt failed: null, {kind: 'unparseable'} or
+// {kind: 'duplicate', alg}. Rejections used to only turn the field red, which
+// is baffling for the common duplicate case — the alg it collides with is
+// usually below the maxAmount cutoff, so nothing on screen explains it.
+const addError = ref(null)
+
+const clearError = () => { addError.value = null }
+
 const addAlg = () => {
-  const cleaned = newAlg.value.replace(/[()]/g, ' ').trim()
+  const cleaned = newAlg.value.replace(/[()]/g, ' ').trim().replace(/\s+/g, ' ')
   if (!cleaned) return
-  if (!isValidAlg(cleaned) || !custom.addAlg(props.caseKey, cleaned)) {
-    inputInvalid.value = true // unparseable or (canonical) duplicate
+  if (!isValidAlg(cleaned)) {
+    addError.value = {kind: 'unparseable'}
     return
   }
+  const clash = custom.blockingAlg(props.caseKey, cleaned)
+  if (clash) {
+    addError.value = {kind: 'duplicate', alg: clash}
+    revealed.value = new Set([...revealed.value, clash]) // show what it collides with
+    return
+  }
+  custom.addAlg(props.caseKey, cleaned)
   newAlg.value = ''
-  inputInvalid.value = false
+  addError.value = null
 }
+
+// Switching case: the message and the revealed tail belong to the old one.
+watch(() => props.caseKey, () => {
+  addError.value = null
+  revealed.value = new Set()
+})
 </script>
 
 <template>
@@ -69,7 +95,7 @@ const addAlg = () => {
           v-for="alg in suggestedAlgs"
           :key="alg"
           class="alg-item d-flex align-items-center"
-          :class="alg === preferred ? 'fw-bold preferred' : ''"
+          :class="[alg === preferred ? 'fw-bold preferred' : '', {clash: addError?.alg === alg}]"
           @click="onAlgClick(alg)"
       >
         <i class="bi me-1" :class="alg === preferred ? 'bi-check-circle-fill text-success' : 'bi-circle opacity-50'"/>
@@ -97,16 +123,23 @@ const addAlg = () => {
           v-model="newAlg"
           type="text"
           class="form-control themed font-monospace"
-          :class="{'is-invalid': inputInvalid}"
+          :class="{'is-invalid': !!addError}"
           maxlength="120"
           :placeholder="$t('result_card.add_alg_placeholder')"
-          @input="inputInvalid = false"
+          @input="clearError"
           @keydown.enter.prevent="addAlg"
           @keydown.stop
       >
       <button class="btn btn-outline-secondary" :title="$t('result_card.add_alg_btn')" @click="addAlg">
         <i class="bi bi-plus-lg"></i>
       </button>
+    </div>
+    <div v-if="addError" class="add-alg-error text-danger small mt-1">
+      <template v-if="addError.kind === 'duplicate'">
+        {{ $t('result_card.add_alg_duplicate') }}
+        <span class="font-monospace">{{ show(addError.alg) }}</span>
+      </template>
+      <template v-else>{{ $t('result_card.add_alg_unparseable') }}</template>
     </div>
   </div>
 </template>
@@ -125,6 +158,11 @@ ul {
 .alg-item:hover {
   background: var(--bs-secondary-bg, rgba(128, 128, 128, 0.15));
 }
+/* the listed alg a rejected input turned out to be a duplicate of */
+.alg-item.clash {
+  background: rgba(var(--bs-danger-rgb), 0.12);
+  outline: 1px solid rgba(var(--bs-danger-rgb), 0.5);
+}
 .alg-text {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -138,5 +176,9 @@ ul {
 }
 .add-alg {
   max-width: 340px;
+}
+.add-alg-error {
+  max-width: 340px;
+  overflow-wrap: anywhere;
 }
 </style>

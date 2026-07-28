@@ -23,6 +23,13 @@
 
   --bs-link-color: #6a62ea;
   --bs-link-hover-color: #564fd0;
+
+  /* Quiet outline buttons (timer "hint", "repeat soon"). The bases'
+     --bs-secondary is far too washed out for text on the body background
+     (#95a5a6 light / #444 dark), so these carry their own readable tokens. */
+  --alg-quiet-color: #4a5163;
+  --alg-quiet-border: #8087a0;
+  --alg-quiet-hover-bg: #ecebfa;
 }
 
 /* ====================== DARK ======================= */
@@ -42,6 +49,10 @@
 
   --bs-link-color: #b4b0fc;
   --bs-link-hover-color: #cbc9fd;
+
+  --alg-quiet-color: #bcbfd2;
+  --alg-quiet-border: #6a6f92;
+  --alg-quiet-hover-bg: #262a40;
 }
 
 :root[data-mode="dark"] .card {

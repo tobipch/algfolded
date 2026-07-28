@@ -146,6 +146,8 @@
       "choose_alg_hint": "(click an alg to make it yours)",
       "add_alg_placeholder": "Add your own alg — moves or [a, b] commutator",
       "add_alg_btn": "Add algorithm",
+      "add_alg_duplicate": "This case already lists that algorithm (highlighted in red) — the same moves, possibly written differently:",
+      "add_alg_unparseable": "Couldn't read that. Use moves like R U' F2, wide/slice moves (Rw, M, x) or commutators like [R U R', D2].",
       "custom_alg_title": "Your own algorithm",
       "delete_alg_title": "Remove this algorithm",
       "play_alg_title": "Play on the cube",

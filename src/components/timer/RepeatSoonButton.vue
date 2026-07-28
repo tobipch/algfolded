@@ -35,15 +35,19 @@ const onClick = () => {
 
 <style scoped>
 .repeat-soon-btn {
-  color: var(--bs-secondary);
-  border-color: var(--bs-secondary);
-  opacity: 0.8;
+  /* readable in both modes — see --alg-quiet-* in theme.css */
+  color: var(--alg-quiet-color, #4a5163);
+  border-color: var(--alg-quiet-border, #8087a0);
 }
 .repeat-soon-btn:hover,
+.repeat-soon-btn:focus-visible {
+  color: var(--bs-body-color);
+  border-color: var(--bs-danger);
+  background: var(--alg-quiet-hover-bg, transparent);
+}
 .repeat-soon-btn.active {
   color: var(--bs-danger);
   border-color: var(--bs-danger);
-  background: transparent;
-  opacity: 1;
+  background: var(--alg-quiet-hover-bg, transparent);
 }
 </style>
