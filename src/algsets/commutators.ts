@@ -1,5 +1,6 @@
 import type { AlgCase, Algset } from '@/algsets/types'
 import type { ToLetter } from '@/helpers/helpers'
+import { parseRaw } from '@/algsets/load_json'
 
 // A raw commutator (3-style) case as stored in the data files. Buffer-order-
 // independent: `buffers` maps every trainer buffer whose piece is part of the
@@ -119,7 +120,7 @@ export const cornerComms: Algset = makeCommAlgset({
   id: 'commCorner',
   name: 'algset.commCorner',
   load: () =>
-    import('@/assets/corner_comms.json').then((m) => (m.default as unknown) as Record<string, RawComm>),
+    import('@/assets/corner_comms.json?raw').then((m) => parseRaw<Record<string, RawComm>>(m.default)),
   order: (deps) => deps.bufferOrder,
 })
 
@@ -127,6 +128,6 @@ export const edgeComms: Algset = makeCommAlgset({
   id: 'commEdge',
   name: 'algset.commEdge',
   load: () =>
-    import('@/assets/edge_comms.json').then((m) => (m.default as unknown) as Record<string, RawComm>),
+    import('@/assets/edge_comms.json?raw').then((m) => parseRaw<Record<string, RawComm>>(m.default)),
   order: (deps) => deps.edgeBufferOrder,
 })

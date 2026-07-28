@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- helper is plain JS (checkJs is off)
 import { algToFaceMoves, normalizeMoves, detectAlg, canonicalAlg, isValidAlg, dedupeAlgs, notationRichness } from './alg_match'

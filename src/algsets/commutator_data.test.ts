@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 // @ts-ignore -- plain JS helper
 import { isValidAlg } from '@/helpers/alg_match'

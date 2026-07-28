@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { buildTree, countLeaves, flattenLeaves } from './tree'
 import type { AlgCase, AlgsetLevel } from './types'

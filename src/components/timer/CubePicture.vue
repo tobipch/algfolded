@@ -2,12 +2,20 @@
 import {computed, onBeforeUnmount, onMounted, ref, watch} from "vue";
 import {useSettingsStore} from "@/stores/SettingsStore";
 
-const props = defineProps(['scramble'])
+// `interactive`: this cube gets played on (the case modal animates algs
+// through playAlg) and is draggable, so it needs the 3D engine. Left off, the
+// cube is a still picture of the case and renders as a 2D net, which skips
+// cubing's 3D chunk entirely — that chunk is the single biggest download in
+// the app, and a thumbnail doesn't earn it.
+const props = defineProps({
+  scramble: { type: String, default: '' },
+  interactive: { type: Boolean, default: false },
+})
 const settings = useSettingsStore()
 const containerDiv = ref(null)
 let player = null
 
-// Load the (heavy) 3D engine only when a cube is actually rendered.
+// Load the twisty engine only when a cube is actually rendered.
 let TwistyPlayerClass = null
 let createToken = 0
 
@@ -57,12 +65,12 @@ const createPlayer = async () => {
   player = new TwistyPlayerClass({
     puzzle: "3x3x3",
     alg: alg,
-    visualization: "3D",
+    visualization: props.interactive ? "3D" : "2D",
     hintFacelets: "none",
     backView: "none",
     background: "none",
     controlPanel: "none",
-    experimentalDragInput: "auto",
+    experimentalDragInput: props.interactive ? "auto" : "none",
   })
 
   player.style.width = `${cubePictureSize.value}px`

@@ -1,5 +1,6 @@
 import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
+import {readJson, writeJson} from '@/helpers/namespaced_storage'
 
 // Corner scheme: sticker (3 chars) -> letter. Speffz by default.
 const defaultScheme = {
@@ -26,12 +27,8 @@ const localStorageKey = "ltctLetterScheme"
 const edgeStorageKey = "ltctEdgeLetterScheme"
 
 export const useLetterSchemeStore = defineStore('letterScheme', () => {
-    const scheme = reactive(
-        JSON.parse(localStorage.getItem(localStorageKey)) || {...defaultScheme}
-    )
-    const edgeScheme = reactive(
-        JSON.parse(localStorage.getItem(edgeStorageKey)) || {...defaultEdgeScheme}
-    )
+    const scheme = reactive(readJson(localStorageKey, {...defaultScheme}))
+    const edgeScheme = reactive(readJson(edgeStorageKey, {...defaultEdgeScheme}))
 
     // Dispatch by sticker length: 2-char stickers are edges, everything else is a
     // corner. Keeps every caller (`ls.toLetter(sticker)`) scheme-aware without
@@ -45,10 +42,10 @@ export const useLetterSchemeStore = defineStore('letterScheme', () => {
     }
 
     watch(() => scheme, () => {
-        localStorage.setItem(localStorageKey, JSON.stringify(scheme))
+        writeJson(localStorageKey, scheme)
     }, {deep: true})
     watch(() => edgeScheme, () => {
-        localStorage.setItem(edgeStorageKey, JSON.stringify(edgeScheme))
+        writeJson(edgeStorageKey, edgeScheme)
     }, {deep: true})
 
     return { scheme, edgeScheme, toLetter, resetDefaults }

@@ -15,13 +15,14 @@ import {migrateLocalStorageKey} from '@/helpers/helpers'
 import flatlyUrl from '@/assets/bootstrap_themes/flatly.min.css?url'
 import darklyUrl from '@/assets/bootstrap_themes/darkly.min.css?url'
 import overridesCssUrl from '@/assets/theme.css?url'
+import {readString, writeString} from '@/helpers/namespaced_storage'
 
 const isDarkKey = "ltct_theme.is_dark";
 migrateLocalStorageKey("zbll_theme.is_dark", isDarkKey)
 
 const BASE_URL_BY_MODE = { light: flatlyUrl, dark: darklyUrl };
 
-const getInitialIsDark = () => !!localStorage && localStorage.getItem(isDarkKey) === "true";
+const getInitialIsDark = () => readString(isDarkKey) === "true";
 
 // create the <link> if missing, set its href, optionally move it to the end of <head>
 const ensureLink = (id, href, moveToEnd = false) => {
@@ -52,9 +53,7 @@ export const useThemeStore = defineStore('theme', () => {
   function toggleDayNight() {
     isDark.value = !isDark.value;
     applyCurrentTheme();
-    if (localStorage) {
-      localStorage.setItem(isDarkKey, "" + isDark.value);
-    }
+    writeString(isDarkKey, "" + isDark.value);
   }
 
   return { isDark, icon, toggleDayNight, applyCurrentTheme }

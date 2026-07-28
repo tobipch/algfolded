@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from 'vitest'
 import { partition, threeTwists, DEFAULT_BUFFER_ORDER, type RawTwist } from './three_twists'
 

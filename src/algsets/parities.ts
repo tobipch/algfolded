@@ -2,6 +2,7 @@ import type { AlgCase, Algset } from '@/algsets/types'
 import type { ToLetter } from '@/helpers/helpers'
 import { SPEFFZ } from '@/algsets/commutators'
 import { STICKER_CYCLES } from '@/algsets/t2c'
+import { parseRaw } from '@/algsets/load_json'
 
 // Parities: one alg swaps the corner buffer with a corner target and two
 // edges with each other (memo swap / pseudo swap). Memoed as just the corner
@@ -108,8 +109,8 @@ export const parities: Algset = {
     { id: 'case', display: (v, ctx) => ({ primary: ctx.toLetter(v) }) },
   ],
   load: () =>
-    import('@/assets/parities_map.json').then(
-      (m) => (m.default as unknown) as Record<string, RawParity>,
+    import('@/assets/parities_map.json?raw').then(
+      (m) => parseRaw<Record<string, RawParity>>(m.default),
     ),
   derive: (raw, deps) => partition(raw as Record<string, RawParity>, deps.bufferOrder),
   caseLabel: (c, toLetter) => toLetter(c.path[2]),

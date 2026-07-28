@@ -60,13 +60,17 @@ export const matchesWildcard = (pattern: string, text: string): boolean => {
 // One-time migration of a renamed localStorage key (oldKey -> newKey).
 // Copies the old value to the new key if the new key isn't set yet, then drops the old key.
 export const migrateLocalStorageKey = (oldKey: string, newKey: string): void => {
-    if (typeof localStorage === 'undefined' || !localStorage) return
-    const oldVal = localStorage.getItem(oldKey)
-    if (oldVal === null) return
-    if (localStorage.getItem(newKey) === null) {
-        localStorage.setItem(newKey, oldVal)
-    }
-    localStorage.removeItem(oldKey)
+    // Runs at module scope, so it must not throw: storage can be blocked
+    // outright (privacy modes) or full, and neither is worth a blank page.
+    try {
+        if (typeof localStorage === 'undefined' || !localStorage) return
+        const oldVal = localStorage.getItem(oldKey)
+        if (oldVal === null) return
+        if (localStorage.getItem(newKey) === null) {
+            localStorage.setItem(newKey, oldVal)
+        }
+        localStorage.removeItem(oldKey)
+    } catch { /* nothing to migrate, nothing to crash over */ }
 }
 
 // Copy text to the clipboard. The async Clipboard API needs a secure context,

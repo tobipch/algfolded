@@ -10,6 +10,7 @@ import flagDe from '@/assets/flags/de.svg'
 import flagGb from '@/assets/flags/gb.svg'
 import flagFr from '@/assets/flags/fr.svg'
 import flagIt from '@/assets/flags/it.svg'
+import {readString, writeString} from '@/helpers/namespaced_storage'
 
 export const supportedLocales = [
     {code: "de", messages: de, name: "Deutsch", flag: flagDe},
@@ -24,7 +25,7 @@ const defaultLocale = 'en';
 const supportedLocalesSet = new Set(supportedLocales.map(locale => locale.code));
 
 const getUserLocale = () => {
-    const localeFromStorage = localStorage.getItem(localStorageKey);
+    const localeFromStorage = readString(localStorageKey);
     if (supportedLocalesSet.has(localeFromStorage)) {
         return localeFromStorage;
     }
@@ -49,6 +50,6 @@ export const setLocaleAndReload = (code) => {
         console.error("setLocaleAndReload(", code, "). Supported: ", supportedLocales);
         return;
     }
-    localStorage.setItem(localStorageKey, code);
+    writeString(localStorageKey, code);
     location.reload();
 }

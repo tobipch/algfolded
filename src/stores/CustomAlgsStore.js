@@ -2,9 +2,12 @@ import {reactive, watch} from 'vue'
 import {defineStore} from 'pinia'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
 import {canonicalAlg, dedupeAlgs, notationRichness} from '@/helpers/alg_match'
-import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
+import {readNamespaced, writeNamespaced, splitCombinedKey} from '@/helpers/namespaced_storage'
 
 const localStorageKey = 'algfoldedCustomAlgs'
+
+// One key per algset (was one combined key holding every algset's slot).
+splitCombinedKey(localStorageKey)
 
 // User-added algorithms per case (map caseKey -> [algs]), on top of the
 // collection that ships with the algset. Fed by the "add your own alg" input

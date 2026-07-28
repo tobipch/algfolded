@@ -64,7 +64,6 @@ export const usePresetsStore = defineStore('presets', () => {
         if (!caseKey || typeof caseKey !== "string") {
             return console.error("toggleAddRemove: caseKey is not a string", caseKey)
         }
-        console.log("toggleAddRemove to ", presetName, caseKey)
         const action = hasCase(presetName, caseKey) ? removeFromPreset : addToPreset
         action(presetName, caseKey)
     }

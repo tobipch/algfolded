@@ -13,7 +13,7 @@ import {useCustomAlgsStore} from "@/stores/CustomAlgsStore"
 import {useDisplayStore} from "@/stores/DisplayStore"
 import {i18n} from "@/locale"
 import {LEGACY_ALGSET_ID} from "@/algsets/registry"
-import {readNamespaced, writeNamespaced, migrateToNamespaced,
+import {readNamespaced, writeNamespaced, migrateToNamespaced, readJson, writeJson, readString,
     isFlatSession, isFlatSrs, isFlatNumber} from "@/helpers/namespaced_storage"
 
 const statsKey = 'ltct_stats_array';
@@ -45,9 +45,9 @@ const makeDefaultStore = () => ({
 
 // Legacy: stats once lived in their own key; fold them into the flat store
 // once, before it gets namespaced below.
-const legacyStats = JSON.parse(localStorage.getItem(statsKey) || 'null')
-if (Array.isArray(legacyStats) && localStorage.getItem(storeKey) == null) {
-    localStorage.setItem(storeKey, JSON.stringify({...makeDefaultStore(), stats: legacyStats}))
+const legacyStats = readJson(statsKey, null)
+if (Array.isArray(legacyStats) && readString(storeKey) === null) {
+    writeJson(storeKey, {...makeDefaultStore(), stats: legacyStats})
 }
 
 // Per-algset namespacing: lift any pre-multi-algset flat data into the
