@@ -68,3 +68,31 @@ export const migrateLocalStorageKey = (oldKey: string, newKey: string): void => 
     }
     localStorage.removeItem(oldKey)
 }
+
+// Copy text to the clipboard. The async Clipboard API needs a secure context,
+// which self-hosted / LAN setups over plain http don't get, so fall back to a
+// hidden textarea + execCommand there. Resolves to whether it worked.
+export const copyToClipboard = async (text: string): Promise<boolean> => {
+    if (navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text)
+            return true
+        } catch {
+            // denied or insecure context — try the legacy path below
+        }
+    }
+    try {
+        const ta = document.createElement('textarea')
+        ta.value = text
+        ta.setAttribute('readonly', '')
+        // off-screen but still focusable, and never scroll the page to it
+        ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0'
+        document.body.appendChild(ta)
+        ta.select()
+        const ok = document.execCommand('copy')
+        document.body.removeChild(ta)
+        return ok
+    } catch {
+        return false
+    }
+}

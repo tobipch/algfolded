@@ -1,10 +1,11 @@
 <script setup>
-import {computed} from "vue";
+import {computed, onUnmounted, ref} from "vue";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
 import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {displayAlg} from "@/helpers/scramble_utils";
+import {copyToClipboard} from "@/helpers/helpers";
 
 // A non-interruptive "I forgot the alg" card: shows the case's preferred
 // algorithm large, plus any alternatives below it. Triggered by the help
@@ -21,6 +22,18 @@ const algs = computed(() => custom.mergedAlgs(props.caseKey))
 const preferred = computed(() => prefs.resolvePreferred(props.caseKey, algs.value))
 const others = computed(() => algs.value.filter(a => a !== preferred.value))
 const show = (alg) => displayAlg(alg, settings.store.algNotation)
+
+// Copy an alg straight off the hint card — mid-solve this is the one place the
+// alg is on screen, so it shouldn't need a detour through the result card.
+const copiedAlg = ref(null)
+let copiedTimer = null
+const copyAlg = async (alg) => {
+  if (!await copyToClipboard(show(alg))) return
+  copiedAlg.value = alg
+  if (copiedTimer) clearTimeout(copiedTimer)
+  copiedTimer = setTimeout(() => { copiedAlg.value = null }, 1500)
+}
+onUnmounted(() => { if (copiedTimer) clearTimeout(copiedTimer) })
 </script>
 
 <template>
@@ -29,10 +42,34 @@ const show = (alg) => displayAlg(alg, settings.store.algNotation)
       <span class="alg-hint-label">{{ label }}</span>
       <small v-if="secondary" class="alg-hint-secondary">{{ secondary }}</small>
     </div>
-    <div v-if="preferred" class="alg-hint-main font-monospace">{{ show(preferred) }}</div>
+    <div v-if="preferred" class="alg-hint-main font-monospace alg-hint-row">
+      <span>{{ show(preferred) }}</span>
+      <button
+          type="button"
+          class="copy-btn"
+          :class="{copied: copiedAlg === preferred}"
+          :title="copiedAlg === preferred ? $t('result_card.copy_alg_copied') : $t('result_card.copy_alg_title')"
+          :aria-label="$t('result_card.copy_alg_title')"
+          tabindex="-1"
+          @click.stop="copyAlg(preferred)">
+        <i class="bi" :class="copiedAlg === preferred ? 'bi-check-lg' : 'bi-clipboard'"/>
+      </button>
+    </div>
     <div v-else class="alg-hint-none fst-italic">{{ $t('select.no_alg') }}</div>
     <ul v-if="others.length" class="alg-hint-others font-monospace">
-      <li v-for="a in others" :key="a">{{ show(a) }}</li>
+      <li v-for="a in others" :key="a" class="alg-hint-row">
+        <span>{{ show(a) }}</span>
+        <button
+            type="button"
+            class="copy-btn"
+            :class="{copied: copiedAlg === a}"
+            :title="copiedAlg === a ? $t('result_card.copy_alg_copied') : $t('result_card.copy_alg_title')"
+            :aria-label="$t('result_card.copy_alg_title')"
+            tabindex="-1"
+            @click.stop="copyAlg(a)">
+          <i class="bi" :class="copiedAlg === a ? 'bi-check-lg' : 'bi-clipboard'"/>
+        </button>
+      </li>
     </ul>
   </div>
 </template>
@@ -88,5 +125,49 @@ const show = (alg) => displayAlg(alg, settings.store.algNotation)
 }
 .alg-hint-others li {
   padding: 1px 0;
+}
+/* the alg text plus its copy button, centred as one unit */
+.alg-hint-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+/* mirror the button's footprint on the left so the alg itself stays optically
+   centred in the card rather than sitting half a button off to the side */
+.alg-hint-row::before {
+  content: '';
+  flex: none;
+  width: calc(0.85em + 4px);
+}
+.copy-btn {
+  border: 0;
+  background: none;
+  color: inherit;
+  flex: none;
+  line-height: 1;
+  padding: 0 2px;
+  font-size: 0.85em;
+  /* only on hover, so the card stays a clean read while solving */
+  opacity: 0;
+  transition: opacity 0.12s ease-in-out;
+}
+.alg-hint-row:hover .copy-btn,
+.copy-btn:focus-visible,
+.copy-btn.copied {
+  opacity: 0.65;
+}
+.alg-hint-row:hover .copy-btn:hover,
+.copy-btn:focus-visible {
+  opacity: 1;
+}
+.copy-btn.copied {
+  opacity: 1;
+  color: var(--bs-success);
+}
+@media (hover: none) {
+  .copy-btn {
+    opacity: 0.65;
+  }
 }
 </style>
