@@ -260,6 +260,92 @@
       "local_hint": "Showing locally stored data. Sign in to keep your times in your account and across devices:",
       "no_matches": "No cases match your search.",
       "best": "Best"
+    },
+    "legal": {
+      "privacy": "Privacy",
+      "imprint": "Imprint",
+      "updated": "Last updated: {date}",
+      "config_warning": "Note to the operator: the details in src/legal_config.js have not been filled in yet. This page is not legally valid as it stands.",
+      "governing": "The German version is authoritative. Translations are provided for convenience."
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "Algfolded is a trainer for blindfolded speedcubing. This page explains what data comes up along the way, what it is used for and how to get rid of it. The guiding principle: as little as possible, and nothing is ever sold or used for advertising.",
+      "controller": {
+        "title": "Controller",
+        "body": "The party responsible for data processing on this website is:"
+      },
+      "logs": {
+        "title": "Visiting the site",
+        "body": "When you open the site your browser sends technically necessary information to the hosting provider: IP address, timestamp, the resource requested, browser and operating system identifiers and the referring page. These server logs occur whenever a website is operated, serve only operations and security, and are not combined with any other data."
+      },
+      "analytics": {
+        "title": "Audience measurement",
+        "body": "Visitor statistics are collected with Vercel Web Analytics. It measures page views, approximate region, device type, browser and referring page. It sets no cookies and neither stores nor reads any data in your browser. Repeat visits are not linked across websites; visitors are counted server-side using a one-way checksum that is rotated regularly. No personal profiles are created."
+      },
+      "localstorage": {
+        "title": "Local storage in your browser",
+        "body": "Your settings stay local to your browser (localStorage) and are not sent to the server unless you are signed in. This covers language, colour scheme, selected cases, presets, custom algorithms, letter scheme, notes and your times. You can clear it at any time through your browser settings, after which the site starts fresh.",
+        "note": "This storage is necessary for the functionality you requested and therefore needs no separate consent."
+      },
+      "account": {
+        "title": "Signing in with a WCA account",
+        "body": "Signing in is optional and exists so your times can sync across devices. It runs through the official OAuth service of the World Cube Association; no password is ever passed to Algfolded. Once signed in, the following is stored:",
+        "item_account_id": "the internal WCA account number",
+        "item_wca_id": "the public WCA ID, where one exists",
+        "item_name": "the name held in the WCA account",
+        "item_avatar": "the address of the WCA profile picture",
+        "after": "Without signing in none of this is collected, and the application remains fully usable."
+      },
+      "solves": {
+        "title": "Stored times",
+        "body": "While signed in, your training results are stored against your account: algorithm set, case, time in milliseconds, scramble, algorithm used and timestamp. This data serves only your own statistics and is not shown to anyone else."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "body": "Exactly one cookie is set, and only if you sign in: a session identifier that keeps you signed in. It is protected against access by scripts, expires at the end of the session and is removed when you sign out. No advertising or analytics cookies are used."
+      },
+      "processors": {
+        "title": "Service providers involved",
+        "body": "Running the site requires third parties that technically process the data described above:",
+        "item_frontend": "Hosting of the website and its interfaces, and audience measurement:",
+        "item_database": "Database for accounts and times:",
+        "item_wca": "Sign-in: World Cube Association, only when you actively use the login.",
+        "note": "Hosting in the USA means data may be processed outside Switzerland and the EEA; the provider commits to an adequate level of protection through standard contractual clauses."
+      },
+      "retention": {
+        "title": "Retention and deletion",
+        "body": "Account and timing data are kept until you ask for deletion. Sessions expire automatically. Statistics data is not personal in the first place. On request your account and all associated times will be deleted in full; write to the address below."
+      },
+      "rights": {
+        "title": "Your rights",
+        "body": "You may request access to the data held about you, have it corrected or deleted, restrict its processing and request it in a common format. An informal message to the contact address is enough. If you believe your data is not being processed lawfully, you may contact the competent supervisory authority."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "For questions and requests regarding data protection:"
+      }
+    },
+    "imprint": {
+      "title": "Imprint",
+      "operator": {
+        "title": "Operator"
+      },
+      "contact": {
+        "title": "Contact"
+      },
+      "nature": {
+        "title": "About this project",
+        "body": "Algfolded is a non-commercial hobby project. It is free to use, no goods or services are sold, and no advertising is served."
+      },
+      "liability": {
+        "title": "Liability",
+        "body": "Content is produced with care but without warranty as to accuracy or completeness. The operators of external sites are solely responsible for their content; no infringements were apparent at the time the links were added."
+      },
+      "source": {
+        "title": "Source code",
+        "body": "The complete source code of this application is publicly available:"
+      }
     }
   }
 }

@@ -35,6 +35,17 @@ const router = createRouter({
       name: 'stats',
       component: () => import("@/views/StatsView.vue")
     },
+    // Legal pages: lazy, since they're linked from every page but read rarely.
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import("@/views/PrivacyView.vue")
+    },
+    {
+      path: '/imprint',
+      name: 'imprint',
+      component: () => import("@/views/ImprintView.vue")
+    },
   ]
 })
 
