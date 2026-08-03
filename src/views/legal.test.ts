@@ -14,7 +14,7 @@ import itMessages from '@/assets/i18n/it.json'
 import PrivacyView from '@/views/PrivacyView.vue'
 import ImprintView from '@/views/ImprintView.vue'
 import AppFooter from '@/components/AppFooter.vue'
-import { isLegalConfigComplete } from '@/legal_config'
+import { isConfigComplete, isLegalConfigComplete } from '@/legal_config'
 
 // The legal pages have to say something in every language the app offers: a
 // missing key renders the key path itself ("privacy.rights.body"), which on an
@@ -103,6 +103,29 @@ describe.each(['de', 'en', 'fr', 'it'])('legal pages (%s)', (locale) => {
     expect(text).toContain('Vercel')
     expect(text).toContain('Hostpoint')
     expect(text).toContain('World Cube Association')
+  })
+})
+
+describe('operator details', () => {
+  // A postal address is only required for commercial sites; the duties that do
+  // apply here ask for identity and contact details. Name plus email has to
+  // count as complete, or the warning banner would never go away.
+  const named = { operatorName: 'A. Muster', email: 'kontakt@example.com' }
+
+  it('counts as complete without any address', () => {
+    expect(isConfigComplete({ ...named, addressLines: [] })).toBe(true)
+    expect(isConfigComplete(named)).toBe(true)
+  })
+
+  it('still requires a name and a way to get in touch', () => {
+    expect(isConfigComplete({ ...named, operatorName: '' })).toBe(false)
+    expect(isConfigComplete({ ...named, email: '' })).toBe(false)
+    expect(isConfigComplete({ ...named, operatorName: 'TODO: Name' })).toBe(false)
+  })
+
+  it('rejects a half-edited address rather than shipping a stray placeholder', () => {
+    const half = { ...named, addressLines: ['Musterstrasse 1', 'TODO: PLZ und Ort'] }
+    expect(isConfigComplete(half)).toBe(false)
   })
 })
 

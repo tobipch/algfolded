@@ -8,15 +8,21 @@ export const legalConfig = {
   // Name of the person or organisation running the site.
   operatorName: 'TODO: Name',
 
-  // Street, postcode/city, country -- one array entry per printed line.
-  addressLines: [
-    'TODO: Strasse und Nummer',
-    'TODO: PLZ und Ort',
-    'TODO: Land',
-  ],
+  // Optional -- an empty array omits the address block entirely.
+  //
+  // A postal address is required for commercial sites (DE: DDG section 5; CH:
+  // UWG art. 3 lit. s covers paid offerings). Algfolded is free and sells
+  // nothing, so neither applies. What does apply -- revDSG art. 19 and GDPR
+  // art. 13 -- asks for "identity and contact details" and does not spell out
+  // a postal address, so name plus a working email is defensible here.
+  //
+  // One entry per printed line, e.g.
+  //   ['Musterstrasse 1', '8000 Zürich', 'Schweiz']
+  addressLines: [],
 
   // Contact address for data protection requests. Required: the information
-  // duty is only met if people can actually reach you.
+  // duty is only met if people can actually reach you. An alias that forwards
+  // to your inbox works and keeps your personal address off the page.
   email: 'TODO: kontakt@example.com',
 
   // Optional, leave empty to omit.
@@ -38,9 +44,15 @@ export const legalConfig = {
 // True once the operator has replaced the placeholders above. The pages show a
 // visible warning while this is false, so an unfilled imprint can't quietly go
 // live and look finished.
-export function isLegalConfigComplete() {
+export function isConfigComplete(config) {
   const filled = (v) => typeof v === 'string' && v.trim() !== '' && !v.startsWith('TODO')
-  return filled(legalConfig.operatorName)
-      && filled(legalConfig.email)
-      && legalConfig.addressLines.every(filled)
+  // The address is optional (see above), so an empty list passes. Any line
+  // that *is* present has to be real, so a half-edited address can't ship.
+  return filled(config.operatorName)
+      && filled(config.email)
+      && (config.addressLines ?? []).every(filled)
+}
+
+export function isLegalConfigComplete() {
+  return isConfigComplete(legalConfig)
 }
