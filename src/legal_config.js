@@ -6,7 +6,7 @@
 // printed as a blank line.
 export const legalConfig = {
   // Name of the person or organisation running the site.
-  operatorName: 'TODO: Name',
+  operatorName: 'Tobias Peter',
 
   // Optional -- an empty array omits the address block entirely.
   //
@@ -23,7 +23,7 @@ export const legalConfig = {
   // Contact address for data protection requests. Required: the information
   // duty is only met if people can actually reach you. An alias that forwards
   // to your inbox works and keeps your personal address off the page.
-  email: 'TODO: kontakt@example.com',
+  email: 'tobias.peter@bluewin.ch',
 
   // Optional, leave empty to omit.
   phone: '',
