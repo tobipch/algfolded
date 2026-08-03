@@ -260,6 +260,92 @@
       "local_hint": "Données locales affichées. Connectez-vous pour conserver vos temps dans votre compte et sur tous vos appareils :",
       "no_matches": "Aucun cas ne correspond à la recherche.",
       "best": "Meilleur"
+    },
+    "legal": {
+      "privacy": "Confidentialité",
+      "imprint": "Mentions légales",
+      "updated": "Mise à jour : {date}",
+      "config_warning": "Note à l'exploitant : les informations dans src/legal_config.js ne sont pas encore renseignées. Cette page n'est pas valable en l'état.",
+      "governing": "La version allemande fait foi. Les traductions sont fournies à titre indicatif."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "intro": "Algfolded est un entraîneur de speedcubing en aveugle. Cette page décrit les données qui apparaissent, leur utilisation et la manière de s'en défaire. Le principe directeur : le moins possible, et rien n'est jamais vendu ni exploité à des fins publicitaires.",
+      "controller": {
+        "title": "Responsable du traitement",
+        "body": "Le responsable du traitement des données sur ce site est :"
+      },
+      "logs": {
+        "title": "Consultation du site",
+        "body": "Lorsque vous ouvrez le site, votre navigateur transmet à l'hébergeur des informations techniquement nécessaires : adresse IP, horodatage, ressource demandée, identifiants du navigateur et du système d'exploitation, et page de provenance. Ces journaux serveur sont inhérents à l'exploitation d'un site web, servent uniquement au fonctionnement et à la sécurité, et ne sont recoupés avec aucune autre donnée."
+      },
+      "analytics": {
+        "title": "Mesure d'audience",
+        "body": "Les statistiques de visite sont collectées avec Vercel Web Analytics. L'outil mesure les pages vues, la région approximative, le type d'appareil, le navigateur et la page de provenance. Il ne dépose aucun cookie et n'enregistre ni ne lit aucune donnée dans votre navigateur. Les visites répétées ne sont pas reliées entre les sites ; le comptage se fait côté serveur au moyen d'une empreinte non réversible, renouvelée régulièrement. Aucun profil personnel n'est constitué."
+      },
+      "localstorage": {
+        "title": "Stockage local dans le navigateur",
+        "body": "Vos réglages restent locaux à votre navigateur (localStorage) et ne sont pas transmis au serveur tant que vous n'êtes pas connecté. Cela comprend la langue, le thème, les cas sélectionnés, les préréglages, vos algorithmes personnels, le schéma de lettres, les notes et vos temps. Vous pouvez les effacer à tout moment via les réglages du navigateur ; le site repart alors de zéro.",
+        "note": "Ce stockage est nécessaire à la fonctionnalité demandée et ne requiert donc pas de consentement distinct."
+      },
+      "account": {
+        "title": "Connexion avec un compte WCA",
+        "body": "La connexion est facultative et sert à synchroniser vos temps entre appareils. Elle passe par le service OAuth officiel de la World Cube Association ; aucun mot de passe n'est jamais transmis à Algfolded. Une fois connecté, sont enregistrés :",
+        "item_account_id": "le numéro de compte WCA interne",
+        "item_wca_id": "l'identifiant WCA public, s'il existe",
+        "item_name": "le nom enregistré dans le compte WCA",
+        "item_avatar": "l'adresse de la photo de profil WCA",
+        "after": "Sans connexion, rien de tout cela n'est collecté et l'application reste pleinement utilisable."
+      },
+      "solves": {
+        "title": "Temps enregistrés",
+        "body": "Lorsque vous êtes connecté, vos résultats d'entraînement sont enregistrés et rattachés à votre compte : jeu d'algorithmes, cas, temps en millisecondes, mélange, algorithme utilisé et horodatage. Ces données servent uniquement à vos propres statistiques et ne sont montrées à personne d'autre."
+      },
+      "cookies": {
+        "title": "Cookies",
+        "body": "Un seul cookie est déposé, et uniquement si vous vous connectez : un identifiant de session qui vous maintient connecté. Il est protégé contre la lecture par des scripts, expire à la fin de la session et disparaît à la déconnexion. Aucun cookie publicitaire ou de mesure n'est utilisé."
+      },
+      "processors": {
+        "title": "Prestataires impliqués",
+        "body": "L'exploitation requiert des tiers qui traitent techniquement les données décrites ci-dessus :",
+        "item_frontend": "Hébergement du site et de ses interfaces, et mesure d'audience :",
+        "item_database": "Base de données pour les comptes et les temps :",
+        "item_wca": "Connexion : World Cube Association, uniquement en cas d'utilisation effective du login.",
+        "note": "L'hébergement aux États-Unis implique que des données peuvent être traitées hors de Suisse et de l'EEE ; le prestataire s'engage à un niveau de protection adéquat au moyen de clauses contractuelles types."
+      },
+      "retention": {
+        "title": "Conservation et suppression",
+        "body": "Les données de compte et de temps sont conservées jusqu'à ce que vous en demandiez la suppression. Les sessions expirent automatiquement. Les données statistiques ne sont pas personnelles dès l'origine. Sur demande, votre compte et tous les temps associés sont intégralement supprimés ; écrivez à l'adresse ci-dessous."
+      },
+      "rights": {
+        "title": "Vos droits",
+        "body": "Vous pouvez demander l'accès aux données vous concernant, leur rectification ou leur suppression, la limitation de leur traitement et leur remise dans un format courant. Un message informel à l'adresse de contact suffit. Si vous estimez que vos données ne sont pas traitées licitement, vous pouvez saisir l'autorité de surveillance compétente."
+      },
+      "contact": {
+        "title": "Contact",
+        "body": "Pour toute question relative à la protection des données :"
+      }
+    },
+    "imprint": {
+      "title": "Mentions légales",
+      "operator": {
+        "title": "Exploitant"
+      },
+      "contact": {
+        "title": "Contact"
+      },
+      "nature": {
+        "title": "À propos du projet",
+        "body": "Algfolded est un projet de loisir non commercial. Son utilisation est gratuite, aucun bien ni service n'est vendu et aucune publicité n'est diffusée."
+      },
+      "liability": {
+        "title": "Responsabilité",
+        "body": "Les contenus sont élaborés avec soin, mais sans garantie d'exactitude ni d'exhaustivité. Les exploitants des sites externes sont seuls responsables de leur contenu ; aucune infraction n'était apparente au moment de la mise en lien."
+      },
+      "source": {
+        "title": "Code source",
+        "body": "Le code source complet de cette application est consultable publiquement :"
+      }
     }
   }
 }

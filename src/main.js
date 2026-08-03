@@ -4,6 +4,9 @@ import App from './App.vue'
 // router
 import router from './router'
 
+// analytics
+import {setupAnalytics} from '@/analytics'
+
 // Pinia
 import { createPinia } from 'pinia'
 
@@ -22,6 +25,9 @@ const pinia = createPinia()
 app.use(router)
 app.use(pinia)
 app.use(i18n)
+
+// registered before mount so the router's very first navigation is counted too
+setupAnalytics(router)
 
 // Mount immediately so the app shell paints right away, then load the active
 // algset's cases in the background. The select view shows a loading state and
