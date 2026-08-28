@@ -9,6 +9,7 @@
       "settings": "Paramètres",
       "toggle_night_mode": "Basculer en mode nuit",
       "bluetooth_connect": "Connecter le smart cube",
+      "bluetooth_connecting": "Connexion au smart cube…",
       "bluetooth_disconnect": "Déconnecter le smart cube",
       "bluetooth_select_brand": "Choisir la marque du cube",
       "bluetooth_pause": "Mettre en pause le suivi",

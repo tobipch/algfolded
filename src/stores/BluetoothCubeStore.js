@@ -14,6 +14,9 @@ async function getKPuzzle() {
 
 export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const connected = ref(false)
+    // A connect attempt is in flight (chooser open, or handshaking with the
+    // cube). Exposed so the UI can show progress and block a second attempt.
+    const connecting = ref(false)
     const deviceName = ref(null)
     const battery = ref(null)
 
@@ -54,6 +57,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     let cube = null               // underlying brand-specific connection object
     let cubeDisconnect = null     // brand-specific disconnect fn
     let gattDevice = null         // BluetoothDevice for gattserverdisconnected listener
+    // The last device the chooser handed out. The brand libraries only expose
+    // their BluetoothDevice once they are fully connected, so this is the only
+    // handle we have on a connection that died half-way through setup.
+    let lastRequestedDevice = null
     let subscriptions = []        // active event subscriptions ({ unsubscribe() })
     let cubePattern = null
     let solvedPattern = null
@@ -204,9 +211,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     }
 
     // An unexpected drop (device powered off / out of range / the OS tearing
-    // the link down when the page is backgrounded). Guard so it runs once.
+    // the link down when the page is backgrounded). Guard so it runs once, and
+    // stay quiet while we are tearing the connection down ourselves — the GAN
+    // library emits its DISCONNECT event from inside disconnect(), which lands
+    // back here and would otherwise report a normal disconnect as a failure.
     const onGattDisconnect = () => {
-        if (!connected.value) return
+        if (tearingDown || !connected.value) return
         const display = useDisplayStore()
         cleanupConnection()
         display.showToast('Smart cube connection lost — tap the bluetooth icon to reconnect', 'danger')
@@ -258,10 +268,11 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     }
 
     // Connect a MoYu / QiYi cube via btcube-web.
-    const connectMoyu = async (display) => {
+    const connectMoyu = async (display, attempt) => {
         const {connectSmartCube} = await import('btcube-web')
         patchRequestDevice()
         const c = await connectSmartCube()
+        if (!adoptAttempt(attempt)) { closeAbandoned(c); return }
         cube = c
         cubeDisconnect = () => { try { c.commands.disconnect() } catch (_) {} }
         connected.value = true
@@ -333,8 +344,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // acceptAllDevices one: a single, prompt, cancellable chooser that lists
     // the cube regardless of its advertised name.
     const wrapRequestDevice = (original) => async (options) => {
-        if (!options) return await original(options)
-        return await original(permissiveOptions(options))
+        const device = await original(options ? permissiveOptions(options) : options)
+        // Remember what the chooser handed out: the connect flow can die at any
+        // point after gatt.connect() succeeded, and only this reference lets us
+        // close the link again (see closeGatt).
+        lastRequestedDevice = device
+        // The chooser is done; from here on the cube has to answer promptly.
+        armDeadline(HANDSHAKE_TIMEOUT_MS)
+        return device
     }
 
     // Install the wrapper once. Some browsers expose navigator.bluetooth as
@@ -368,10 +385,11 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     }
 
     // Connect a GAN cube via gan-web-bluetooth.
-    const connectGan = async (display) => {
+    const connectGan = async (display, attempt) => {
         const {connectGanCube} = await import('gan-web-bluetooth')
         patchRequestDevice()
         const conn = await connectGanCube(ganMacProvider)
+        if (!adoptAttempt(attempt)) { closeAbandoned(conn); return }
         cube = conn
         cubeDisconnect = () => { try { conn.disconnect() } catch (_) {} }
         connected.value = true
@@ -394,29 +412,85 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         display.showToast('Connected to ' + deviceName.value, 'success')
     }
 
+    // A connect attempt can wedge: the MoYu library waits forever for the cube
+    // to answer with its MAC, and GAN's advertisement-based MAC lookup can sit
+    // for a while too. Without a deadline the UI just stays "disconnected" with
+    // no error and no way to retry, and the half-open GATT link keeps the cube
+    // bound to the browser.
+    //
+    // The deadline can't simply run from the start of connect(): the browser's
+    // device chooser is open inside that same promise and the user may take as
+    // long as they like there. So the short handshake deadline is armed only
+    // once a device has been picked; until then a much longer one runs purely
+    // so a wedged attempt can't stick around forever.
+    const HANDSHAKE_TIMEOUT_MS = 30000
+    const CHOOSER_TIMEOUT_MS = 300000
+
+    let deadlineTimer = null
+    let deadlineReject = null
+    const armDeadline = (ms) => {
+        clearTimeout(deadlineTimer)
+        deadlineTimer = setTimeout(() => {
+            deadlineReject?.(Object.assign(new Error('the cube did not answer'), {name: 'TimeoutError'}))
+        }, ms)
+    }
+    const clearDeadline = () => {
+        clearTimeout(deadlineTimer)
+        deadlineTimer = null
+        deadlineReject = null
+    }
+
+    // Attempt bookkeeping. A timed-out attempt can still succeed later, long
+    // after we gave up on it; `attempt` marks who is allowed to install itself
+    // as the live connection, and anyone else closes what they opened.
+    let attemptSeq = 0
+    let currentAttempt = 0
+    const adoptAttempt = (attempt) => attempt === currentAttempt
+    const closeAbandoned = (c) => {
+        try { c?.commands?.disconnect?.() } catch (_) {}
+        try { c?.disconnect?.() } catch (_) {}
+        closeGatt(c?.device)
+    }
+
     const connect = async (brand = 'moyu') => {
         const display = useDisplayStore()
+        // Two attempts in flight would each open their own GATT link, and the
+        // one that loses is never closed — that alone can make the cube
+        // unreachable for the rest of the session.
+        if (connecting.value || connected.value) return
+        const attempt = currentAttempt = ++attemptSeq
+        connecting.value = true
         try {
             if (!navigator.bluetooth) {
                 display.showToast('Bluetooth is not supported in this browser', 'danger')
                 return
             }
-            if (brand === 'gan') {
-                await connectGan(display)
-            } else {
-                await connectMoyu(display)
-            }
+            const deadline = new Promise((_, reject) => { deadlineReject = reject })
+            armDeadline(CHOOSER_TIMEOUT_MS)
+            const pending = brand === 'gan'
+                ? connectGan(display, attempt)
+                : connectMoyu(display, attempt)
+            await Promise.race([pending, deadline])
         } catch (e) {
             console.error('Bluetooth connect failed:', e)
+            // Give up on this attempt before cleaning up, so a late success
+            // tears itself down instead of installing a connection nobody
+            // expects any more.
+            if (currentAttempt === attempt) currentAttempt = 0
             cleanupConnection()
             if (e?.name === 'NotFoundError') {
                 display.showToast('No smart cube found. Make sure your cube is on and nearby.', 'danger')
+            } else if (e?.name === 'TimeoutError') {
+                display.showToast('The cube did not respond. Turn it off and on again, then retry.', 'danger')
             } else {
                 // Include the error name so failures on browsers we can't debug
                 // directly (e.g. Bluefy on iOS) can be reported back.
                 const detail = [e?.name, e?.message].filter(Boolean).join(': ') || 'Unknown error'
                 display.showToast('Failed to connect: ' + detail, 'danger')
             }
+        } finally {
+            clearDeadline()
+            connecting.value = false
         }
     }
 
@@ -427,25 +501,52 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             display.showToast('Keyboard simulator disconnected', 'info')
             return
         }
-        if (cubeDisconnect) cubeDisconnect()
         cleanupConnection()
         display.showToast('Smart cube disconnected', 'info')
     }
 
+    // Close a GATT link we may still be holding. Safe on an already-closed one.
+    const closeGatt = (device) => {
+        try {
+            if (device?.gatt?.connected) device.gatt.disconnect()
+        } catch (_) { /* the link is gone anyway */ }
+    }
+
+    // Re-entrancy guard: the GAN library emits DISCONNECT synchronously from
+    // inside its disconnect(), which comes back through onGattDisconnect().
+    let tearingDown = false
+
     const cleanupConnection = () => {
-        stopLivenessMonitor()
-        for (const s of subscriptions) { try { s.unsubscribe() } catch (_) {} }
-        subscriptions = []
-        if (gattDevice) {
-            try { gattDevice.removeEventListener('gattserverdisconnected', onGattDisconnect) } catch (_) {}
+        if (tearingDown) return
+        tearingDown = true
+        try {
+            stopLivenessMonitor()
+            for (const s of subscriptions) { try { s.unsubscribe() } catch (_) {} }
+            subscriptions = []
+            // Always close the link ourselves instead of trusting the brand
+            // library to have done it. It only closes on its happy path (and
+            // GAN only after awaiting stopNotifications), while this runs on
+            // every teardown — user disconnect, silent drop, failed or
+            // abandoned connect. A cube left bound to the browser stops
+            // advertising, so it never shows up in the chooser again and no
+            // later attempt can reach it until the page is reloaded.
+            if (cubeDisconnect) { try { cubeDisconnect() } catch (_) {} }
+            closeGatt(gattDevice)
+            closeGatt(lastRequestedDevice)
+            if (gattDevice) {
+                try { gattDevice.removeEventListener('gattserverdisconnected', onGattDisconnect) } catch (_) {}
+            }
             gattDevice = null
+            lastRequestedDevice = null
+            cube = null
+            cubeDisconnect = null
+            connected.value = false
+            deviceName.value = null
+            battery.value = null
+            resetTracking()
+        } finally {
+            tearingDown = false
         }
-        cube = null
-        cubeDisconnect = null
-        connected.value = false
-        deviceName.value = null
-        battery.value = null
-        resetTracking()
     }
 
     // Set up the virtual cube for the current scrambleMoves. In normal mode the
@@ -770,7 +871,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const _getInternals = () => ({ connectKeyboard, disconnectKeyboard, onMove })
 
     return {
-        connected, deviceName, battery,
+        connected, connecting, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
         tooFarFromSolved, resetSignal, hintSignal, lastSolveMoves, consumeSolveMoves, warmupLibraries,
         connect, disconnect, startTracking, resetTracking,
