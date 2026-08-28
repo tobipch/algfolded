@@ -9,6 +9,7 @@
       "settings": "Impostazioni",
       "toggle_night_mode": "Attiva modalità notturna",
       "bluetooth_connect": "Collega smart cube",
+      "bluetooth_connecting": "Connessione allo smart cube…",
       "bluetooth_disconnect": "Scollega smart cube",
       "bluetooth_select_brand": "Scegli la marca del cubo",
       "bluetooth_pause": "Metti in pausa il tracciamento",

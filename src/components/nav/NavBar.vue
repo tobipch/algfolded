@@ -53,6 +53,7 @@ onMounted(() => auth.checkAuthError(t))
 const showConnectMenu = ref(false)
 const btConnectWrap = ref(null)
 const onBluetoothClick = () => {
+  if (bt.connecting) return // an attempt is already running; a second one would strand a GATT link
   if (bt.connected) { bt.disconnect(); return }
   showConnectMenu.value = !showConnectMenu.value
   // Warm the cube libraries now so picking a brand fires requestDevice
@@ -77,10 +78,12 @@ const onDocClick = (e) => {
   }
 }
 const btBtnClass = computed(() => bt.connected ? 'btn-info' : 'btn-outline-secondary')
-const btTooltip = computed(() => bt.connected
-    ? t('nav.bluetooth_disconnect') + (bt.deviceName ? ` (${bt.deviceName})` : '')
-    : t('nav.bluetooth_connect')
-)
+const btTooltip = computed(() => {
+  if (bt.connecting) return t('nav.bluetooth_connecting')
+  return bt.connected
+      ? t('nav.bluetooth_disconnect') + (bt.deviceName ? ` (${bt.deviceName})` : '')
+      : t('nav.bluetooth_connect')
+})
 const router = useRouter();
 const route = useRoute()
 const displayStore = useDisplayStore()
@@ -179,10 +182,12 @@ onUnmounted(() => {
                 tabindex="-1" @keydown.space.prevent=""
                 :class="btBtnClass"
                 @click.stop="onBluetoothClick"
+                :disabled="bt.connecting"
                 :title="btTooltip">
-              <i class="bi-bluetooth"/>
+              <span v-if="bt.connecting" class="spinner-border spinner-border-sm" role="status"/>
+              <i v-else class="bi-bluetooth"/>
             </button>
-            <div v-if="showConnectMenu && !bt.connected" class="bt-connect-menu">
+            <div v-if="showConnectMenu && !bt.connected && !bt.connecting" class="bt-connect-menu">
               <div class="bt-connect-menu-title">{{ $t('nav.bluetooth_select_brand') }}</div>
               <button class="bt-connect-item" @click.stop="connectBrand('gan')">GAN</button>
               <button class="bt-connect-item" @click.stop="connectBrand('moyu')">MoYu / QiYi</button>
