@@ -377,6 +377,7 @@
     "key": "UD FUL FDL",
     "algs": [
       "U2 D2 R' U R2 D R' U' R D' R' U' R' U R U' D2",
+      "L' U L2 D L' U' L D' L' U' L' U L U",
       "U R U' r' F M' F2 R U R' U' F2"
     ],
     "scrambles": [
@@ -548,8 +549,8 @@
     "algs": [
       "U' R' U2 R U R2 D' R U R' D R2 U2",
       "U' R' U' R U R' U' R2 D R' U' R D' R2 U R U'",
-      "y' R' U2 R U R2 D' R U R' D R2 U y",
-      "U' R' U2 R2 D R' U R D' R2 U R U2"
+      "U' R' U2 R2 D R' U R D' R2 U R U2",
+      "y' R' U2 R U R2 D' R U R' D R2 U y"
     ],
     "scrambles": [
       "B U' L2 U L2 U' F2 U2 F D2 B' R2 B D2 F U2 B'",
@@ -613,7 +614,8 @@
     "key": "UD LUF LDF",
     "algs": [
       "U D2 R' U' R U R D R' U R D' R2 U' R U2 D2",
-      "r' F' D' F r U' r' F' D r U2 r' F' r"
+      "r' F' D' F r U' r' F' D r U2 r' F' r",
+      "U' L' U' L U L D L' U L D' L2 U' L"
     ],
     "scrambles": [
       "B2 U2 B2 R2 B2 U' B2 D2 B2 U F2 L2 B2 D2 F2 R' D U' R' D' U R",
@@ -1082,8 +1084,7 @@
   "UU LUB BUR": {
     "key": "UU LUB BUR",
     "algs": [
-      "R U R' U' R U R2 D' R U' R' D R U2 R U' R' U2",
-      "U R2 U R2 U R D' R U' R' D R U' R2"
+      "R U R' U' R U R2 D' R U' R' D R U2 R U' R' U2"
     ],
     "scrambles": [
       "U' B2 L D' B2 L2 D2 U F2 L2 D L2 U2 R2 F2 L B2 R' U R",
@@ -1485,8 +1486,8 @@
   "UD BUL BDR": {
     "key": "UD BUL BDR",
     "algs": [
-      "R D R' U R D' R2 U R U R' U2 R",
-      "U R2 D' R U R' D R2 U R' U2 R"
+      "U R2 D' R U R' D R2 U R' U2 R",
+      "R D R' U R D' R2 U R U R' U2 R"
     ],
     "scrambles": [
       "F R2 F' L2 B U' F2 U' B' U R2 U' R2 U2 F2 U L2 D' F2 D F2",
@@ -1551,10 +1552,10 @@
     "algs": [
       "U' D' R2 U R' U' R' U R' U' D R' U R",
       "U R U R' U' R B2 R' U2 R U2 R B2 R2",
-      "U' R2 U R' U' R' U R' U' D R' U R D'",
       "R' D' R U R' D R2 U R2 D' r U2 r' D R U",
       "F R' F' R U' S U R' U' S' R' U R",
       "U R U2 R2 D' R U' R U R' U' R2 D R' U' R'",
+      "U' R2 U R' U' R' U R' U' D R' U R D'",
       "U2 R' D R2 U' R' U R U' R' U2 R U2 R2 D' R"
     ],
     "scrambles": [
@@ -2342,8 +2343,8 @@
     "key": "DU LDF FUL",
     "algs": [
       "y U R' U' R D' R2 U' R U2 R' U' R2 U' D y'",
-      "D L' U' L D' L2 U' L U2 L' U' L2",
       "U2 D' R' U' R D' R2 U' R U2 R' U' R2 U2 D2",
+      "D L' U' L D' L2 U' L U2 L' U' L2",
       "R' U' R' F R2 U R' F' R U' R2 D' F' D R2 U"
     ],
     "scrambles": [
@@ -2384,10 +2385,10 @@
   "DU LDF LUB": {
     "key": "DU LDF LUB",
     "algs": [
-      "U D' R D' R2 U' R U2 R' U' R2 D R' U2 D",
       "y R D' R2 U' R U2 R' U' R2 D R' U' y'",
-      "U' D r F' r2 F' r U2 r' F' r2 F r' D'",
-      "U' D L D' L2 U' L U2 L' U' L2 D L' D'"
+      "U D' R D' R2 U' R U2 R' U' R2 D R' U2 D",
+      "U' D L D' L2 U' L U2 L' U' L2 D L' D'",
+      "U' D r F' r2 F' r U2 r' F' r2 F r' D'"
     ],
     "scrambles": [
       "L2 U2 B R2 U2 L2 B' L2 B2 L2 B' R2 F R2 F D' B' R2 B D' F2",
@@ -2533,8 +2534,8 @@
   "DD LDF BDR": {
     "key": "DD LDF BDR",
     "algs": [
-      "R D R U R2 U D' R U R U R2 U' D R D' R U' R'",
-      "U2 R2 D R U R' D' R2 U2 R' L2 U R U' L2"
+      "U2 R2 D R U R' D' R2 U2 R' L2 U R U' L2",
+      "R D R U R2 U D' R U R U R2 U' D R D' R U' R'"
     ],
     "scrambles": [
       "L' F2 U L2 U' L2 B2 F2 U B2 D' L2 D L2 U R F2 R' U' L D2",
@@ -2614,10 +2615,10 @@
   "DU FDL LUF": {
     "key": "DU FDL LUF",
     "algs": [
-      "U' D R U2 R' U M F R' F' r U' D'",
       "U2 R2 D R2 U R' U2 R U R2 D' R U R U2",
-      "F R' S2 R U R' S2 R2 U R' F' U'",
-      "U2 D R' D' R U R' D R2 U2 R' U R U R' U2 D'"
+      "U' D R U2 R' U M F R' F' r U' D'",
+      "U2 D R' D' R U R' D R2 U2 R' U R U R' U2 D'",
+      "F R' S2 R U R' S2 R2 U R' F' U'"
     ],
     "scrambles": [
       "L B2 R' F2 R B2 L F2 D' L2 U' L2 B2 D' B2 D2 F2 L2",
@@ -2762,8 +2763,8 @@
   "DD FDL RDB": {
     "key": "DD FDL RDB",
     "algs": [
-      "R U R' D R' U D' R2 U' R' U' R' U' D R2 U' R' D' R'",
-      "L2 U R' U' R L2 U2 R2 D R U' R' D' R2 U2"
+      "L2 U R' U' R L2 U2 R2 D R U' R' D' R2 U2",
+      "R U R' D R' U D' R2 U' R' U' R' U' D R2 U' R' D' R'"
     ],
     "scrambles": [
       "D F' R2 L2 D F2 L2 U F2 R2 U R2 F2 U' R2 F U B2 D' R2 U' R2 U'",
@@ -2929,8 +2930,8 @@
   "DU DBL BUR": {
     "key": "DU DBL BUR",
     "algs": [
-      "U D2 R2 U' R' U2 R U' R2 D' R U' R' U' D'",
       "y D' R2 U' R' U2 R U' R2 D' R U' R' D2 y'",
+      "U D2 R2 U' R' U2 R U' R2 D' R U' R' U' D'",
       "r' F2 r D R' F2 R D' r2 D r2"
     ],
     "scrambles": [
@@ -3056,8 +3057,8 @@
   "DD DBL FDR": {
     "key": "DD DBL FDR",
     "algs": [
-      "U D R2 D R2 U' R' U2 R U' R2 D' R U' R U' D'",
-      "D R D2 r' U2 r D' R2 U R U2 R D' R' D'"
+      "D R D2 r' U2 r D' R2 U R U2 R D' R' D'",
+      "U D R2 D R2 U' R' U2 R U' R2 D' R U' R U' D'"
     ],
     "scrambles": [
       "F' R2 B' L2 B R2 F' U2 R2 D2 R2 F2 U F2 U F2 U",
@@ -3282,8 +3283,8 @@
   "DD BDL BDR": {
     "key": "DD BDL BDR",
     "algs": [
-      "U' D' R2 U' R' U2 R' D' R U R' U' r U2 r' U D2",
-      "y R D' R U R' D R2 U R' U2 R U R y'"
+      "y R D' R U R' D R2 U R' U2 R U R y'",
+      "U' D' R2 U' R' U2 R' D' R U R' U' r U2 r' U D2"
     ],
     "scrambles": [
       "D' R D' L2 U' F2 D R2 D' F2 U' L D F2 D2 L B2 D'",
@@ -3368,9 +3369,9 @@
   "DU LDB LUF": {
     "key": "DU LDB LUF",
     "algs": [
-      "L' D' L U L' D L2 U2 L' U L U L'",
-      "r' B' r U r' B r2 B2 r' U r B r'",
       "y U D' R' D' R U R' D R2 U2 R' U R U R' U' D y'",
+      "r' B' r U r' B r2 B2 r' U r B r'",
+      "L' D' L U L' D L2 U2 L' U L U L'",
       "U2 D2 R' D' R U R' D R2 U2 R' U R U R' U2 D2"
     ],
     "scrambles": [
@@ -3392,8 +3393,8 @@
     "key": "DU LDB LUB",
     "algs": [
       "y R' U' R D' R2 U2 R U' R' U' R2 D y'",
-      "D L2 U' L' U' L U2 L2 D' L U' L'",
-      "U D' R' U' R D' R2 U2 R U' R' U' R2 U' D2"
+      "U D' R' U' R D' R2 U2 R U' R' U' R2 U' D2",
+      "D L2 U' L' U' L U2 L2 D' L U' L'"
     ],
     "scrambles": [
       "F' U' D F' U D' F L2 U' L2 U2 B2 R2 D' R2 B2",
@@ -3453,8 +3454,8 @@
   "DU LDB RUB": {
     "key": "DU LDB RUB",
     "algs": [
-      "U D R U R' D R2 U R' U2 R U R2 U' D2",
       "y D2 R U R' D R2 U R' U2 R U R2 D y'",
+      "U D R U R' D R2 U R' U2 R U R2 U' D2",
       "r2 D' r2 D R' F2 R D' r' F2 r"
     ],
     "scrambles": [
@@ -3600,8 +3601,8 @@
   "DU DBR FUL": {
     "key": "DU DBR FUL",
     "algs": [
-      "U D' r' F R F' M' U' R U2 R' U D",
       "y U R U' R' U' R U2 R2 D' R U' R' D R U' y'",
+      "U D' r' F R F' M' U' R U2 R' U D",
       "U' D r' F' D r U2 r' F2 D' F r D'"
     ],
     "scrambles": [
@@ -3642,9 +3643,9 @@
   "DU DBR LUB": {
     "key": "DU DBR LUB",
     "algs": [
-      "U' L' D L2 U' L' U2 L U' L2 D' L",
-      "U' r' B r2 B' r' U2 r B' r2 B' r",
       "y R' U' R D r' U2 r D' R2 U R U' R y'",
+      "U' r' B r2 B' r' U2 r B' r2 B' r",
+      "U' L' D L2 U' L' U2 L U' L2 D' L",
       "U D' R' U' R D r' U2 r D' R2 U R U' R U' D"
     ],
     "scrambles": [
@@ -3665,8 +3666,8 @@
   "DU DBR BUL": {
     "key": "DU DBR BUL",
     "algs": [
-      "U R2 D' R U' R' D R U2 R U R' U2 R",
       "U2 D R D' R2 U R U2 R' U R2 D R' U' D'",
+      "U R2 D' R U' R' D R U2 R U R' U2 R",
       "U R' U R U R' U r' F R F' r U"
     ],
     "scrambles": [
@@ -3687,8 +3688,8 @@
   "DU DBR BUR": {
     "key": "DU DBR BUR",
     "algs": [
-      "U D' R2 U' R' U2 R U' R2 D' R U' R' U' D2",
       "y R2 U' R' U2 R U' R2 D' R U' R' D y'",
+      "U D' R2 U' R' U2 R U' R2 D' R U' R' U' D2",
       "D r' F2 r D R' F2 R D' r2 D r2 D'"
     ],
     "scrambles": [
@@ -3730,8 +3731,9 @@
   "DD DBR LDF": {
     "key": "DD DBR LDF",
     "algs": [
+      "y D' R2 D R2 U' R' U2 R U' R2 D' R U' R D y'",
       "U D2 R2 D R2 U' R' U2 R U' R2 D' R U' R U' D2",
-      "y D' R2 D R2 U' R' U2 R U' R2 D' R U' R D y'"
+      "U R D R2 U' R U2 R' U' R2 D R' U' R D2 R' U'"
     ],
     "scrambles": [
       "D L2 D' U' B2 D2 R2 F2 R2 D B2 D L2 R' U' L2 U R",
@@ -3751,8 +3753,8 @@
   "DD DBR FDL": {
     "key": "DD DBR FDL",
     "algs": [
-      "U' D R' D2 r U2 r' D R2 U' R' U2 R' D R U D'",
-      "y' R' D2 r U2 r' D R2 U' R' U2 R' D R y"
+      "y' R' D2 r U2 r' D R2 U' R' U2 R' D R y",
+      "U' D R' D2 r U2 r' D R2 U' R' U2 R' D R U D'"
     ],
     "scrambles": [
       "U L2 F' L2 F L2 B U2 B L2 B' U2 B' U' L2 U L2",
@@ -3816,8 +3818,8 @@
   "DD DBR FDR": {
     "key": "DD DBR FDR",
     "algs": [
-      "U D' R D R U' R' U2 R U' R' D' R' D R U' R' U'",
-      "y U D R2 U R2 U' R D R' U' R D' R U R2 D' y'"
+      "y U D R2 U R2 U' R D R' U' R D' R U R2 D' y'",
+      "U D' R D R U' R' U2 R U' R' D' R' D R U' R' U'"
     ],
     "scrambles": [
       "L D' L2 U' L2 D U2 B2 L' F2 R F2 U2 L U2 D2 B2",
@@ -4001,9 +4003,9 @@
   "DD RDB FDL": {
     "key": "DD RDB FDL",
     "algs": [
-      "L' U' D' R' D' r U2 r' D R2 U' R' U' D L",
       "R D R' D R D' R' U2 R' U' R2 D r' U2 M' D' R D' R'",
-      "L' U D L' D' l U2 l' D L2 U' L' U D' L"
+      "L' U D L' D' l U2 l' D L2 U' L' U D' L",
+      "L' U' D' R' D' r U2 r' D R2 U' R' U' D L"
     ],
     "scrambles": [
       "U2 R2 F' R2 U2 F2 R2 F' D2 L2 B L2 D F D F R2",
@@ -4084,8 +4086,8 @@
   "DD RDB RDF": {
     "key": "DD RDB RDF",
     "algs": [
-      "U' R2 U' R' U2 R' D' R U R' U' r U2 r' U D",
-      "D' L' U' R' D' r U2 r' D R2 U' R' U' L D"
+      "D' L' U' R' D' r U2 r' D R2 U' R' U' L D",
+      "U' R2 U' R' U2 R' D' R U R' U' r U2 r' U D"
     ],
     "scrambles": [
       "B2 U R2 U2 R2 U2 R U2 R B2 U2 R2 B2 D' R D R U2",
@@ -4125,8 +4127,8 @@
   "DU BDR LUF": {
     "key": "DU BDR LUF",
     "algs": [
-      "U' D' R U2 R' U M F R' F' r U' D",
       "y U R' D' R U R' D R2 U2 R' U R U R' U' y'",
+      "U' D' R U2 R' U M F R' F' r U' D",
       "U2 D' R' D' R U R' D R2 U2 R' U R U R' U2 D",
       "U2 R U' R2 U' R2 U R' D' R U R' D R' U' R U2"
     ],
@@ -4148,8 +4150,8 @@
   "DU BDR LUB": {
     "key": "DU BDR LUB",
     "algs": [
-      "U R' U' R D' R2 U2 R U' R' U' R2 U' D",
-      "y D R' U' R D' R2 U2 R U' R' U' R2 y'"
+      "y D R' U' R D' R2 U2 R U' R' U' R2 y'",
+      "U R' U' R D' R2 U2 R U' R' U' R2 U' D"
     ],
     "scrambles": [
       "F U B2 L2 D' B2 D B2 U' L2 U B' U F' U' L2 B'",
@@ -4169,9 +4171,9 @@
   "DU BDR BUL": {
     "key": "DU BDR BUL",
     "algs": [
-      "L' D L2 U L' U2 L U L2 D' L U",
-      "r' B r2 B r' U2 r B r2 B' r U",
       "y R' U R' U' R2 D r' U2 r D' R' U R y'",
+      "r' B r2 B r' U2 r B r2 B' r U",
+      "L' D L2 U L' U2 L U L2 D' L U",
       "U D' R' U R' U' R2 D r' U2 r D' R' U R U' D"
     ],
     "scrambles": [
@@ -4212,8 +4214,8 @@
   "DU BDR RUB": {
     "key": "DU BDR RUB",
     "algs": [
-      "U D2 R U R' D R2 U R' U2 R U R2 U' D",
       "y D' R U R' D R2 U R' U2 R U R2 y'",
+      "U D2 R U R' D R2 U R' U2 R U R2 U' D",
       "R2 U' R U2 R' U' R2 U2 R' U D' R U2 R' D R"
     ],
     "scrambles": [
@@ -4234,9 +4236,9 @@
   "DD BDR LDF": {
     "key": "DD BDR LDF",
     "algs": [
-      "L' U D' R U R2 D' r U2 r' D R U D L",
       "R D B2 R' D r B2 r D r2 D' R D' R'",
-      "L' U' D L U L2 D' l U2 l' D L U' D' L"
+      "L' U' D L U L2 D' l U2 l' D L U' D' L",
+      "L' U D' R U R2 D' r U2 r' D R U D L"
     ],
     "scrambles": [
       "U2 R2 U F U' F' U L2 F' L2 F D2 F' U2 L2 D2 R2 B'",
@@ -4299,8 +4301,8 @@
     "key": "DD BDR LDB",
     "algs": [
       "y U R2 U R' U2 R U R2 D' R U R' U' D y'",
-      "D L2 U L' U2 L U L2 D' L U L'",
-      "U2 D' R2 U R' U2 R U R2 D' R U R' U2 D2"
+      "U2 D' R2 U R' U2 R U R2 D' R U R' U2 D2",
+      "D L2 U L' U2 L U L2 D' L U L'"
     ],
     "scrambles": [
       "B' D2 L2 D2 F2 R2 D' F2 L2 B2 D2 L2 U' R2 F' D F2 D L2 R2 U'",
@@ -4426,10 +4428,10 @@
   "DU DFL BUL": {
     "key": "DU DFL BUL",
     "algs": [
-      "D L D' L2 U L U2 L' U L2 D L' U D'",
-      "D r F' r2 F r U2 r' F r2 F r' U D'",
+      "U2 D' R D' R2 U R U2 R' U R2 D R' U' D",
       "y U R D' R2 U R U2 R' U R2 D R' y'",
-      "U2 D' R D' R2 U R U2 R' U R2 D R' U' D"
+      "D r F' r2 F r U2 r' F r2 F r' U D'",
+      "D L D' L2 U L U2 L' U L2 D L' U D'"
     ],
     "scrambles": [
       "R2 U F U F D' F' U' F D2 B2 U' B2 D' F2 R2 U' R2 D R2 D'",
@@ -4490,8 +4492,8 @@
   "DD DFL BDL": {
     "key": "DD DFL BDL",
     "algs": [
-      "U D R D R U' R' U2 R U' R' D' R' D R U' R' U' D2",
-      "y U D' R2 U R2 U' R D R' U' R D' R U R2 D y'"
+      "y U D' R2 U R2 U' R D R' U' R D' R U R2 D y'",
+      "U D R D R U' R' U2 R U' R' D' R' D R U' R' U' D2"
     ],
     "scrambles": [
       "B' D R D2 F2 D F2 D R2 B2 U' B2 R2 U R' D' U2 R U R' U2 B",
@@ -4511,8 +4513,8 @@
   "DD DFL LDB": {
     "key": "DD DFL LDB",
     "algs": [
-      "U D' R' U R D' R2 U R U2 R' U R2 U' D2",
-      "y R' U R D' R2 U R U2 R' U R2 D y'"
+      "y R' U R D' R2 U R U2 R' U R2 D y'",
+      "U D' R' U R D' R2 U R U2 R' U R2 U' D2"
     ],
     "scrambles": [
       "L B' L U2 F2 L2 F L2 F U2 F' U2 F U' L' B D L' D'",
@@ -4552,8 +4554,8 @@
   "DD DFL BDR": {
     "key": "DD DFL BDR",
     "algs": [
-      "U' D' R' D2 r U2 r' D R2 U' R' U2 R' D R U D",
-      "y' D2 R' D2 r U2 r' D R2 U' R' U2 R' D R D2 y"
+      "y' D2 R' D2 r U2 r' D R2 U' R' U2 R' D R D2 y",
+      "U' D' R' D2 r U2 r' D R2 U' R' U2 R' D R U D"
     ],
     "scrambles": [
       "L B2 R' B2 L' D2 R D2 B2 L2 F2 U2 R U' L2 R' B2 R' D R2",
@@ -4573,8 +4575,8 @@
   "DD DFL FDR": {
     "key": "DD DFL FDR",
     "algs": [
-      "U D R2 U' R2 D' R U R' D R U R U' R' U' R' U' D'",
-      "U2 R U' R' D R2 U' R' U2 R U' R2 U2 D'"
+      "U2 R U' R' D R2 U' R' U2 R U' R2 U2 D'",
+      "U D R2 U' R2 D' R U R' D R U R U' R' U' R' U' D'"
     ],
     "scrambles": [
       "D' R2 L' U' R2 U L U F2 D' F2 L2 D2 L2 U' F2 D' F2",
@@ -4594,8 +4596,8 @@
   "DD DFL RDF": {
     "key": "DD DFL RDF",
     "algs": [
-      "R2 F' R2 U D' F' D F' U' F R2 F",
-      "U D R2 U' R2 U R' D' R U R' D R' U' R2 U2 D'"
+      "U D R2 U' R2 U R' D' R U R' D R' U' R2 U2 D'",
+      "R2 F' R2 U D' F' D F' U' F R2 F"
     ],
     "scrambles": [
       "U R' D L2 D' R U2 R2 B2 D L2 D' L2 D R2 L2 U F2",
@@ -4615,9 +4617,9 @@
   "DU DFR FUL": {
     "key": "DU DFR FUL",
     "algs": [
-      "U r' F R F' M' U' R U2 R' U",
       "U2 R U' R' U' R U2 R2 D' R U' R' D R U2",
-      "L' U2 R U' R' U' R U' L U' R' U"
+      "L' U2 R U' R' U' R U' L U' R' U",
+      "U r' F R F' M' U' R U2 R' U"
     ],
     "scrambles": [
       "D2 L F2 R' U2 D R' D' F2 L2 D2 B2 L B2 L' F2 B2 R' F2 L",
@@ -4679,9 +4681,9 @@
   "DU DFR BUL": {
     "key": "DU DFR BUL",
     "algs": [
-      "L D' L2 U L U2 L' U L2 D L' U",
-      "r F' r2 F r U2 r' F r2 F r' U",
       "y U D' R D' R2 U R U2 R' U R2 D R' D y'",
+      "r F' r2 F r U2 r' F r2 F r' U",
+      "L D' L2 U L U2 L' U L2 D L' U",
       "U D R2 D' R U' R' D R U2 R U R' U2 R D'"
     ],
     "scrambles": [
@@ -4745,8 +4747,8 @@
   "DD DFR LDF": {
     "key": "DD DFR LDF",
     "algs": [
-      "U R D R U' R' U2 R U' R' D' R' D R U' R' U' D'",
-      "y U D2 R2 U R2 U' R D R' U' R D' R U R2 D2 y'"
+      "y U D2 R2 U R2 U' R D R' U' R D' R U R2 D2 y'",
+      "U R D R U' R' U2 R U' R' D' R' D R U' R' U' D'"
     ],
     "scrambles": [
       "R' D2 F D R2 D2 R2 F2 D' R2 F2 D R2 F2 R2 F' R' U' R D2 R U R2",
@@ -4766,8 +4768,8 @@
   "DD DFR FDL": {
     "key": "DD DFR FDL",
     "algs": [
-      "U D2 R' U R D' R2 U R U2 R' U R2 U' D'",
-      "y D' R' U R D' R2 U R U2 R' U R2 D2 y'"
+      "y D' R' U R D' R2 U R U2 R' U R2 D2 y'",
+      "U D2 R' U R D' R2 U R U2 R' U R2 U' D'"
     ],
     "scrambles": [
       "R' F2 R' D2 B2 R2 D' R2 B2 U L2 D2 L2 U' L' U' L D R2 D2",
@@ -4787,8 +4789,8 @@
   "DD DFR BDL": {
     "key": "DD DFR BDL",
     "algs": [
-      "U D' R2 D R2 U' R' U2 R U' R2 D' R U' R U' D",
-      "y R2 D R2 U' R' U2 R U' R2 D' R U' R y'"
+      "y R2 D R2 U' R' U2 R U' R2 D' R U' R y'",
+      "U D' R2 D R2 U' R' U2 R U' R2 D' R U' R U' D"
     ],
     "scrambles": [
       "L2 F U' D2 R2 F D2 R2 F L2 B D2 L2 D2 B2 D' B' D2 F R2 B'",
@@ -4871,8 +4873,8 @@
   "DU FDR FUL": {
     "key": "DU FDR FUL",
     "algs": [
-      "U D R2 U R2 D' r U2 r' D R U2 R' U' D'",
       "y' U' D R' U' R D' R2 U' R U2 R' U' R2 U y",
+      "U D R2 U R2 D' r U2 r' D R U2 R' U' D'",
       "U2 D2 R' U' R D' R2 U' R U2 R' U' R2 U2 D'"
     ],
     "scrambles": [
@@ -4955,8 +4957,8 @@
   "DU FDR BUR": {
     "key": "DU FDR BUR",
     "algs": [
-      "U D R D R' U' R D' R2 U2 R U' R' U' R U' D'",
       "y D2 R D R' U' R D' R2 U2 R U' R' U' R D2 y'",
+      "U D R D R' U' R D' R2 U2 R U' R' U' R U' D'",
       "U F' U2 F U' S R' F R f' U"
     ],
     "scrambles": [
@@ -5041,6 +5043,7 @@
     "algs": [
       "y D' R' D' R2 U' R U2 R' U' R2 D R' U' R2 D y'",
       "L U' L D' L2 U' L U2 L' U' L2 D L2",
+      "U' D2 R' D' R U2 R U R2 D' r U2 r' D2 R U D2",
       "U D2 R' D' R2 U' R U2 R' U' R2 D R' U' R2 U' D2"
     ],
     "scrambles": [
@@ -5061,9 +5064,9 @@
   "DD FDR LDB": {
     "key": "DD FDR LDB",
     "algs": [
-      "L2 U' R' D' r U2 r' D R2 U' R' U' L2",
       "z U R2 D R' U R2 U' R' D' R2 U R U2 z'",
-      "D' R D R U R2 U D' R U R U R2 U' D R D' R U' R' D"
+      "D' R D R U R2 U D' R U R U R2 U' D R D' R U' R' D",
+      "L2 U' R' D' r U2 r' D R2 U' R' U' L2"
     ],
     "scrambles": [
       "F L' F2 U R2 D B2 L2 B2 D2 L2 D' L2 R2 U' F' U F U' L2 U' L' F'",
@@ -5225,8 +5228,8 @@
   "DU RDF RUB": {
     "key": "DU RDF RUB",
     "algs": [
-      "U D' R U R' D R2 U R' U2 R U R2 U'",
-      "y R U R' D R2 U R' U2 R U R2 D' y'"
+      "y R U R' D R2 U R' U2 R U R2 D' y'",
+      "U D' R U R' D R2 U R' U2 R U R2 U'"
     ],
     "scrambles": [
       "D2 B2 U B2 U' B2 U' B U2 B' L2 F R2 F U2 D2 L2 B2 R2",
@@ -5289,9 +5292,9 @@
   "DD RDF BDL": {
     "key": "DD RDF BDL",
     "algs": [
-      "L2 U R U R2 D' r U2 r' D R U L2",
       "z U2 R' U' R2 D R U R2 U' R D' R2 U' z'",
-      "D L' U' D L U L2 D' l U2 l' D L U' D' L D'"
+      "D L' U' D L U L2 D' l U2 l' D L U' D' L D'",
+      "L2 U R U R2 D' r U2 r' D R U L2"
     ],
     "scrambles": [
       "L2 U' B2 R2 D2 R2 D2 B' D2 B' R2 F L2 F' R' U L2 U' R' U2",
