@@ -32,7 +32,7 @@ Because the app is set-agnostic, adding a new set is essentially "a data file + 
 - **WCA account & cloud sync** — sign in with your WCA account; solves are stored in a database so your history follows you across devices.
 - **Statistics overview** — a mobile-friendly grid of all cases with average time and repetition count, searchable with `*`/`?` wildcards.
 - **Your alg per case** — pick the algorithm you actually use for each case (click it in any case detail); with a smart cube the executed alg is recognized automatically.
-- **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets.
+- **Presets** — save named case selections (plus a starred quick-list) to jump between practice sets. Signed in, presets belong to the account and follow you to every device.
 - **Notes** — attach a personal note to any case.
 - **Interactive 3D cube** — touch/drag to rotate; configurable solving orientation.
 - **Unified light/dark theme** and **four languages** (EN, DE, FR, IT).
@@ -83,6 +83,7 @@ Sign in via the account button in the navbar (WCA OAuth). While signed in:
 - every solve is stored in the database (an offline queue in `localStorage` buffers solves when you're offline or logged out and drains after the next login),
 - deleting a result also deletes it from the database,
 - your per-case alg choices sync across devices,
+- your presets sync across devices — the account copy wins, and presets a device already had are uploaded on first login instead of being dropped,
 - the **statistics page** (bar-chart icon) aggregates over your whole account history.
 
 Logged out, the statistics page falls back to the locally stored per-case data, so it works without an account too.
