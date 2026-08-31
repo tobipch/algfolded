@@ -38,6 +38,19 @@ const statements = [
     CONSTRAINT fk_solves_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) CHARACTER SET utf8mb4`,
 
+  // Named case selections. The name is the identity of a preset, so it is
+  // compared byte-exactly (utf8mb4_bin) — the starred preset's name is an emoji
+  // and "Test"/"test" must stay two presets, as they are in localStorage.
+  `CREATE TABLE IF NOT EXISTS user_presets (
+    user_id INT NOT NULL,
+    algset VARCHAR(32) NOT NULL,
+    name VARCHAR(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+    case_keys MEDIUMTEXT NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, algset, name),
+    CONSTRAINT fk_presets_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) CHARACTER SET utf8mb4`,
+
   `CREATE TABLE IF NOT EXISTS user_case_algs (
     user_id INT NOT NULL,
     algset VARCHAR(32) NOT NULL,
