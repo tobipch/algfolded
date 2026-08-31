@@ -5,10 +5,9 @@
       "L F' L' U M' U2 M U S' L F L' S",
       "U R' S R2 S2 R' U' R S2 R2 S' R",
       "S' L F' L' S U' M' U2 M U' L F L'",
-      "R S2 R2 S' R U R' S R2 S2 R' U'",
       "U2 R' E2 R2 E' R' U R E R2 E2 R U",
       "r' F' r S r' F M' F R S' R' F' R",
-      "R' S R2 S2 R' U R S2 R2 S' R U'",
+      "R S2 R2 S' R U R' S R2 S2 R' U'",
       "M U' M' U2 M U' M U' M U2 M' U' M2",
       "U' S R' F R S' U M' U2 M U R' F' R U",
       "U' r U R' U' r' U2 R U R U' R2 U2 R U"
@@ -101,7 +100,6 @@
       "S L F' L' U M' U2 M U S' L F L'",
       "L F' L' S U' M' U2 M U' L F L' S'",
       "R S' R2 S' R U R' S R2 S2 R' U' R S' R'",
-      "R' S R U R S' R' U' R' S2 R U R S2 R' U'",
       "D' M U R' F' R S R' F R S' U M' U2 D",
       "S U' r U R' U' r' U2 R U R U' R2 U2 R U S'",
       "U D' M' U' M' U2 M U' M U' M U2 M' U2 D",
@@ -274,8 +272,8 @@
   "AY": {
     "algs": [
       "L' E L U L' E' L2 E2 L' U' L E2 L'",
-      "R' S' R U R' S R2 S2 R' U' R S2 R'",
       "R S' R' F R U' M' U2 M U' S R' F'",
+      "R' S' R U R' S R2 S2 R' U' R S2 R'",
       "R2 E2 R2 E' R' U' R E R2 E2 R U R",
       "R' U' R E2 R2 E R U R' E' R2 E2",
       "R' U' R E R2 E2 R U R' E2 R2 E'",
@@ -311,10 +309,9 @@
       "U' L E2 L2 E L U L' E' L2 E2 L'",
       "L E2 L2 E L U' L' E' L2 E2 L' U",
       "U' R' S R2 S2 R' U R S2 R2 S' R",
-      "R' S R2 S2 R' U' R S2 R2 S' R U",
       "M' U M U' S R' F' R S' R' F R U' M' U M",
       "l F' L' U M' U2 M U S' L F L' S M'",
-      "R S2 R2 S' R U' R' S R2 S2 R' U"
+      "R' S R2 S2 R' U' R S2 R2 S' R U"
     ],
     "buffers": {
       "UB": "UL",
@@ -372,7 +369,6 @@
       "U2 L' E' L U2 L' E L S' L2 S L2",
       "S' R' D R S R' D' R S U' M U2 M' U' S'",
       "U2 R S R' U2 R S' R' S' r2 S' r2",
-      "U R' S R U' R S' R' U R' S2 R U' R S2 R'",
       "S' L2 S L2 D S' r U r' S r U' r' D'"
     ],
     "buffers": {
@@ -450,11 +446,10 @@
       "U' L E' L' U L E L2 E2 L U' L' E2 L U",
       "S' L E' L2 E L2 F2 L' S L F2 L'",
       "R U M' U2 M U R' F' R S R' F R S' R'",
-      "U' R S' R' U R S R2 S2 R U' R' S2 R U",
       "R U2 R' E R S R2 S' R2 U2 R' E'",
       "R U2 R' S' R U2 S2 R2 S' R2 S' R' S",
       "U L E' L' U' L E L2 E2 L U L' E2 L U'",
-      "U R S' R' U' R S R2 S2 R U R' S2 R U'",
+      "U' R S' R' U R S R2 S2 R U' R' S2 R U",
       "U' L' E2 L U L' E2 L2 E' L' U' L E L' U"
     ],
     "buffers": {
@@ -505,8 +500,8 @@
   "CW": {
     "algs": [
       "U' R E' R' U' R E R2 E2 R U R' E2 R U",
-      "R E' R' U2 R E R2 E2 R U2 R' E2 R",
       "U R' E2 R U R' E2 R2 E' R' U' R E R' U'",
+      "R E' R' U2 R E R2 E2 R U2 R' E2 R",
       "R' E2 R U2 R' E2 R2 E' R' U2 R E R'",
       "U' R' E2 R U' R' E2 R2 E' R' U R E R' U"
     ],
@@ -539,7 +534,6 @@
       "U' R' S' R U R' S R2 S2 R' U' R S2 R' U",
       "E' R U2 R' E R S R2 S' R2 U2 R'",
       "R' U2 R S' R' U2 S2 R2 S' R2 S' R S",
-      "U R' S' R U' R' S R2 S2 R' U R S2 R' U'",
       "U' L E2 L' U L E2 L2 E L U' L' E' L U"
     ],
     "buffers": {
@@ -591,7 +585,6 @@
       "U L E L' U2 L E' L' S' L2 S L2 U",
       "R S' R2 S' R U' R' S R2 S2 R' U R S' R'",
       "S U' R S2 R2 S' R U R' S R2 S2 R' S'",
-      "R' S R U' R S' R' U R' S2 R U' R S2 R' U",
       "U' L F L' S L F' L' U M' U2 M U S' U",
       "U S' L2 S L2 U2 L E L' U2 L E' L' U'",
       "U' r' S U' M' U2 M U' r U r' S' r"
@@ -671,8 +664,8 @@
   "EQ": {
     "algs": [
       "L E' L' U' L E L2 E2 L U L' E2 L",
-      "R S' R' U' R S R2 S2 R U R' S2 R",
       "L' E2 L U' L' E2 L2 E' L' U L E L'",
+      "R S' R' U' R S R2 S2 R U R' S2 R",
       "R U R' E2 R2 E' R' U' R E R2 E2"
     ],
     "buffers": {
@@ -777,7 +770,6 @@
       "r U R' U' r' U2 R U R U' R2 U2 R",
       "R' E R2 E' R2 E R U' R' E' R2 E R2 E' R U",
       "U' R E R2 E2 R U R' E2 R2 E' R'",
-      "U R' S R2 S2 R' U R S2 R2 S' R U2",
       "U' R' U2 R F U' R' U' R U R U R' U' F'",
       "M2 U' M U2 M' U' M' U' M' U2 M U' M'",
       "R M U2 M2 U R' U' M2 U2 M' U' R U R'"
@@ -831,7 +823,6 @@
       "U R' E2 R2 E' R' U' R E R2 E2 R",
       "R' E R2 E' R2 E R U R' E' R2 E R2 E' R U'",
       "R' E2 R2 E' R' U R E R2 E2 R U'",
-      "U' R' S R2 S2 R' U' R S2 R2 S' R U2",
       "r' F R U' M' U2 M U' S R' F' R S' M'",
       "y R M U2 M2 U R' U' M2 U2 M' U' R U R' y'"
     ],
@@ -963,11 +954,11 @@
   "GQ": {
     "algs": [
       "U L E' L' U L E L2 E2 L U' L' E2 L U'",
-      "R S' R' U2 R S R2 S2 R U2 R' S2 R",
       "U R U' R' E' R2 E2 R' U R E2 R2 u'",
+      "R S' R' U2 R S R2 S2 R U2 R' S2 R",
       "L E' L' U2 L E L2 E2 L U2 L' E2 L",
-      "U R S' R' U R S R2 S2 R U' R' S2 R U'",
       "U' L E' L' U' L E L2 E2 L U L' E2 L U",
+      "U R S' R' U R S R2 S2 R U' R' S2 R U'",
       "U' L' E2 L U' L' E2 L2 E' L' U L E L' U",
       "U L' E2 L U L' E2 L2 E' L' U' L E L' U'"
     ],
@@ -1048,8 +1039,8 @@
   "GY": {
     "algs": [
       "U L' E L U L' E' L2 E2 L' U' L E2 L' U'",
-      "R' S' R U2 R' S R2 S2 R' U2 R S2 R'",
       "U R' S' R U R' S R2 S2 R' U' R S2 R' U'",
+      "R' S' R U2 R' S R2 S2 R' U2 R S2 R'",
       "U' L' E L U' L' E' L2 E2 L' U L E2 L' U",
       "L E2 L' U2 L E2 L2 E L U2 L' E' L",
       "U' R' U R E R2 E2 R U' R' E2 R2 u",
@@ -1350,7 +1341,6 @@
       "U' R2 S' R2 S U R F R' S' R F' R' S",
       "S' R F R' S R F' R' U' S' R2 S R2 U",
       "D' M D2 M' D' R F R' S' R F' R' S",
-      "l' S' l' S R2 S' l S l S' R2 S",
       "S' R2 U2 R E R' U2 R E' R' S R2"
     ],
     "buffers": {
@@ -1490,16 +1480,16 @@
   "OY": {
     "algs": [
       "S' U L' E L U L' E' L2 E2 L' U' L E2 L' U' S",
-      "u' E R E R2 E' R E' R E' R2 E R u",
       "S L' E L2 E' L' S' r' E L E' r E L' E'",
       "S L' E L2 E' L' S' L' S L S' L E L' E'",
+      "u' E R E R2 E' R E' R E' R2 E R u",
       "u' R E' R2 E R2 B2 R' S' R B2 R' S u",
+      "S' U R' S' R U R' S R2 S2 R' U' R S2 R' U' S",
       "R' S' R S R2 S' R2 U2 R' E' R U2 R' E S R",
       "D' R' U' M' U2 M U' S R' F' R S' R' F R2 D",
       "u' R' E' R2 E R' S R' E' R2 E R S' R2 u",
       "E2 R E R2 E' R E' R E' R2 E R E'",
-      "S L' E L2 E' L2 B2 L S L' B2 L S2",
-      "S' U R' S' R U R' S R2 S2 R' U' R S2 R' U' S"
+      "S L' E L2 E' L2 B2 L S L' B2 L S2"
     ],
     "buffers": {
       "DR": "BR",
@@ -1553,8 +1543,7 @@
       "D L E' L2 E L2 F2 L' S L F2 L' S' D'",
       "R U' M U' S R' F' R S' R' F R U' M' U' R'",
       "r' S2 R U' R' S2 R2 S' R' U R S R' M'",
-      "R U M U R' F' R S R' F R S' U M' U R'",
-      "R l S' R' U' R S R2 S2 R U R' S2 x"
+      "R U M U R' F' R S R' F R S' U M' U R'"
     ],
     "buffers": {
       "DB": "FR",
@@ -1603,8 +1592,8 @@
   "QW": {
     "algs": [
       "R2 E' R2 F2 R S' R' F2 R S R' E",
-      "R u R' U' R E R2 E2 R U R' E2 R2 U' R'",
       "E' L2 E L2 F2 L' S L F2 L' S' L",
+      "R u R' U' R E R2 E2 R U R' E2 R2 U' R'",
       "E' R S' R' F2 R S R' F2 R2 E R2"
     ],
     "buffers": {
@@ -1630,8 +1619,8 @@
     "algs": [
       "R2 E R2 E' R S' R' F2 R S R' F2",
       "F' R S' R' F R U' M' U2 M U' S R'",
-      "R U R2 S' R U R' S R2 S2 R' U' R S2 U' R'",
-      "R S' U M' U2 M U R' F' R S R' F"
+      "R S' U M' U2 M U R' F' R S R' F",
+      "R U R2 S' R U R' S R2 S2 R' U' R S2 U' R'"
     ],
     "buffers": {
       "FR": "BR",
@@ -1712,7 +1701,6 @@
       "F L' S L F' L' U M' U2 M U S' L",
       "L' S U' M' U2 M U' L F L' S' L F'",
       "R F E' R' U' R E R2 E2 R U R' E2 R2 F' R'",
-      "R' B' E R U R' E' R2 E2 R' U' R E2 R2 B R",
       "f R E' R' U' R E R2 E2 R U R' E2 R f'"
     ],
     "buffers": {
