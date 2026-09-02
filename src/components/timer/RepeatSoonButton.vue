@@ -11,7 +11,7 @@ const session = useSessionStore();
 const settings = useSettingsStore();
 
 const visible = computed(() =>
-    !!props.caseKey && settings.store.smartSelection && !session.store.recapMode)
+    !!props.caseKey && settings.store.smartSelection && session.store.mode !== 'recap')
 const active = computed(() => props.caseKey in session.didntKnowMap)
 const onClick = () => {
   if (active.value) session.unflagDidntKnow(props.caseKey)

@@ -38,6 +38,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Paused: when true, incoming cube moves are ignored
     const paused = ref(false)
 
+    // Flow mode arms every case the letter-pair way (virtual cube starts
+    // scrambled, success is bringing it back to solved) no matter what the
+    // global setting says. Set by the flow view for as long as it is on screen.
+    const forceLetterPair = ref(false)
+    const letterPairArming = () => forceLetterPair.value || useSettingsStore().store.letterPairMode
+
     // Letter-pair mode: true when the solving cube is far from solved (likely a
     // wrong alg), used to surface the "spin the bottom layer to reset" hint.
     const tooFarFromSolved = ref(false)
@@ -127,8 +133,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // cube clearly unsolved, surface the reset hint.
     const scheduleFarCheck = () => {
         clearIdleTimer()
-        const settings = useSettingsStore()
-        if (!settings.store.letterPairMode) return
+        if (!letterPairArming()) return
         idleTimer = setTimeout(() => {
             idleTimer = null
             if (phase.value === 'solving' && cubePattern && solvedPattern
@@ -555,7 +560,6 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // the user can execute the solution immediately (the physical cube can be in
     // any state — we only ever track relative moves).
     const initVirtualState = (kpuzzle) => {
-        const settings = useSettingsStore()
         solvedPattern = kpuzzle.defaultPattern()
         correctionMoves.value = []
         pendingFaceTurn.value = null
@@ -566,7 +570,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         clearIdleTimer()
         computeExpectedPatterns(kpuzzle)
 
-        if (settings.store.letterPairMode && scrambleMoves.value.length > 0) {
+        if (letterPairArming() && scrambleMoves.value.length > 0) {
             // Jump the virtual cube straight to the fully-scrambled state.
             cubePattern = expectedPatterns[expectedPatterns.length - 1]
             position.value = scrambleMoves.value.length
@@ -874,6 +878,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         connected, connecting, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
         tooFarFromSolved, resetSignal, hintSignal, lastSolveMoves, consumeSolveMoves, warmupLibraries,
+        forceLetterPair,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals
     }

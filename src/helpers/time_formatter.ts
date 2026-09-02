@@ -20,3 +20,19 @@ export const msToHumanReadable = (ms: number, numDigitsMs = 2, displayMs = true)
 
   return `${hoursString}${minutesString}${secondsString}${millisecondsString}`;
 }
+
+// A wall clock for a whole session: always m:ss (or h:mm:ss), so half a minute
+// reads as "0:28" rather than as the bare "28" a solve time would print.
+export const msToClock = (ms: number): string => {
+  if (!Number.isFinite(ms) || ms < 0) {
+    ms = 0
+  }
+  const total = Math.floor(ms / 1000)
+  const seconds = total % 60
+  const minutes = Math.floor(total / 60) % 60
+  const hours = Math.floor(total / 3600)
+  const pad = (num: number): string => (num < 10 ? "0" : "") + num
+  return hours > 0
+    ? `${hours}:${pad(minutes)}:${pad(seconds)}`
+    : `${minutes}:${pad(seconds)}`
+}

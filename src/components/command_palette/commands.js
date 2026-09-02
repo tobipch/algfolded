@@ -55,9 +55,11 @@ export const useCommands = () => {
     if (selected.totalCasesSelected() > 0) {
       cmds.push(
         { id: 'practice.start', section: S.practice, icon: 'bi-play-fill', title: t('cmd.start_practice'),
-          run: () => { session.store.recapMode = false; router.push('timer') } },
+          run: () => { session.store.mode = 'practice'; router.push('timer') } },
         { id: 'practice.recap', section: S.practice, icon: 'bi-arrow-repeat', title: t('cmd.recap'),
           run: () => { session.startRecap(); router.push('timer') } },
+        { id: 'practice.flow', section: S.practice, icon: 'bi-lightning-charge', title: t('cmd.flow'),
+          run: () => { session.store.mode = 'flow'; router.push('flow') } },
       )
     }
 

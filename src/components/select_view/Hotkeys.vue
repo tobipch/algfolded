@@ -28,6 +28,10 @@
       <span class="expl">{{ $t("hotkeys.recap") }}</span>
     </li>
     <li>
+      <kbd>Alt</kbd>+<kbd>F</kbd>
+      <span class="expl">{{ $t("hotkeys.flow") }}</span>
+    </li>
+    <li>
       <kbd>Alt</kbd>+<kbd>A</kbd>
       <span class="expl">{{ $t("hotkeys.add_to_starred") }}</span>
     </li>
