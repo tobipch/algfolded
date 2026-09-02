@@ -160,7 +160,17 @@
       "no_mistakes": "Keine Fehler. Jeder Fall auf Anhieb richtig.",
       "page_trend": "Zeit pro Seite",
       "untracked_note": "Ohne Smartcube lassen sich nur ganze Seiten messen, daher wurden keine Solves gespeichert.",
-      "nothing_recorded": "In dieser Session wurde nichts aufgezeichnet."
+      "nothing_recorded": "In dieser Session wurde nichts aufgezeichnet.",
+      "tab_runs": "Durchgänge",
+      "runs_intro": "Jeder vollständige Durchgang mit einer Seite in diesem Algset, neueste zuerst. Ein abgebrochener Durchgang oder einer ohne Würfel ist nicht vergleichbar und bleibt draussen. | Jeder vollständige Durchgang mit {pages} Seiten in diesem Algset, neueste zuerst. Ein abgebrochener Durchgang oder einer ohne Würfel ist nicht vergleichbar und bleibt draussen.",
+      "runs_none": "Das war dein erster vollständiger Durchgang mit einer Seite. Mach ein paar mehr, dann erscheint hier der Vergleich. | Das war dein erster vollständiger Durchgang mit {pages} Seiten. Mach ein paar mehr, dann erscheint hier der Vergleich.",
+      "runs_ao5": "Ao5",
+      "runs_ao12": "Ao12",
+      "runs_best": "Bester",
+      "runs_best_marker": "(bester)",
+      "col_run": "Durchgang",
+      "col_time": "Zeit",
+      "col_when": "Wann"
     },
     "stats_card": {
       "stats_title": "Verlauf:",

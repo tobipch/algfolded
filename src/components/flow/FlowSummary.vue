@@ -12,7 +12,7 @@ import {useI18n} from "vue-i18n";
 //
 // Without a smart cube only page times exist, so the split bar, TPS and the
 // per-case tables are left out rather than shown empty.
-const {t} = useI18n()
+const {t, locale} = useI18n()
 const router = useRouter()
 const flow = useFlowStore()
 const algset = useAlgsetStore()
@@ -108,6 +108,21 @@ const pageChart = computed(() => {
   if (times.length === 0) return null
   const max = Math.max(...times) * 1.1 || 1
   return times.map((ms, i) => ({i, ms, pct: (ms / max) * 100}))
+})
+
+// --- the series this run belongs to --------------------------------------
+// Runs of the same length on the same algset, newest first, with the
+// speedcubing averages over them. Only completed, cube-measured runs are in
+// here — see FlowStore.recordRun.
+const runRows = computed(() => {
+  const list = flow.comparableRuns
+  const best = flow.runStats.best
+  return list.map((r, i) => ({...r, nr: i + 1, isBest: best != null && r.at === best.at}))
+      .reverse()
+      .slice(0, 25)
+})
+const when = (at) => new Date(at).toLocaleString(locale.value, {
+  month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
 })
 
 const goSelect = () => router.push('select')
@@ -233,6 +248,12 @@ const goSelect = () => router.push('select')
             {{ $t('flow.tab_wrong') }}<span v-if="s.wrongCases.length"> ({{ s.cases - s.firstTry }})</span>
           </button>
         </li>
+        <li class="nav-item">
+          <button type="button" class="nav-link" :class="{active: tab === 'runs'}"
+                  tabindex="-1" @keydown.space.prevent="" @click="tab = 'runs'">
+            {{ $t('flow.tab_runs') }}<span v-if="flow.runStats.count > 1"> ({{ flow.runStats.count }})</span>
+          </button>
+        </li>
       </ul>
 
       <div v-if="tab === 'cases'" class="table-responsive">
@@ -263,6 +284,69 @@ const goSelect = () => router.push('select')
           </tr>
           </tbody>
         </table>
+      </div>
+
+      <div v-else-if="tab === 'runs'">
+        <p class="text-muted small">
+          {{ $t('flow.runs_intro', {pages: flow.pageCount}, flow.pageCount) }}
+        </p>
+        <div v-if="flow.runStats.count < 2" class="text-muted mb-0">
+          {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
+        </div>
+        <template v-else>
+          <div class="row g-3 mb-3">
+            <div class="col-4">
+              <div class="card h-100 bg-body-tertiary border">
+                <div class="card-body py-2">
+                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao5') }}</div>
+                  <div class="flow-figure">{{ flow.runStats.ao5 == null ? '-' : fmtTotal(flow.runStats.ao5) }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card h-100 bg-body-tertiary border">
+                <div class="card-body py-2">
+                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao12') }}</div>
+                  <div class="flow-figure">{{ flow.runStats.ao12 == null ? '-' : fmtTotal(flow.runStats.ao12) }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="card h-100 bg-body-tertiary border">
+                <div class="card-body py-2">
+                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_best') }}</div>
+                  <div class="flow-figure text-success">
+                    {{ flow.runStats.best == null ? '-' : fmtTotal(flow.runStats.best.ms) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+              <tr>
+                <th>{{ $t('flow.col_run') }}</th>
+                <th>{{ $t('flow.col_time') }}</th>
+                <th>{{ $t('flow.col_pause') }}</th>
+                <th>{{ $t('flow.fig_accuracy') }}</th>
+                <th>{{ $t('flow.col_when') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="r in runRows" :key="r.at">
+                <td class="text-muted">{{ r.nr }}</td>
+                <td class="fw-semibold" :class="{'text-success': r.isBest}">
+                  {{ fmtTotal(r.ms) }}<span v-if="r.isBest">&nbsp;{{ $t('flow.runs_best_marker') }}</span>
+                </td>
+                <td class="text-muted">{{ Math.round(100 * r.pauseMs / Math.max(1, r.execMs + r.pauseMs + r.recoveryMs)) }}%</td>
+                <td class="text-muted">{{ r.firstTry }} / {{ r.cases }}</td>
+                <td class="text-muted">{{ when(r.at) }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </template>
       </div>
 
       <div v-else>

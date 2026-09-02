@@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest'
 import {
   CASES_PER_PAGE,
   armAttempt, noteFirstMove, flagWrong, retryAttempt, completeAttempt, attemptElapsedMs,
-  summarizeFlow, summarizePages,
-  type CaseRecord,
+  summarizeFlow, summarizePages, summarizeRuns,
+  type CaseRecord, type FlowRun,
 } from '@/helpers/flow_timing'
 
 // Flow mode splits a case into pause / execution / recovery, and only
@@ -168,5 +168,39 @@ describe('summarising an untracked session', () => {
 
   it('survives having no pages', () => {
     expect(summarizePages([])).toMatchObject({pages: 0, cases: 0, totalMs: 0, msPerCase: 0})
+  })
+})
+
+describe('comparing runs with each other', () => {
+  const run = (ms: number, over: Partial<FlowRun> = {}): FlowRun => ({
+    at: ms, pages: 5, cases: 25, ms, execMs: ms / 2, pauseMs: ms / 2,
+    recoveryMs: 0, moves: 250, firstTry: 25, ...over,
+  })
+
+  it('has nothing to say about a single run', () => {
+    const s = summarizeRuns([run(60000)])
+    expect(s).toMatchObject({count: 1, ao5: null, ao12: null, mean: 60000})
+    expect(s.best!.ms).toBe(60000)
+  })
+
+  it('averages the most recent five, best and worst dropped', () => {
+    // oldest .. newest; the last five are 50,40,30,20,10 -> drop 50 and 10
+    const runs = [90000, 80000, 50000, 40000, 30000, 20000, 10000].map((ms) => run(ms))
+    expect(summarizeRuns(runs).ao5).toBe(30000)
+  })
+
+  it('needs twelve runs before there is an Ao12', () => {
+    const eleven = Array.from({length: 11}, (_, i) => run((i + 1) * 1000))
+    expect(summarizeRuns(eleven).ao12).toBeNull()
+    expect(summarizeRuns([...eleven, run(12000)]).ao12).not.toBeNull()
+  })
+
+  it('finds the fastest run anywhere in the series, not just the recent ones', () => {
+    const runs = [30000, 9000, 40000, 25000, 26000, 27000].map((ms) => run(ms))
+    expect(summarizeRuns(runs).best!.ms).toBe(9000)
+  })
+
+  it('survives an empty history', () => {
+    expect(summarizeRuns([])).toEqual({count: 0, ao5: null, ao12: null, best: null, mean: null})
   })
 })

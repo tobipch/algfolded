@@ -51,7 +51,7 @@ rest of the app reads case data from.
 | `AlgsetStore` | the active set, its cases, the hierarchy, case labels |
 | `SelectedStore` | which cases the user selected |
 | `SessionStore` | the run: case picking, the timer state machine, stats, SRS |
-| `FlowStore` | a flow run: pages of five cases and its own timing |
+| `FlowStore` | a flow run: pages of five cases, its own timing, and the history of finished runs |
 | `BluetoothCubeStore` | **the** smart cube connection, the virtual cube, gestures |
 | `SolveSyncStore` | the cloud queue for solves |
 | `SettingsStore` | all user settings, one flat persisted object |
@@ -62,6 +62,12 @@ never throws: a corrupt or blocked `localStorage` must not stop the app from
 booting. Most run data is namespaced per algset (`<key>:<algsetId>`), so sets
 keep separate sessions and histories. `storage_resilience.test.ts` pins this
 down — extend it whenever a persisted shape changes.
+
+Flow keeps its own run history under `algfolded_flow_runs:<algsetId>` (capped,
+oldest first) so runs can be compared with each other. It is not a second
+statistics store: it holds whole runs, which the solve-level stores have no
+concept of, and it belongs to the store that produces them. Per-solve history
+still goes through `recordSolve` and nowhere else.
 
 ### Picking the next case
 

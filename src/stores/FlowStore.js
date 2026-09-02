@@ -1,16 +1,27 @@
 import {defineStore} from 'pinia'
-import {computed, ref, shallowRef} from 'vue'
+import {computed, ref, shallowRef, watch} from 'vue'
 import {
     CASES_PER_PAGE, armAttempt, noteFirstMove, flagWrong, retryAttempt,
-    completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages,
+    completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages, summarizeRuns,
 } from '@/helpers/flow_timing'
 import {useSessionStore} from '@/stores/SessionStore'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
+import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
 
 // The green flash on the fifth case, and nothing more. A few frames is enough
 // to register that the page landed; anything longer is felt as a wait, and the
 // whole point of flow is that the cases run into each other.
 export const PAGE_ADVANCE_MS = 60
+
+// Finished runs, per algset. Capped: a run is a few dozen bytes, but this is
+// the user's localStorage and nothing here is worth an unbounded list.
+const runsKey = 'algfolded_flow_runs'
+const MAX_RUNS = 200
+
+const loadRuns = (algsetId) => {
+    const stored = readNamespaced(runsKey, algsetId, [])
+    return Array.isArray(stored) ? stored.filter(r => r && typeof r.ms === 'number') : []
+}
 
 /**
  * A flow run: pages of five cases, drilled back to back.
@@ -60,6 +71,16 @@ export const useFlowStore = defineStore('flow', () => {
 
     let attempt = null                  // plain object from flow_timing
     let pageStartedAt = 0
+
+    // Finished runs on the active algset, oldest first — the series an Ao5 is
+    // read off. Reloaded when the algset changes, like every other run datum.
+    const runs = ref(loadRuns(algset.activeId))
+    watch(() => algset.activeId, (id) => { runs.value = loadRuns(id) })
+
+    // Only runs of the same length are comparable with each other, so the
+    // series is the one matching the run that was just done.
+    const comparableRuns = computed(() => runs.value.filter(r => r.pages === pageCount.value))
+    const runStats = computed(() => summarizeRuns(comparableRuns.value))
 
     const currentPage = computed(() => pages.value[pageIndex.value] || [])
     const currentCase = computed(() => currentPage.value[caseIndex.value] || null)
@@ -131,7 +152,10 @@ export const useFlowStore = defineStore('flow', () => {
         pageTimes.value = []
         wrongIndex.value = -1
         abandonedMs.value = 0
-        startedAt.value = now
+        // With a cube the clock waits for the first move, the way a solve is
+        // timed: reading the first case is not part of the session. Without one
+        // there is no move to wait for, so it runs from the page appearing.
+        startedAt.value = isTracked ? 0 : now
         endedAt.value = 0
         const snapshot = {}
         for (const key of session.store.keys) {
@@ -146,6 +170,7 @@ export const useFlowStore = defineStore('flow', () => {
 
     const noteMove = (now = Date.now()) => {
         if (!attempt) return
+        if (!startedAt.value) startedAt.value = now  // the run's first move starts the clock
         attempt = noteFirstMove(attempt, now)
     }
 
@@ -209,7 +234,7 @@ export const useFlowStore = defineStore('flow', () => {
         advancing.value = false
         if (!active.value || finished.value) return
         const next = pageIndex.value + 1
-        if (next >= pageCount.value) finish(now)
+        if (next >= pageCount.value) finish(now, true)
         else loadPage(next, now)
     }
 
@@ -218,19 +243,44 @@ export const useFlowStore = defineStore('flow', () => {
         if (!active.value || finished.value || tracked.value) return
         pageTimes.value.push(Math.max(0, now - pageStartedAt))
         const next = pageIndex.value + 1
-        if (next >= pageCount.value) finish(now)
+        if (next >= pageCount.value) finish(now, true)
         else loadPage(next, now)
     }
 
-    const finish = (now = Date.now()) => {
+    // Keep a completed run so later runs have something to be compared against.
+    // Runs cut short, and runs without a cube, are left out: an average over
+    // unequal work, or over pages nobody measured, would mean nothing.
+    const recordRun = (now) => {
+        if (!tracked.value || records.value.length === 0) return
+        const s = summarizeFlow(records.value)
+        runs.value.push({
+            at: now,
+            pages: pageCount.value,
+            cases: s.cases,
+            ms: Math.max(0, now - startedAt.value),
+            execMs: Math.round(s.execMs),
+            pauseMs: Math.round(s.pauseMs),
+            recoveryMs: Math.round(s.recoveryMs + abandonedMs.value),
+            moves: s.moves,
+            firstTry: s.firstTry,
+        })
+        if (runs.value.length > MAX_RUNS) runs.value = runs.value.slice(-MAX_RUNS)
+        writeNamespaced(runsKey, algset.activeId, runs.value)
+    }
+
+    const finish = (now = Date.now(), completed = false) => {
         if (finished.value) return
+        // Ended without ever turning the cube: a zero-length run, not one that
+        // started at the epoch.
+        if (!startedAt.value) startedAt.value = now
         // The case on screen was never completed, so it is not a record — but
         // the time it cost is real and belongs in the session's recovery.
         if (attempt) abandonedMs.value += attemptElapsedMs(attempt, now)
         attempt = null
         advancing.value = false
-        finished.value = true
         endedAt.value = now
+        if (completed) recordRun(now)
+        finished.value = true
     }
 
     const reset = () => {
@@ -242,14 +292,16 @@ export const useFlowStore = defineStore('flow', () => {
         pageTimes.value = []
         abandonedMs.value = 0
         wrongIndex.value = -1
+        startedAt.value = 0
+        endedAt.value = 0
         armSeq.value++
         attempt = null
     }
 
     /** Wall time of the run so far, for the header clock. */
     const elapsedMs = (now = Date.now()) => {
-        if (!active.value) return 0
-        if (finished.value) return endedAt.value - startedAt.value
+        if (!active.value || !startedAt.value) return 0
+        if (finished.value) return Math.max(0, endedAt.value - startedAt.value)
         return Math.max(0, now - startedAt.value)
     }
 
@@ -272,6 +324,6 @@ export const useFlowStore = defineStore('flow', () => {
         currentPage, currentCase, caseStates, totalCases, completedCases, progress,
         start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
         advancePageManually, finish, reset, elapsedMs, currentCaseMs,
-        summary, pageSummary,
+        summary, pageSummary, runs, comparableRuns, runStats,
     }
 })

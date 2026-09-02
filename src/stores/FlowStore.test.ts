@@ -164,6 +164,32 @@ describe('a tracked flow run', () => {
     expect(s.firstTry).toBe(5)
   })
 
+  it('leaves the clock at zero until the first move of the run', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 2, tracked: true }, 1000)
+    // reading the first case is not part of the session
+    expect(flow.elapsedMs(4000)).toBe(0)
+    flow.noteMove(4000)
+    expect(flow.elapsedMs(6000)).toBe(2000)
+    flow.completeCurrent(10, 5500)
+    // and it keeps running through the recall pauses that follow
+    expect(flow.elapsedMs(9000)).toBe(5000)
+  })
+
+  it('runs the clock from the page appearing when there is no cube to wait for', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 2, tracked: false }, 1000)
+    expect(flow.elapsedMs(4000)).toBe(3000)
+  })
+
+  it('a run ended without a single move is zero long, not epoch long', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 2, tracked: true }, 1000)
+    flow.finish(9000)
+    expect(flow.elapsedMs(9000)).toBe(0)
+    expect(flow.endedAt - flow.startedAt).toBe(0)
+  })
+
   it('finishing early books the unfinished case as time, not as a case', async () => {
     const { flow } = await load()
     flow.start({ pages: 4, tracked: true }, 0)
@@ -212,5 +238,80 @@ describe('a selection smaller than a page', () => {
     const page: {key: string}[] = flow.currentPage
     expect(page).toHaveLength(5)
     expect(page.every((c) => ['c1', 'c2'].includes(c.key))).toBe(true)
+  })
+})
+
+describe('comparing one run with the next', () => {
+  // A full run of `pages` pages, each case taking pause+exec, so the run's
+  // wall clock is deterministic.
+  const fullRun = async (flow: any, pages: number, at: number, exec = 1500) => {
+    flow.start({ pages, tracked: true }, at)
+    let t = at
+    for (let p = 0; p < pages; p++) {
+      for (let c = 0; c < 5; c++) {
+        flow.noteMove(t + 500)
+        flow.completeCurrent(10, t + 500 + exec)
+        t += 500 + exec
+      }
+      flow.nextPage(t)
+    }
+    return t
+  }
+
+  it('keeps a completed run and compares later ones against it', async () => {
+    const { flow } = await load()
+    await fullRun(flow, 2, 0, 2000)
+    expect(flow.comparableRuns).toHaveLength(1)
+    // the clock runs from the first move, so the opening recall is not in it
+    expect(flow.comparableRuns[0]).toMatchObject({ pages: 2, cases: 10, firstTry: 10 })
+    expect(flow.runStats).toMatchObject({ count: 1, ao5: null, ao12: null })
+    expect(flow.runStats.best!.ms).toBe(flow.comparableRuns[0].ms)
+
+    await fullRun(flow, 2, 1_000_000, 1000)
+    expect(flow.comparableRuns).toHaveLength(2)
+    // the second run was faster, so it is the one to beat
+    expect(flow.runStats.best!.ms).toBe(flow.comparableRuns[1].ms)
+    expect(flow.runStats.best!.ms).toBeLessThan(flow.comparableRuns[0].ms)
+  })
+
+  it('only compares runs of the same length', async () => {
+    const { flow } = await load()
+    await fullRun(flow, 2, 0)
+    await fullRun(flow, 3, 1_000_000)
+    expect(flow.runs).toHaveLength(2)
+    expect(flow.comparableRuns).toHaveLength(1)      // the 3-page series
+    expect(flow.comparableRuns[0].pages).toBe(3)
+  })
+
+  it('does not keep a run that was cut short', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 3, tracked: true }, 0)
+    flow.noteMove(500)
+    flow.completeCurrent(10, 2000)
+    flow.finish(3000)                                 // the Finish button
+    expect(flow.runs).toHaveLength(0)
+  })
+
+  it('does not keep a run nobody measured', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 2, tracked: false }, 0)
+    flow.advancePageManually(10000)
+    flow.advancePageManually(20000)
+    expect(flow.finished).toBe(true)
+    expect(flow.runs).toHaveLength(0)
+  })
+
+  it('survives a corrupt or foreign run history', async () => {
+    localStorage.setItem('algfolded_flow_runs:testset', '{"nicht":"ein array"}')
+    const { flow } = await load()
+    expect(flow.runs).toEqual([])
+  })
+
+  it('reads the history back on the next visit', async () => {
+    const { flow } = await load()
+    await fullRun(flow, 2, 0)
+    const stored = JSON.parse(localStorage.getItem('algfolded_flow_runs:testset')!)
+    expect(stored).toHaveLength(1)
+    expect(stored[0].pages).toBe(2)
   })
 })

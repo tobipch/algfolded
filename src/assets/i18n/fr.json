@@ -160,7 +160,17 @@
       "no_mistakes": "Aucune erreur. Chaque cas juste du premier coup.",
       "page_trend": "Temps par page",
       "untracked_note": "Sans smart cube seules les pages entières sont chronométrées, aucun solve n'a donc été enregistré.",
-      "nothing_recorded": "Rien n'a été enregistré dans cette session."
+      "nothing_recorded": "Rien n'a été enregistré dans cette session.",
+      "tab_runs": "Séries",
+      "runs_intro": "Chaque série complète d'une page dans cet algset, la plus récente en premier. Une série interrompue, ou faite sans cube, n'est pas comparable et reste de côté. | Chaque série complète de {pages} pages dans cet algset, la plus récente en premier. Une série interrompue, ou faite sans cube, n'est pas comparable et reste de côté.",
+      "runs_none": "C'était votre première série complète d'une page. Faites-en quelques-unes de plus et la comparaison apparaîtra ici. | C'était votre première série complète de {pages} pages. Faites-en quelques-unes de plus et la comparaison apparaîtra ici.",
+      "runs_ao5": "Ao5",
+      "runs_ao12": "Ao12",
+      "runs_best": "Meilleure",
+      "runs_best_marker": "(meilleure)",
+      "col_run": "Série",
+      "col_time": "Temps",
+      "col_when": "Quand"
     },
     "stats_card": {
       "stats_title": "Historique :",

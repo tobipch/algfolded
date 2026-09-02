@@ -160,7 +160,17 @@
       "no_mistakes": "No mistakes. Every case was right first time.",
       "page_trend": "Time per page",
       "untracked_note": "Without a smart cube only whole pages can be timed, so no solves were recorded.",
-      "nothing_recorded": "Nothing was recorded in this session."
+      "nothing_recorded": "Nothing was recorded in this session.",
+      "tab_runs": "Runs",
+      "runs_intro": "Every completed run of one page on this algset, newest first. A run cut short, or done without a cube, is not comparable and is left out. | Every completed run of {pages} pages on this algset, newest first. A run cut short, or done without a cube, is not comparable and is left out.",
+      "runs_none": "This was your first completed run of one page. Do a few more and the comparison shows up here. | This was your first completed run of {pages} pages. Do a few more and the comparison shows up here.",
+      "runs_ao5": "Ao5",
+      "runs_ao12": "Ao12",
+      "runs_best": "Best",
+      "runs_best_marker": "(best)",
+      "col_run": "Run",
+      "col_time": "Time",
+      "col_when": "When"
     },
     "stats_card": {
       "stats_title": "History:",

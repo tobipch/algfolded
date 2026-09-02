@@ -16,6 +16,8 @@
  * the per-case EMA. Pause and recovery are session data.
  */
 
+import {aoN} from '@/helpers/srs'
+
 export const CASES_PER_PAGE = 5
 
 export interface Attempt {
@@ -243,5 +245,49 @@ export const summarizePages = (
         totalMs,
         msPerCase: cases > 0 ? totalMs / cases : 0,
         pageTimes: [...pageTimes],
+    }
+}
+
+/**
+ * One finished run, kept so runs can be compared with each other. Only runs
+ * that went the whole distance are stored: an Ao5 over runs of different
+ * lengths would not mean anything.
+ */
+export interface FlowRun {
+    /** when the run finished, epoch ms */
+    at: number
+    pages: number
+    cases: number
+    /** the session clock: first move to last completion */
+    ms: number
+    execMs: number
+    pauseMs: number
+    recoveryMs: number
+    moves: number
+    firstTry: number
+}
+
+export interface RunStats {
+    count: number
+    /** WCA-style averages of the most recent 5 / 12 runs, best and worst dropped */
+    ao5: number | null
+    ao12: number | null
+    best: FlowRun | null
+    mean: number | null
+}
+
+/**
+ * Compare a series of runs the way a speedcuber compares solves. `runs` must be
+ * oldest first and already narrowed to comparable ones (same algset, same page
+ * count) — `aoN` reads the most recent n off the end.
+ */
+export const summarizeRuns = (runs: FlowRun[]): RunStats => {
+    const times = runs.map(r => r.ms)
+    return {
+        count: runs.length,
+        ao5: aoN(times, 5),
+        ao12: aoN(times, 12),
+        best: runs.length > 0 ? runs.reduce((b, r) => (r.ms < b.ms ? r : b)) : null,
+        mean: times.length > 0 ? times.reduce((t, ms) => t + ms, 0) / times.length : null,
     }
 }
