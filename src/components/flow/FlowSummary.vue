@@ -22,7 +22,8 @@ defineEmits(['again'])
 
 const p = computed(() => settings.store.timerPrecision)
 const fmt = (ms) => msToHumanReadable(ms, p.value)
-const fmtCoarse = (ms) => msToClock(ms)
+// the session total is a number the user reads once, so it is exact
+const fmtTotal = (ms) => msToClock(ms, true)
 const label = (key) => algset.caseLabel(key)
 const num = (v, digits = 1) => (v == null || !Number.isFinite(v)) ? '-' : v.toFixed(digits)
 
@@ -44,25 +45,23 @@ const perCaseContext = computed(() => {
       {delta: fmt(Math.abs(delta)), n: ref_.cases})
 })
 
-const tpsContext = computed(() => {
-  const ref_ = s.value?.reference
-  if (!ref_ || ref_.tps == null) return t('flow.no_history')
-  return t('flow.usual_pace', {tps: num(ref_.tps), n: ref_.cases})
-})
-
 const accuracyContext = computed(() =>
     t('flow.right_first_time_of', {right: s.value.firstTry, total: s.value.cases}))
 
-// Where the time went, as one bar: turning against recall against recovery.
+// Where the time went: turning against recall against recovery. The pause
+// figure above the bar shares this denominator so the two never disagree.
+const splitTotalMs = computed(() =>
+    s.value.execMs + s.value.pauseMs + s.value.recoveryMs + flow.abandonedMs)
+const pausePct = computed(() =>
+    splitTotalMs.value > 0 ? (s.value.pauseMs / splitTotalMs.value) * 100 : 0)
+
 const splitParts = computed(() => {
-  const recovery = s.value.recoveryMs + flow.abandonedMs
-  const parts = [
+  const total = splitTotalMs.value || 1
+  return [
     {id: 'exec', label: t('flow.split_execution'), ms: s.value.execMs},
     {id: 'pause', label: t('flow.split_pause'), ms: s.value.pauseMs},
-    {id: 'recovery', label: t('flow.split_recovery'), ms: recovery},
-  ].filter(part => part.ms > 0)
-  const total = parts.reduce((sum, part) => sum + part.ms, 0) || 1
-  return parts.map(part => ({...part, pct: (part.ms / total) * 100}))
+    {id: 'recovery', label: t('flow.split_recovery'), ms: s.value.recoveryMs + flow.abandonedMs},
+  ].filter(part => part.ms > 0).map(part => ({...part, pct: (part.ms / total) * 100}))
 })
 
 // One stacked bar per case in the order drilled: pale is the pause before the
@@ -134,11 +133,12 @@ const goSelect = () => router.push('select')
     <template v-if="flow.tracked && s.cases > 0">
       <div class="mb-4">
         <div class="flow-figure-lg">
-          {{ $t('flow.headline', {cases: s.cases, time: fmtCoarse(wallMs)}, s.cases) }}
+          {{ $t('flow.headline', {cases: s.cases, time: fmtTotal(wallMs)}, s.cases) }}
         </div>
         <div class="text-muted">
-          {{ $t('flow.headline_sub', {
+          {{ $t(s.tps == null ? 'flow.headline_sub_no_tps' : 'flow.headline_sub', {
             perCase: fmt(s.msPerCase),
+            tps: num(s.tps),
             right: s.firstTry,
             total: s.cases,
           }) }}
@@ -149,18 +149,18 @@ const goSelect = () => router.push('select')
         <div class="col-12 col-sm-4">
           <div class="card h-100 bg-body-tertiary border">
             <div class="card-body py-3">
-              <div class="text-muted text-uppercase small">{{ $t('flow.fig_per_case') }}</div>
-              <div class="flow-figure">{{ fmt(s.execPerCase) }}</div>
-              <div class="text-muted small">{{ perCaseContext }}</div>
+              <div class="text-muted text-uppercase small">{{ $t('flow.fig_pause') }}</div>
+              <div class="flow-figure">{{ fmt(s.pauseMs) }}</div>
+              <div class="text-muted small">{{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}</div>
             </div>
           </div>
         </div>
         <div class="col-12 col-sm-4">
           <div class="card h-100 bg-body-tertiary border">
             <div class="card-body py-3">
-              <div class="text-muted text-uppercase small">{{ $t('flow.fig_tps') }}</div>
-              <div class="flow-figure">{{ num(s.tps) }}</div>
-              <div class="text-muted small">{{ tpsContext }}</div>
+              <div class="text-muted text-uppercase small">{{ $t('flow.fig_per_case') }}</div>
+              <div class="flow-figure">{{ fmt(s.execPerCase) }}</div>
+              <div class="text-muted small">{{ perCaseContext }}</div>
             </div>
           </div>
         </div>
@@ -295,7 +295,7 @@ const goSelect = () => router.push('select')
       <div class="mb-4">
         <div class="flow-figure-lg">
           {{ $t('flow.headline',
-              {cases: pageStats.cases, time: fmtCoarse(pageStats.totalMs)}, pageStats.cases) }}
+              {cases: pageStats.cases, time: fmtTotal(pageStats.totalMs)}, pageStats.cases) }}
         </div>
         <div class="text-muted">
           {{ $t('flow.headline_sub_untracked', {perCase: fmt(pageStats.msPerCase)}) }}

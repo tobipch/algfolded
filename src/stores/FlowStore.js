@@ -7,9 +7,10 @@ import {
 import {useSessionStore} from '@/stores/SessionStore'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
 
-// Long enough to see the fifth case turn green, short enough not to break the
-// flow. Same value the prototype settled on.
-export const PAGE_ADVANCE_MS = 240
+// The green flash on the fifth case, and nothing more. A few frames is enough
+// to register that the page landed; anything longer is felt as a wait, and the
+// whole point of flow is that the cases run into each other.
+export const PAGE_ADVANCE_MS = 60
 
 /**
  * A flow run: pages of five cases, drilled back to back.

@@ -23,7 +23,8 @@ export const msToHumanReadable = (ms: number, numDigitsMs = 2, displayMs = true)
 
 // A wall clock for a whole session: always m:ss (or h:mm:ss), so half a minute
 // reads as "0:28" rather than as the bare "28" a solve time would print.
-export const msToClock = (ms: number): string => {
+// `hundredths` appends the fraction ("0:56.12") where the exact total matters.
+export const msToClock = (ms: number, hundredths = false): string => {
   if (!Number.isFinite(ms) || ms < 0) {
     ms = 0
   }
@@ -32,7 +33,8 @@ export const msToClock = (ms: number): string => {
   const minutes = Math.floor(total / 60) % 60
   const hours = Math.floor(total / 3600)
   const pad = (num: number): string => (num < 10 ? "0" : "") + num
+  const fraction = hundredths ? `.${pad(Math.floor((ms % 1000) / 10))}` : ""
   return hours > 0
-    ? `${hours}:${pad(minutes)}:${pad(seconds)}`
-    : `${minutes}:${pad(seconds)}`
+    ? `${hours}:${pad(minutes)}:${pad(seconds)}${fraction}`
+    : `${minutes}:${pad(seconds)}${fraction}`
 }

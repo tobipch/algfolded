@@ -11,7 +11,7 @@ import { useThemeStore } from '@/stores/ThemeStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
 import { useBluetoothCubeStore } from '@/stores/BluetoothCubeStore'
 import { useDisplayStore } from '@/stores/DisplayStore'
-import { supportedLocales, setLocaleAndReload } from '@/locale'
+import { supportedLocales, setLocale } from '@/locale'
 
 // Reactive, context-aware list of palette commands. Each command is
 // { id, section, title, icon?, keywords?, active?, run() }; the palette closes
@@ -109,7 +109,7 @@ export const useCommands = () => {
       cmds.push({
         id: `lang.${loc.code}`, section: S.settings, icon: 'bi-translate',
         title: t('cmd.set_lang', { lang: loc.name }), keywords: `${loc.name} ${loc.code}`,
-        run: () => setLocaleAndReload(loc.code),
+        run: () => setLocale(loc.code),
       })
     }
 

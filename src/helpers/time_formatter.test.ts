@@ -19,9 +19,18 @@ describe('msToClock', () => {
     expect(msToClock(3_723_000)).toBe('1:02:03')
   })
 
+  it('appends hundredths when the exact total matters', () => {
+    expect(msToClock(0, true)).toBe('0:00.00')
+    expect(msToClock(56_120, true)).toBe('0:56.12')
+    expect(msToClock(56_129, true)).toBe('0:56.12') // truncated, never rounded up
+    expect(msToClock(59_999, true)).toBe('0:59.99')
+    expect(msToClock(3_723_450, true)).toBe('1:02:03.45')
+  })
+
   it('treats nonsense as zero rather than printing NaN', () => {
     expect(msToClock(-5)).toBe('0:00')
     expect(msToClock(NaN)).toBe('0:00')
     expect(msToClock(Infinity)).toBe('0:00')
+    expect(msToClock(NaN, true)).toBe('0:00.00')
   })
 })

@@ -52,12 +52,17 @@ const beginRun = () => {
 
 // Every arm (a new case, or a retry against the cube as it is now) re-inits
 // the virtual cube from the case's scramble.
+//
+// Sync flush: the cube has to be armed in the same task that puts the case on
+// screen. Waiting for the next tick leaves a window in which the user has
+// already seen the case and started turning, and those first moves are dropped
+// on the floor — which reads as the app being slow to catch up.
 watch(() => flow.armSeq, () => {
   showHint.value = false
   wrongFeedback.value = false
   const item = flow.currentCase
   if (bt.connected && item?.scramble) bt.startTracking(item.scramble)
-})
+}, {flush: 'sync'})
 
 // The cube arriving mid-run does not change how the run is scored (that was
 // fixed at start), but the current case can still be armed against it.

@@ -44,12 +44,24 @@ export const i18n = createI18n({
     messages: supportedLocales.find(o => o.code === userLocale).messages
 });
 
+// Switch the interface language in place. Deliberately NOT a page reload: a
+// reload drops the Web Bluetooth GATT connection, and losing the smart cube
+// mid-session because you changed the language is not a trade worth making.
+// Nothing caches translated text, so swapping the locale is enough — every
+// string goes through `t()` at render time.
 // code: 2-letter locale code
-export const setLocaleAndReload = (code) => {
-    if (!supportedLocales.find(o => o.code === code)) {
-        console.error("setLocaleAndReload(", code, "). Supported: ", supportedLocales);
+export const setLocale = (code) => {
+    const locale = supportedLocales.find(o => o.code === code)
+    if (!locale) {
+        console.error("setLocale(", code, "). Supported: ", supportedLocales);
         return;
     }
     writeString(localStorageKey, code);
-    location.reload();
+    // createI18n is handed only the active locale's messages, so each further
+    // locale is registered the first time it is switched to.
+    if (!i18n.global.availableLocales.includes(code)) {
+        i18n.global.setLocaleMessage(code, locale.messages[code])
+    }
+    i18n.global.locale.value = code;
+    document.querySelector("html").setAttribute("lang", code);
 }
