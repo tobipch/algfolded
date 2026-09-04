@@ -154,7 +154,6 @@
       "untracked_note": "Sans smart cube seules les pages entières sont chronométrées, aucun solve n'a donc été enregistré.",
       "nothing_recorded": "Rien n'a été enregistré dans cette session.",
       "tab_runs": "Séries",
-      "runs_intro": "Chaque série complète d'une page dans cet algset, la plus récente en premier. Une série interrompue, ou faite sans cube, n'est pas comparable et reste de côté. | Chaque série complète de {pages} pages dans cet algset, la plus récente en premier. Une série interrompue, ou faite sans cube, n'est pas comparable et reste de côté.",
       "runs_none": "C'était votre première série complète d'une page. Faites-en quelques-unes de plus et la comparaison apparaîtra ici. | C'était votre première série complète de {pages} pages. Faites-en quelques-unes de plus et la comparaison apparaîtra ici.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
@@ -162,7 +161,6 @@
       "runs_best_marker": "(meilleure)",
       "col_run": "Série",
       "col_time": "Temps",
-      "col_when": "Quand",
       "new_best": "Nouveau record !",
       "vs_faster": "{delta} plus rapide que votre {against}",
       "vs_slower": "{delta} plus lent que votre {against}",
@@ -170,7 +168,6 @@
       "runs_mean": "moyenne",
       "over_n_runs": "sur {n} séries",
       "ao5_needs_more": "à partir de 5 séries",
-      "chart_run_times": "Temps par série",
       "chart_pause_share": "Flow · part du temps passé à se rappeler",
       "bucket_title": "Cas difficiles",
       "bucket_intro": "Les cas qui ont échoué à répétition, ou qui sont sortis nettement en dessous de votre rythme. Ils repartent dès que vous les exécutez proprement.",
@@ -178,8 +175,8 @@
       "bucket_more": "+{n} autres",
       "bucket_drill": "Travailler ces {n} cas",
       "details": "Détails",
-      "chart_best_key": "meilleure série",
-      "chart_current_key": "cette série"
+      "col_right": "Justes",
+      "runs_only_complete": "Uniquement les séries complètes avec cube."
     },
     "stats_card": {
       "stats_title": "Historique :",

@@ -154,7 +154,6 @@
       "untracked_note": "Senza smart cube si possono cronometrare solo le pagine intere, quindi nessun solve è stato registrato.",
       "nothing_recorded": "In questa sessione non è stato registrato nulla.",
       "tab_runs": "Serie",
-      "runs_intro": "Ogni serie completa di una pagina in questo algset, la più recente per prima. Una serie interrotta, o fatta senza cubo, non è confrontabile e resta fuori. | Ogni serie completa di {pages} pagine in questo algset, la più recente per prima. Una serie interrotta, o fatta senza cubo, non è confrontabile e resta fuori.",
       "runs_none": "Questa è stata la tua prima serie completa di una pagina. Falne qualcuna in più e qui comparirà il confronto. | Questa è stata la tua prima serie completa di {pages} pagine. Falne qualcuna in più e qui comparirà il confronto.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
@@ -162,7 +161,6 @@
       "runs_best_marker": "(migliore)",
       "col_run": "Serie",
       "col_time": "Tempo",
-      "col_when": "Quando",
       "new_best": "Nuovo record!",
       "vs_faster": "{delta} più veloce della tua {against}",
       "vs_slower": "{delta} più lento della tua {against}",
@@ -170,7 +168,6 @@
       "runs_mean": "media",
       "over_n_runs": "su {n} serie",
       "ao5_needs_more": "da 5 serie in poi",
-      "chart_run_times": "Tempo per serie",
       "chart_pause_share": "Flow · quota di tempo passata a ricordare",
       "bucket_title": "Casi difficili",
       "bucket_intro": "Casi che sono andati male ripetutamente, o usciti ben sotto il tuo ritmo. Escono di nuovo appena li esegui puliti.",
@@ -178,8 +175,8 @@
       "bucket_more": "+{n} altri",
       "bucket_drill": "Allena questi {n} casi",
       "details": "Dettagli",
-      "chart_best_key": "serie migliore",
-      "chart_current_key": "questa serie"
+      "col_right": "Giusti",
+      "runs_only_complete": "Solo serie complete con il cubo."
     },
     "stats_card": {
       "stats_title": "Cronologia:",

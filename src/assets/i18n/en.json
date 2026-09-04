@@ -154,7 +154,6 @@
       "untracked_note": "Without a smart cube only whole pages can be timed, so no solves were recorded.",
       "nothing_recorded": "Nothing was recorded in this session.",
       "tab_runs": "Runs",
-      "runs_intro": "Every completed run of one page on this algset, newest first. A run cut short, or done without a cube, is not comparable and is left out. | Every completed run of {pages} pages on this algset, newest first. A run cut short, or done without a cube, is not comparable and is left out.",
       "runs_none": "This was your first completed run of one page. Do a few more and the comparison shows up here. | This was your first completed run of {pages} pages. Do a few more and the comparison shows up here.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
@@ -162,7 +161,6 @@
       "runs_best_marker": "(best)",
       "col_run": "Run",
       "col_time": "Time",
-      "col_when": "When",
       "new_best": "New best!",
       "vs_faster": "{delta} faster than your {against}",
       "vs_slower": "{delta} slower than your {against}",
@@ -170,7 +168,6 @@
       "runs_mean": "average",
       "over_n_runs": "over {n} runs",
       "ao5_needs_more": "from 5 runs on",
-      "chart_run_times": "Time per run",
       "chart_pause_share": "Flow · share of the time spent recalling",
       "bucket_title": "Difficult cases",
       "bucket_intro": "Cases that repeatedly went wrong, or came out well under your own pace. They drop out again once you execute them cleanly.",
@@ -178,8 +175,8 @@
       "bucket_more": "+{n} more",
       "bucket_drill": "Drill these {n} cases",
       "details": "Details",
-      "chart_best_key": "best run",
-      "chart_current_key": "this run"
+      "col_right": "Right",
+      "runs_only_complete": "Complete runs with a cube only."
     },
     "stats_card": {
       "stats_title": "History:",

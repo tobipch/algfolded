@@ -154,7 +154,6 @@
       "untracked_note": "Ohne Smartcube lassen sich nur ganze Seiten messen, daher wurden keine Solves gespeichert.",
       "nothing_recorded": "In dieser Session wurde nichts aufgezeichnet.",
       "tab_runs": "Durchgänge",
-      "runs_intro": "Jeder vollständige Durchgang mit einer Seite in diesem Algset, neueste zuerst. Ein abgebrochener Durchgang oder einer ohne Würfel ist nicht vergleichbar und bleibt draussen. | Jeder vollständige Durchgang mit {pages} Seiten in diesem Algset, neueste zuerst. Ein abgebrochener Durchgang oder einer ohne Würfel ist nicht vergleichbar und bleibt draussen.",
       "runs_none": "Das war dein erster vollständiger Durchgang mit einer Seite. Mach ein paar mehr, dann erscheint hier der Vergleich. | Das war dein erster vollständiger Durchgang mit {pages} Seiten. Mach ein paar mehr, dann erscheint hier der Vergleich.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
@@ -162,7 +161,6 @@
       "runs_best_marker": "(bester)",
       "col_run": "Durchgang",
       "col_time": "Zeit",
-      "col_when": "Wann",
       "new_best": "Neue Bestzeit!",
       "vs_faster": "{delta} schneller als dein {against}",
       "vs_slower": "{delta} langsamer als dein {against}",
@@ -170,7 +168,6 @@
       "runs_mean": "Schnitt",
       "over_n_runs": "über {n} Durchgänge",
       "ao5_needs_more": "ab 5 Durchgängen",
-      "chart_run_times": "Zeit pro Durchgang",
       "chart_pause_share": "Flow · Anteil der Zeit im Erinnern",
       "bucket_title": "Schwierige Fälle",
       "bucket_intro": "Fälle, die wiederholt danebengingen oder deutlich unter deinem eigenen Tempo blieben. Sie fallen wieder raus, sobald du sie sauber ausführst.",
@@ -178,8 +175,8 @@
       "bucket_more": "+{n} weitere",
       "bucket_drill": "Diese {n} Fälle üben",
       "details": "Details",
-      "chart_best_key": "bester Durchgang",
-      "chart_current_key": "dieser Durchgang"
+      "col_right": "Richtig",
+      "runs_only_complete": "Nur vollständige Durchgänge mit Würfel."
     },
     "stats_card": {
       "stats_title": "Verlauf:",

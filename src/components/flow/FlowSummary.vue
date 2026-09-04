@@ -57,10 +57,11 @@ const headlineContext = computed(() => {
   }
 })
 
-// --- charts ---------------------------------------------------------------
-// Two measures, two charts: never one plot with two scales. Both are zoomed to
-// their data rather than to zero — the point is how the number moved, and a
-// zero baseline flattens exactly that.
+// --- the run series -------------------------------------------------------
+// One chart, one list, side by side. The times themselves read better as a
+// list — you compare them by looking, not by following a line — so the plot is
+// left to the one thing a list cannot show at a glance: whether the practice
+// is getting more fluid.
 
 const CHART_W = 640
 
@@ -87,18 +88,8 @@ const makeLine = (values, height, padLeft) => {
   }
 }
 
-// Axis labels: seconds with a decimal while a run is short enough for that to
-// be the readable form, m:ss once it is not. m:ss alone collapses a 2.5s-3.1s
-// spread onto three identical labels.
-const axisTime = (ms, span) => span < 60000
-    ? (ms / 1000).toFixed(1) + 's'
-    : msToClock(ms)
-
 const series = computed(() => flow.comparableRuns)
 const hasSeries = computed(() => series.value.length >= 2)
-
-const timeChart = computed(() => hasSeries.value
-    ? makeLine(series.value.map(r => r.ms), 190, 52) : null)
 
 // Pause share is the "flow" reading: less recall, more turning.
 const pauseShare = (r) => {
@@ -106,17 +97,11 @@ const pauseShare = (r) => {
   return total > 0 ? (r.pauseMs / total) * 100 : 0
 }
 const pauseChart = computed(() => hasSeries.value
-    ? makeLine(series.value.map(pauseShare), 110, 40) : null)
+    ? makeLine(series.value.map(pauseShare), 240, 44) : null)
 
-// The run that is the current one, and the best one, are the two points worth
-// picking out; the rest is context.
 const bestAt = computed(() => stats.value.best?.at ?? null)
-const pointClass = (i) => {
-  const run = series.value[i]
-  if (run.at === bestAt.value) return 'chart-dot-best'
-  if (flow.runRecorded && run.at === flow.endedAt) return 'chart-dot-current'
-  return 'chart-dot'
-}
+const isCurrent = (run) => flow.runRecorded && run.at === flow.endedAt
+const pointClass = (run) => isCurrent(run) ? 'chart-dot-current' : 'chart-dot-quiet'
 
 // --- hover ----------------------------------------------------------------
 
@@ -125,7 +110,7 @@ const hover = ref(null)
 
 const onChartMove = (e) => {
   const svg = chartRef.value
-  const chart = timeChart.value
+  const chart = pauseChart.value
   if (!svg || !chart) return
   const rect = svg.getBoundingClientRect()
   const ratio = (e.clientX - rect.left) / rect.width
@@ -139,7 +124,7 @@ const onChartMove = (e) => {
     left: (nearest.x / chart.width) * rect.width,
     top: (nearest.y / chart.height) * rect.height,
     crosshair: nearest.x,
-    text: `#${nearest.i + 1} · ${fmtTotal(run.ms)} · ${run.firstTry}/${run.cases}`,
+    text: `#${nearest.i + 1} · ${Math.round(pauseShare(run))}% · ${fmtTotal(run.ms)}`,
   }
 }
 const onChartLeave = () => { hover.value = null }
@@ -162,7 +147,7 @@ const drillBucket = async () => {
 
 // --- details --------------------------------------------------------------
 
-const tab = ref('runs')
+const tab = ref('cases')
 
 const splitTotalMs = computed(() =>
     s.value.execMs + s.value.pauseMs + s.value.recoveryMs + flow.abandonedMs)
@@ -225,13 +210,15 @@ const pageChart = computed(() => {
   return times.map((ms, i) => ({i, ms, pct: (ms / max) * 100}))
 })
 
-const runRows = computed(() => {
-  const best = stats.value.best
-  return series.value
-      .map((r, i) => ({...r, nr: i + 1, isBest: best != null && r.at === best.at}))
-      .reverse()
-      .slice(0, 25)
-})
+const runRows = computed(() => series.value
+    .map((r, i) => ({
+      ...r,
+      nr: i + 1,
+      isBest: bestAt.value != null && r.at === bestAt.value,
+      isCurrent: isCurrent(r),
+    }))
+    .reverse()
+    .slice(0, 50))
 const when = (at) => new Date(at).toLocaleString(locale.value, {
   month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
 })
@@ -314,61 +301,67 @@ const goSelect = () => router.push('select')
         </template>
       </div>
 
-      <!-- how the runs compare with each other -->
-      <div v-if="timeChart" class="mb-4">
-        <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_run_times') }}</div>
-        <div class="chart-hover-wrap">
-          <svg ref="chartRef" :viewBox="`0 0 ${timeChart.width} ${timeChart.height}`"
-               class="flow-chart" role="img" :aria-label="$t('flow.chart_run_times')"
-               @mousemove="onChartMove" @mouseleave="onChartLeave">
-            <line v-for="(g, i) in timeChart.grid" :key="'g' + i"
-                  :x1="timeChart.pad.l" :y1="g.y" :x2="timeChart.width - timeChart.pad.r" :y2="g.y"
-                  class="chart-grid"/>
-            <text v-for="(g, i) in timeChart.grid" :key="'t' + i"
-                  :x="timeChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
-              {{ axisTime(g.v, timeChart.grid[2].v) }}
-            </text>
-            <line v-if="hover" :x1="hover.crosshair" :y1="timeChart.pad.t"
-                  :x2="hover.crosshair" :y2="timeChart.height - timeChart.pad.b"
-                  class="chart-crosshair"/>
-            <path :d="timeChart.path" class="chart-line" fill="none"/>
-            <circle v-for="pt in timeChart.points" :key="pt.i"
-                    :cx="pt.x" :cy="pt.y" :r="pointClass(pt.i) === 'chart-dot' ? 4 : 6"
-                    :class="pointClass(pt.i)"/>
-          </svg>
-          <div v-if="hover" class="chart-tooltip"
-               :style="{left: hover.left + 'px', top: (hover.top - 34) + 'px'}">
-            {{ hover.text }}
+      <!-- how the runs compare with each other: the plot for the trend,
+           the list for the times themselves -->
+      <div v-if="hasSeries" class="row g-3 mb-4">
+        <div class="col-12 col-lg-7">
+          <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_pause_share') }}</div>
+          <div class="chart-hover-wrap">
+            <svg ref="chartRef" :viewBox="`0 0 ${pauseChart.width} ${pauseChart.height}`"
+                 class="flow-chart" role="img" :aria-label="$t('flow.chart_pause_share')"
+                 @mousemove="onChartMove" @mouseleave="onChartLeave">
+              <line v-for="(g, i) in pauseChart.grid" :key="'g' + i"
+                    :x1="pauseChart.pad.l" :y1="g.y"
+                    :x2="pauseChart.width - pauseChart.pad.r" :y2="g.y" class="chart-grid"/>
+              <text v-for="(g, i) in pauseChart.grid" :key="'t' + i"
+                    :x="pauseChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+                {{ Math.round(g.v) }}%
+              </text>
+              <line v-if="hover" :x1="hover.crosshair" :y1="pauseChart.pad.t"
+                    :x2="hover.crosshair" :y2="pauseChart.height - pauseChart.pad.b"
+                    class="chart-crosshair"/>
+              <path :d="pauseChart.path" class="chart-line chart-line-quiet" fill="none"/>
+              <circle v-for="pt in pauseChart.points" :key="pt.i"
+                      :cx="pt.x" :cy="pt.y" :r="isCurrent(series[pt.i]) ? 6 : 4"
+                      :class="pointClass(series[pt.i])"/>
+            </svg>
+            <div v-if="hover" class="chart-tooltip"
+                 :style="{left: hover.left + 'px', top: (hover.top - 34) + 'px'}">
+              {{ hover.text }}
+            </div>
           </div>
+          <p class="text-muted small mb-0">
+            {{ fmt(s.pauseMs) }} · {{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}
+          </p>
         </div>
-        <p class="text-muted small mb-0">
-          <span class="dot-key dot-key-best"></span>{{ $t('flow.chart_best_key') }}
-          <span class="dot-key dot-key-current ms-3"></span>{{ $t('flow.chart_current_key') }}
-        </p>
-      </div>
 
-      <!-- the secondary reading: how fluid it was -->
-      <div v-if="pauseChart" class="mb-4">
-        <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_pause_share') }}</div>
-        <svg :viewBox="`0 0 ${pauseChart.width} ${pauseChart.height}`"
-             class="flow-chart flow-chart-small" role="img"
-             :aria-label="$t('flow.chart_pause_share')">
-          <line v-for="(g, i) in pauseChart.grid" :key="'g' + i"
-                :x1="pauseChart.pad.l" :y1="g.y" :x2="pauseChart.width - pauseChart.pad.r" :y2="g.y"
-                class="chart-grid"/>
-          <text v-for="(g, i) in pauseChart.grid" :key="'t' + i"
-                :x="pauseChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
-            {{ Math.round(g.v) }}%
-          </text>
-          <path :d="pauseChart.path" class="chart-line chart-line-quiet" fill="none"/>
-          <g v-for="pt in pauseChart.points" :key="pt.i">
-            <title>{{ `#${pt.i + 1} · ${Math.round(pt.v)}%` }}</title>
-            <circle :cx="pt.x" :cy="pt.y" r="4" class="chart-dot-quiet"/>
-          </g>
-        </svg>
-        <p class="text-muted small mb-0">
-          {{ fmt(s.pauseMs) }} · {{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}
-        </p>
+        <div class="col-12 col-lg-5">
+          <div class="text-muted text-uppercase small mb-1">
+            {{ $t('flow.tab_runs') }} ({{ stats.count }})
+          </div>
+          <div class="run-list">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+              <tr>
+                <th class="run-col-nr">{{ $t('flow.col_run') }}</th>
+                <th>{{ $t('flow.col_time') }}</th>
+                <th class="text-end">{{ $t('flow.col_right') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="r in runRows" :key="r.at" :title="when(r.at)"
+                  :class="{'run-current': r.isCurrent}">
+                <td class="text-muted">{{ r.nr }}</td>
+                <td class="fw-semibold" :class="{'text-success': r.isBest}">
+                  {{ fmtTotal(r.ms) }}<span v-if="r.isBest">&nbsp;{{ $t('flow.runs_best_marker') }}</span>
+                </td>
+                <td class="text-muted text-end">{{ r.firstTry }} / {{ r.cases }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-muted small mb-0 mt-1">{{ $t('flow.runs_only_complete') }}</p>
+        </div>
       </div>
 
       <!-- the cases worth drilling next -->
@@ -442,12 +435,6 @@ const goSelect = () => router.push('select')
 
           <ul class="nav nav-pills gap-1 mb-3">
             <li class="nav-item">
-              <button type="button" class="nav-link" :class="{active: tab === 'runs'}"
-                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'runs'">
-                {{ $t('flow.tab_runs') }}<span v-if="stats.count > 1"> ({{ stats.count }})</span>
-              </button>
-            </li>
-            <li class="nav-item">
               <button type="button" class="nav-link" :class="{active: tab === 'cases'}"
                       tabindex="-1" @keydown.space.prevent="" @click="tab = 'cases'">
                 {{ $t('flow.tab_cases') }}
@@ -461,40 +448,7 @@ const goSelect = () => router.push('select')
             </li>
           </ul>
 
-          <div v-if="tab === 'runs'">
-            <p class="text-muted small">
-              {{ $t('flow.runs_intro', {pages: flow.pageCount}, flow.pageCount) }}
-            </p>
-            <div v-if="stats.count < 2" class="text-muted mb-0">
-              {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
-            </div>
-            <div v-else class="table-responsive">
-              <table class="table table-sm align-middle mb-0">
-                <thead>
-                <tr>
-                  <th>{{ $t('flow.col_run') }}</th>
-                  <th>{{ $t('flow.col_time') }}</th>
-                  <th>{{ $t('flow.col_pause') }}</th>
-                  <th>{{ $t('flow.fig_accuracy') }}</th>
-                  <th>{{ $t('flow.col_when') }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="r in runRows" :key="r.at">
-                  <td class="text-muted">{{ r.nr }}</td>
-                  <td class="fw-semibold" :class="{'text-success': r.isBest}">
-                    {{ fmtTotal(r.ms) }}<span v-if="r.isBest">&nbsp;{{ $t('flow.runs_best_marker') }}</span>
-                  </td>
-                  <td class="text-muted">{{ Math.round(pauseShare(r)) }}%</td>
-                  <td class="text-muted">{{ r.firstTry }} / {{ r.cases }}</td>
-                  <td class="text-muted">{{ when(r.at) }}</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div v-else-if="tab === 'cases'" class="table-responsive">
+          <div v-if="tab === 'cases'" class="table-responsive">
             <table class="table table-sm align-middle mb-0">
               <thead>
               <tr>
@@ -626,14 +580,29 @@ const goSelect = () => router.push('select')
 }
 .flow-chart {
   width: 100%;
-  min-width: 320px;
+  min-width: 280px;
   height: auto;
   max-height: 240px;
   cursor: crosshair;
 }
-.flow-chart-small {
-  max-height: 130px;
-  cursor: default;
+/* the list stands beside the chart, so it is capped at roughly the chart's
+   rendered height and scrolls past that */
+.run-list {
+  max-height: 220px;
+  overflow-y: auto;
+}
+.run-list thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bs-body-bg);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color, #6c757d);
+}
+.run-col-nr { width: 3rem; }
+.run-current > td {
+  background: rgba(var(--bs-primary-rgb), 0.08);
 }
 .chart-tooltip {
   position: absolute;
@@ -662,29 +631,13 @@ const goSelect = () => router.push('select')
   stroke-linecap: round;
 }
 .chart-line-quiet { stroke: var(--bs-primary); opacity: 0.45; }
-.chart-dot { fill: var(--bs-primary); opacity: 0.55; }
 .chart-dot-quiet { fill: var(--bs-primary); opacity: 0.55; }
-/* the two points worth picking out; a ring keeps them readable on the line */
-.chart-dot-best {
-  fill: var(--bs-success);
-  stroke: var(--bs-body-bg);
-  stroke-width: 2;
-}
+/* the run just finished, so it can be found on the line */
 .chart-dot-current {
   fill: var(--bs-primary);
   stroke: var(--bs-body-bg);
   stroke-width: 2;
 }
-/* the emphasis colours carry meaning, so they are named in text too */
-.dot-key {
-  display: inline-block;
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 50%;
-  margin-right: 0.3rem;
-}
-.dot-key-best { background: var(--bs-success); }
-.dot-key-current { background: var(--bs-primary); }
 .bucket-chip {
   display: inline-block;
   padding: 0.15rem 0.55rem;
