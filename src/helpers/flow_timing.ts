@@ -291,3 +291,73 @@ export const summarizeRuns = (runs: FlowRun[]): RunStats => {
         mean: times.length > 0 ? times.reduce((t, ms) => t + ms, 0) / times.length : null,
     }
 }
+
+// --- the bucket of cases that keep going wrong ----------------------------
+//
+// Practice is repetition, not a case-by-case post mortem, so the useful output
+// of a run is not a table: it is a short list of cases worth drilling next.
+// Each run adds strikes to the cases that went wrong or came out noticeably
+// slower than the user's own average for them, and takes strikes away from the
+// ones that went clean and quick. A case is only in the bucket once it has
+// misbehaved *repeatedly*, and it leaves again by being executed well.
+
+/** How many strikes a case needs before it counts as trouble. */
+export const TROUBLE_THRESHOLD = 3
+/** Ceiling, so a case can always be cleared in a few good repetitions. */
+export const TROUBLE_MAX = 5
+/** Slower than this multiple of the case's own average counts as a strike. */
+export const TROUBLE_SLOW_FACTOR = 1.5
+
+export interface TroubleEntry {
+    strikes: number
+    /** when the tally last moved, epoch ms */
+    lastAt: number
+}
+
+export type TroubleMap = Record<string, TroubleEntry>
+
+/** What one appearance of a case does to its tally. */
+export const troubleDelta = (
+    record: CaseRecord,
+    ema: number | null | undefined,
+): number => {
+    if (record.wrong) return 2
+    // Without history there is nothing to be slow against, so a clean
+    // execution of an unknown case is neither good nor bad news.
+    if (ema == null) return 0
+    if (record.execMs > ema * 1000 * TROUBLE_SLOW_FACTOR) return 1
+    if (record.execMs <= ema * 1000) return -1
+    return 0
+}
+
+/**
+ * Fold a run's records into the running tally. `emaByKey` is the per-case EMA
+ * in seconds as it stood *before* the run, so a case is judged against the
+ * average it had going in.
+ */
+export const updateTrouble = (
+    trouble: TroubleMap,
+    records: CaseRecord[],
+    emaByKey: Record<string, number | null | undefined> = {},
+    now = 0,
+): TroubleMap => {
+    const next: TroubleMap = {...trouble}
+    for (const r of records) {
+        const delta = troubleDelta(r, emaByKey[r.key])
+        if (delta === 0) continue
+        const strikes = Math.max(0, Math.min(TROUBLE_MAX, (next[r.key]?.strikes ?? 0) + delta))
+        if (strikes === 0) delete next[r.key]
+        else next[r.key] = {strikes, lastAt: now}
+    }
+    return next
+}
+
+/** The cases currently worth drilling, worst first. */
+export const troubleCases = (
+    trouble: TroubleMap,
+    threshold = TROUBLE_THRESHOLD,
+): string[] =>
+    Object.entries(trouble)
+        .filter(([, e]) => e.strikes >= threshold)
+        .sort((a, b) => b[1].strikes - a[1].strikes || b[1].lastAt - a[1].lastAt)
+        .map(([key]) => key)

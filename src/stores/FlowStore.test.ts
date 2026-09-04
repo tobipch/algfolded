@@ -315,3 +315,97 @@ describe('comparing one run with the next', () => {
     expect(stored[0].pages).toBe(2)
   })
 })
+
+describe('the bucket of difficult cases', () => {
+  // Drive one page where every case goes wrong (a retry books recovery, which
+  // is what marks a case wrong).
+  const badPage = (flow: any, at: number) => {
+    for (let c = 0; c < 5; c++) {
+      flow.noteMove(at + 100)
+      flow.retryCurrent(at + 2000)
+      flow.noteMove(at + 2100)
+      flow.completeCurrent(10, at + 3000)
+      at += 3000
+    }
+    flow.nextPage(at)
+    return at
+  }
+
+  it('stays empty after a single bad run — one bad run is not a pattern', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: true }, 0)
+    badPage(flow, 0)
+    expect(flow.bucket).toEqual([])
+    expect(Object.keys(flow.trouble)).toHaveLength(5)   // ...but it is being watched
+  })
+
+  it('fills once cases keep going wrong, and survives a reload', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: true }, 0)
+    const t = badPage(flow, 0)
+    flow.start({ pages: 1, tracked: true }, t + 1000)
+    badPage(flow, t + 1000)
+    expect(flow.bucket.length).toBeGreaterThan(0)
+    const stored = JSON.parse(localStorage.getItem('algfolded_flow_trouble:testset')!)
+    expect(Object.keys(stored).length).toBeGreaterThan(0)
+  })
+
+  it('collects a case that is repeatedly much slower than its own average', async () => {
+    const { session, flow } = await load()
+    for (const c of CASES) ema(session)[c.id] = { a: 1, n: 5, s: 1 }   // 1s average
+    for (let run = 0; run < 3; run++) {
+      flow.start({ pages: 1, tracked: true }, run * 100000)
+      let t = run * 100000
+      for (let c = 0; c < 5; c++) {
+        flow.noteMove(t + 100)
+        flow.completeCurrent(10, t + 5100)     // 5s against a 1s average
+        t += 5100
+      }
+      flow.nextPage(t)
+    }
+    expect(flow.bucket.length).toBeGreaterThan(0)
+  })
+
+  it('does not collect cases that are executed cleanly and quickly', async () => {
+    const { session, flow } = await load()
+    for (const c of CASES) ema(session)[c.id] = { a: 5, n: 5, s: 1 }
+    for (let run = 0; run < 3; run++) {
+      flow.start({ pages: 1, tracked: true }, run * 100000)
+      let t = run * 100000
+      for (let c = 0; c < 5; c++) {
+        flow.noteMove(t + 100)
+        flow.completeCurrent(10, t + 1100)     // 1s against a 5s average
+        t += 1100
+      }
+      flow.nextPage(t)
+    }
+    expect(flow.bucket).toEqual([])
+    expect(flow.trouble).toEqual({})
+  })
+
+  it('fills from a run that was cut short too', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 4, tracked: true }, 0)
+    flow.noteMove(100)
+    flow.retryCurrent(2000)
+    flow.noteMove(2100)
+    flow.completeCurrent(10, 3000)
+    flow.finish(4000)                          // the Finish button
+    expect(flow.runs).toHaveLength(0)          // not comparable...
+    expect(Object.keys(flow.trouble)).toHaveLength(1)  // ...but the case still misbehaved
+  })
+
+  it('ignores a run nobody measured', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: false }, 0)
+    flow.advancePageManually(10000)
+    expect(flow.trouble).toEqual({})
+  })
+
+  it('survives a corrupt tally', async () => {
+    localStorage.setItem('algfolded_flow_trouble:testset', '[1,2,3]')
+    const { flow } = await load()
+    expect(flow.trouble).toEqual({})
+    expect(flow.bucket).toEqual([])
+  })
+})

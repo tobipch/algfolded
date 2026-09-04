@@ -3,6 +3,7 @@ import {computed, ref, shallowRef, watch} from 'vue'
 import {
     CASES_PER_PAGE, armAttempt, noteFirstMove, flagWrong, retryAttempt,
     completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages, summarizeRuns,
+    updateTrouble, troubleCases,
 } from '@/helpers/flow_timing'
 import {useSessionStore} from '@/stores/SessionStore'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
@@ -21,6 +22,20 @@ const MAX_RUNS = 200
 const loadRuns = (algsetId) => {
     const stored = readNamespaced(runsKey, algsetId, [])
     return Array.isArray(stored) ? stored.filter(r => r && typeof r.ms === 'number') : []
+}
+
+// The tally of cases that keep going wrong, per algset. Small: only cases
+// with strikes are in it, and a case drops out again once it is clean.
+const troubleKey = 'algfolded_flow_trouble'
+
+const loadTrouble = (algsetId) => {
+    const stored = readNamespaced(troubleKey, algsetId, {})
+    if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return {}
+    const out = {}
+    for (const [key, entry] of Object.entries(stored)) {
+        if (entry && typeof entry.strikes === 'number' && entry.strikes > 0) out[key] = entry
+    }
+    return out
 }
 
 /**
@@ -75,7 +90,14 @@ export const useFlowStore = defineStore('flow', () => {
     // Finished runs on the active algset, oldest first — the series an Ao5 is
     // read off. Reloaded when the algset changes, like every other run datum.
     const runs = ref(loadRuns(algset.activeId))
-    watch(() => algset.activeId, (id) => { runs.value = loadRuns(id) })
+    const trouble = ref(loadTrouble(algset.activeId))
+    watch(() => algset.activeId, (id) => {
+        runs.value = loadRuns(id)
+        trouble.value = loadTrouble(id)
+    })
+
+    /** The cases worth drilling next, worst first. */
+    const bucket = computed(() => troubleCases(trouble.value))
 
     // Only runs of the same length are comparable with each other, so the
     // series is the one matching the run that was just done.
@@ -268,6 +290,14 @@ export const useFlowStore = defineStore('flow', () => {
         writeNamespaced(runsKey, algset.activeId, runs.value)
     }
 
+    // Every case the cube actually measured feeds the bucket, whether or not
+    // the run went the distance: a case that went wrong went wrong.
+    const recordTrouble = (now) => {
+        if (!tracked.value || records.value.length === 0) return
+        trouble.value = updateTrouble(trouble.value, records.value, emaSnapshot.value, now)
+        writeNamespaced(troubleKey, algset.activeId, trouble.value)
+    }
+
     const finish = (now = Date.now(), completed = false) => {
         if (finished.value) return
         // Ended without ever turning the cube: a zero-length run, not one that
@@ -279,6 +309,7 @@ export const useFlowStore = defineStore('flow', () => {
         attempt = null
         advancing.value = false
         endedAt.value = now
+        recordTrouble(now)
         if (completed) recordRun(now)
         finished.value = true
     }
@@ -309,6 +340,10 @@ export const useFlowStore = defineStore('flow', () => {
     const currentCaseMs = (now = Date.now()) =>
         attempt ? attemptElapsedMs(attempt, now) : 0
 
+    /** Whether the run just finished was kept in the comparable series. */
+    const runRecorded = computed(() =>
+        finished.value && comparableRuns.value.some(r => r.at === endedAt.value))
+
     const summary = computed(() => tracked.value
         ? summarizeFlow(records.value, {emaByKey: emaSnapshot.value})
         : null)
@@ -324,6 +359,7 @@ export const useFlowStore = defineStore('flow', () => {
         currentPage, currentCase, caseStates, totalCases, completedCases, progress,
         start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
         advancePageManually, finish, reset, elapsedMs, currentCaseMs,
-        summary, pageSummary, runs, comparableRuns, runStats,
+        summary, pageSummary, runs, comparableRuns, runStats, runRecorded,
+        trouble, bucket,
     }
 })

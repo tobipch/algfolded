@@ -1,24 +1,28 @@
 <script setup>
-import {computed, ref} from "vue";
+import {computed, nextTick, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useFlowStore} from "@/stores/FlowStore";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
+import {useSelectedStore} from "@/stores/SelectedStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {msToHumanReadable, msToClock} from "@/helpers/time_formatter";
 import {useI18n} from "vue-i18n";
 
-// What the run actually cost, led by the few numbers that carry their own
-// comparison. Everything that needs a table is behind a tab.
+// Practice is repetition, so the summary answers the two questions a repetition
+// actually raises — how fast, how clean — and then how this run sits against the
+// ones before it. Everything that needs reading case by case is behind Details:
+// the useful per-case output is not a table, it is the bucket.
 //
-// Without a smart cube only page times exist, so the split bar, TPS and the
-// per-case tables are left out rather than shown empty.
+// Without a smart cube only page times exist, so all of it collapses to the
+// headline and the page trend rather than being shown empty.
 const {t, locale} = useI18n()
 const router = useRouter()
 const flow = useFlowStore()
 const algset = useAlgsetStore()
+const selected = useSelectedStore()
 const settings = useSettingsStore()
 
-defineEmits(['again'])
+const emit = defineEmits(['again'])
 
 const p = computed(() => settings.store.timerPrecision)
 const fmt = (ms) => msToHumanReadable(ms, p.value)
@@ -30,26 +34,136 @@ const num = (v, digits = 1) => (v == null || !Number.isFinite(v)) ? '-' : v.toFi
 const s = computed(() => flow.summary)
 const pageStats = computed(() => flow.pageSummary)
 const wallMs = computed(() => Math.max(0, flow.endedAt - flow.startedAt))
+const stats = computed(() => flow.runStats)
 
-const tab = ref('cases')
+// --- how this run sits against the ones before it -------------------------
 
-// Execution against the user's own average for exactly these cases. That is
-// the only historical reference in the app, and it measures execution, so the
-// figure it is compared against measures execution too.
-const perCaseContext = computed(() => {
-  const ref_ = s.value?.reference
-  if (!ref_) return t('flow.no_history')
-  const delta = s.value.execPerCase - ref_.execPerCase
-  if (Math.abs(delta) < 10) return t('flow.same_as_usual', {n: ref_.cases})
-  return t(delta < 0 ? 'flow.faster_than_usual' : 'flow.slower_than_usual',
-      {delta: fmt(Math.abs(delta)), n: ref_.cases})
+const isNewBest = computed(() =>
+    flow.runRecorded && stats.value.count > 1
+    && stats.value.best != null && stats.value.best.at === flow.endedAt)
+
+const headlineContext = computed(() => {
+  if (!flow.runRecorded || stats.value.count < 2) return null
+  if (isNewBest.value) return {text: t('flow.new_best'), good: true}
+  const reference = stats.value.ao5 ?? stats.value.mean
+  if (reference == null) return null
+  const delta = wallMs.value - reference
+  const against = stats.value.ao5 != null ? t('flow.runs_ao5') : t('flow.runs_mean')
+  if (Math.abs(delta) < 100) return {text: t('flow.vs_same', {against}), good: false}
+  return {
+    text: t(delta < 0 ? 'flow.vs_faster' : 'flow.vs_slower',
+        {delta: fmt(Math.abs(delta)), against}),
+    good: delta < 0,
+  }
 })
 
-const accuracyContext = computed(() =>
-    t('flow.right_first_time_of', {right: s.value.firstTry, total: s.value.cases}))
+// --- charts ---------------------------------------------------------------
+// Two measures, two charts: never one plot with two scales. Both are zoomed to
+// their data rather than to zero — the point is how the number moved, and a
+// zero baseline flattens exactly that.
 
-// Where the time went: turning against recall against recovery. The pause
-// figure above the bar shares this denominator so the two never disagree.
+const CHART_W = 640
+
+const makeLine = (values, height, padLeft) => {
+  if (values.length === 0) return null
+  const pad = {l: padLeft, r: 14, t: 12, b: 20}
+  const spanX = CHART_W - pad.l - pad.r
+  const spanY = height - pad.t - pad.b
+  const low = Math.min(...values)
+  const high = Math.max(...values)
+  const margin = Math.max((high - low) * 0.3, high * 0.05, 1)
+  const min = Math.max(0, low - margin)
+  const max = high + margin
+  const x = (i) => pad.l + (values.length === 1 ? spanX / 2 : (spanX * i) / (values.length - 1))
+  const y = (v) => pad.t + spanY - (spanY * (v - min)) / ((max - min) || 1)
+  return {
+    width: CHART_W, height, pad,
+    points: values.map((v, i) => ({i, v, x: x(i), y: y(v)})),
+    path: values.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i)},${y(v)}`).join(' '),
+    grid: [0, 0.5, 1].map((f) => {
+      const v = min + (max - min) * f
+      return {v, y: y(v)}
+    }),
+  }
+}
+
+// Axis labels: seconds with a decimal while a run is short enough for that to
+// be the readable form, m:ss once it is not. m:ss alone collapses a 2.5s-3.1s
+// spread onto three identical labels.
+const axisTime = (ms, span) => span < 60000
+    ? (ms / 1000).toFixed(1) + 's'
+    : msToClock(ms)
+
+const series = computed(() => flow.comparableRuns)
+const hasSeries = computed(() => series.value.length >= 2)
+
+const timeChart = computed(() => hasSeries.value
+    ? makeLine(series.value.map(r => r.ms), 190, 52) : null)
+
+// Pause share is the "flow" reading: less recall, more turning.
+const pauseShare = (r) => {
+  const total = r.execMs + r.pauseMs + r.recoveryMs
+  return total > 0 ? (r.pauseMs / total) * 100 : 0
+}
+const pauseChart = computed(() => hasSeries.value
+    ? makeLine(series.value.map(pauseShare), 110, 40) : null)
+
+// The run that is the current one, and the best one, are the two points worth
+// picking out; the rest is context.
+const bestAt = computed(() => stats.value.best?.at ?? null)
+const pointClass = (i) => {
+  const run = series.value[i]
+  if (run.at === bestAt.value) return 'chart-dot-best'
+  if (flow.runRecorded && run.at === flow.endedAt) return 'chart-dot-current'
+  return 'chart-dot'
+}
+
+// --- hover ----------------------------------------------------------------
+
+const chartRef = ref(null)
+const hover = ref(null)
+
+const onChartMove = (e) => {
+  const svg = chartRef.value
+  const chart = timeChart.value
+  if (!svg || !chart) return
+  const rect = svg.getBoundingClientRect()
+  const ratio = (e.clientX - rect.left) / rect.width
+  const xInView = ratio * chart.width
+  let nearest = chart.points[0]
+  for (const pt of chart.points) {
+    if (Math.abs(pt.x - xInView) < Math.abs(nearest.x - xInView)) nearest = pt
+  }
+  const run = series.value[nearest.i]
+  hover.value = {
+    left: (nearest.x / chart.width) * rect.width,
+    top: (nearest.y / chart.height) * rect.height,
+    crosshair: nearest.x,
+    text: `#${nearest.i + 1} · ${fmtTotal(run.ms)} · ${run.firstTry}/${run.cases}`,
+  }
+}
+const onChartLeave = () => { hover.value = null }
+
+// --- the bucket -----------------------------------------------------------
+
+const BUCKET_SHOWN = 24
+const bucketShown = computed(() => flow.bucket.slice(0, BUCKET_SHOWN))
+const bucketRest = computed(() => Math.max(0, flow.bucket.length - BUCKET_SHOWN))
+
+// Drill exactly the cases that keep going wrong, then start over. The
+// selection change reaches SessionStore through App.vue's watcher, so the new
+// run has to be started after it has landed.
+const drillBucket = async () => {
+  if (flow.bucket.length === 0) return
+  selected.applyFromPreset(new Set(flow.bucket))
+  await nextTick()
+  emit('again')
+}
+
+// --- details --------------------------------------------------------------
+
+const tab = ref('runs')
+
 const splitTotalMs = computed(() =>
     s.value.execMs + s.value.pauseMs + s.value.recoveryMs + flow.abandonedMs)
 const pausePct = computed(() =>
@@ -66,7 +180,7 @@ const splitParts = computed(() => {
 
 // One stacked bar per case in the order drilled: pale is the pause before the
 // first turn, solid the turning itself. Page boundaries are marked.
-const chart = computed(() => {
+const caseChart = computed(() => {
   const records = flow.records
   if (records.length === 0) return null
   const width = 640, height = 200
@@ -75,7 +189,7 @@ const chart = computed(() => {
   const spanY = height - padTop - padBottom
   const maxValue = Math.max(...records.map(r => r.pauseMs + r.execMs)) * 1.1 || 1
   const slot = spanX / records.length
-  const barWidth = Math.max(1.5, Math.min(28, slot * 0.7))
+  const barWidth = Math.max(1.5, Math.min(24, slot * 0.7))
   const scale = (ms) => (spanY * ms) / maxValue
   const base = padTop + spanY
 
@@ -87,7 +201,8 @@ const chart = computed(() => {
       x: centre - barWidth / 2,
       w: barWidth,
       execY: base - execH, execH,
-      pauseY: base - execH - pauseH, pauseH,
+      // a 2px gap so the two segments read as two, not one long bar
+      pauseY: base - execH - pauseH - 2, pauseH: Math.max(0, pauseH - 2),
       wrong: r.wrong,
       title: `${label(r.key)}: ${fmt(r.pauseMs)} + ${fmt(r.execMs)}`,
     }
@@ -110,14 +225,10 @@ const pageChart = computed(() => {
   return times.map((ms, i) => ({i, ms, pct: (ms / max) * 100}))
 })
 
-// --- the series this run belongs to --------------------------------------
-// Runs of the same length on the same algset, newest first, with the
-// speedcubing averages over them. Only completed, cube-measured runs are in
-// here — see FlowStore.recordRun.
 const runRows = computed(() => {
-  const list = flow.comparableRuns
-  const best = flow.runStats.best
-  return list.map((r, i) => ({...r, nr: i + 1, isBest: best != null && r.at === best.at}))
+  const best = stats.value.best
+  return series.value
+      .map((r, i) => ({...r, nr: i + 1, isBest: best != null && r.at === best.at}))
       .reverse()
       .slice(0, 25)
 })
@@ -147,241 +258,307 @@ const goSelect = () => router.push('select')
     <!-- with a smart cube: every case was measured -->
     <template v-if="flow.tracked && s.cases > 0">
       <div class="mb-4">
-        <div class="flow-figure-lg">
+        <div class="flow-hero">
           {{ $t('flow.headline', {cases: s.cases, time: fmtTotal(wallMs)}, s.cases) }}
         </div>
-        <div class="text-muted">
-          {{ $t(s.tps == null ? 'flow.headline_sub_no_tps' : 'flow.headline_sub', {
-            perCase: fmt(s.msPerCase),
-            tps: num(s.tps),
-            right: s.firstTry,
-            total: s.cases,
-          }) }}
+        <div v-if="headlineContext" class="flow-hero-context"
+             :class="headlineContext.good ? 'text-success' : 'text-muted'">
+          {{ headlineContext.text }}
+        </div>
+        <div v-else class="flow-hero-context text-muted">
+          {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
         </div>
       </div>
 
       <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-4">
-          <div class="card h-100 bg-body-tertiary border">
-            <div class="card-body py-3">
-              <div class="text-muted text-uppercase small">{{ $t('flow.fig_pause') }}</div>
-              <div class="flow-figure">{{ fmt(s.pauseMs) }}</div>
-              <div class="text-muted small">{{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-sm-4">
-          <div class="card h-100 bg-body-tertiary border">
-            <div class="card-body py-3">
-              <div class="text-muted text-uppercase small">{{ $t('flow.fig_per_case') }}</div>
-              <div class="flow-figure">{{ fmt(s.execPerCase) }}</div>
-              <div class="text-muted small">{{ perCaseContext }}</div>
-            </div>
-          </div>
-        </div>
-        <div class="col-12 col-sm-4">
+        <div class="col-12" :class="hasSeries ? 'col-sm-4' : 'col-sm-6'">
           <div class="card h-100 bg-body-tertiary border">
             <div class="card-body py-3">
               <div class="text-muted text-uppercase small">{{ $t('flow.fig_accuracy') }}</div>
               <div class="flow-figure" :class="{'text-success': s.firstTry === s.cases}">
                 {{ Math.round(s.accuracy * 100) }}%
               </div>
-              <div class="text-muted small">{{ accuracyContext }}</div>
+              <div class="text-muted small">
+                {{ $t('flow.right_first_time_of', {right: s.firstTry, total: s.cases}) }}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="mb-4">
-        <div class="text-muted text-uppercase small mb-2">{{ $t('flow.where_time_went') }}</div>
-        <div class="split-bar mb-2">
-          <div v-for="part in splitParts" :key="part.id"
-               :class="'split-' + part.id"
-               :style="{width: part.pct + '%'}"
-               :title="`${part.label} ${fmt(part.ms)}`"></div>
-        </div>
-        <div class="small">
-          <span v-for="part in splitParts" :key="part.id" class="me-3">
-            <span class="split-key" :class="'split-' + part.id"></span>
-            {{ part.label }} <strong>{{ Math.round(part.pct) }}%</strong>&nbsp;<span
-              class="text-muted">{{ fmt(part.ms) }}</span>
-          </span>
-        </div>
-      </div>
-
-      <div v-if="chart" class="mb-4">
-        <div class="text-muted text-uppercase small mb-2">{{ $t('flow.per_case_chart') }}</div>
-        <div class="chart-scroll">
-          <svg :viewBox="`0 0 ${chart.width} ${chart.height}`" class="flow-chart"
-               role="img" :aria-label="$t('flow.per_case_chart')">
-            <line v-for="(g, i) in chart.grid" :key="'g' + i"
-                  :x1="chart.padLeft" :y1="g.y" :x2="chart.width - chart.padRight" :y2="g.y"
-                  class="chart-grid"/>
-            <text v-for="(g, i) in chart.grid" :key="'t' + i"
-                  :x="chart.padLeft - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
-              {{ g.text }}
-            </text>
-            <line v-for="(x, i) in chart.dividers" :key="'d' + i"
-                  :x1="x" y1="14" :x2="x" :y2="chart.height - 24" class="chart-divider"/>
-            <g v-for="(b, i) in chart.bars" :key="'b' + i">
-              <title>{{ b.title }}</title>
-              <rect :x="b.x" :y="b.execY" :width="b.w" :height="b.execH"
-                    :class="b.wrong ? 'chart-bar-wrong' : 'chart-bar'"/>
-              <rect :x="b.x" :y="b.pauseY" :width="b.w" :height="b.pauseH"
-                    :class="b.wrong ? 'chart-bar-wrong-pause' : 'chart-bar-pause'"/>
-            </g>
-          </svg>
-        </div>
-        <p class="text-muted small mb-0 text-center">{{ $t('flow.per_case_chart_legend') }}</p>
-      </div>
-
-      <ul class="nav nav-pills gap-1 mb-3">
-        <li class="nav-item">
-          <button type="button" class="nav-link" :class="{active: tab === 'cases'}"
-                  tabindex="-1" @keydown.space.prevent="" @click="tab = 'cases'">
-            {{ $t('flow.tab_cases') }}
-          </button>
-        </li>
-        <li class="nav-item">
-          <button type="button" class="nav-link" :class="{active: tab === 'wrong'}"
-                  tabindex="-1" @keydown.space.prevent="" @click="tab = 'wrong'">
-            {{ $t('flow.tab_wrong') }}<span v-if="s.wrongCases.length"> ({{ s.cases - s.firstTry }})</span>
-          </button>
-        </li>
-        <li class="nav-item">
-          <button type="button" class="nav-link" :class="{active: tab === 'runs'}"
-                  tabindex="-1" @keydown.space.prevent="" @click="tab = 'runs'">
-            {{ $t('flow.tab_runs') }}<span v-if="flow.runStats.count > 1"> ({{ flow.runStats.count }})</span>
-          </button>
-        </li>
-      </ul>
-
-      <div v-if="tab === 'cases'" class="table-responsive">
-        <table class="table table-sm align-middle mb-0">
-          <thead>
-          <tr>
-            <th>{{ $t('flow.col_case') }}</th>
-            <th>{{ $t('flow.col_total') }}</th>
-            <th>{{ $t('flow.col_pause') }}</th>
-            <th>{{ $t('flow.col_execution') }}</th>
-            <th>{{ $t('flow.col_tps') }}</th>
-            <th>{{ $t('flow.col_delta') }}</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-for="(c, i) in s.perCase" :key="i">
-            <td class="fw-semibold">
-              {{ label(c.key) }}<span v-if="c.wrong" class="text-danger"> !</span>
-            </td>
-            <td>{{ fmt(c.totalMs) }}</td>
-            <td class="text-muted">{{ fmt(c.pauseMs) }}</td>
-            <td class="text-muted">{{ fmt(c.execMs) }}</td>
-            <td>{{ num(c.tps) }}</td>
-            <td :class="c.deltaMs != null && c.deltaMs > 0 ? 'text-danger' : 'text-muted'">
-              <template v-if="c.deltaMs == null">-</template>
-              <template v-else>{{ (c.deltaMs >= 0 ? '+' : '-') + fmt(Math.abs(c.deltaMs)) }}</template>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div v-else-if="tab === 'runs'">
-        <p class="text-muted small">
-          {{ $t('flow.runs_intro', {pages: flow.pageCount}, flow.pageCount) }}
-        </p>
-        <div v-if="flow.runStats.count < 2" class="text-muted mb-0">
-          {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
-        </div>
-        <template v-else>
-          <div class="row g-3 mb-3">
-            <div class="col-4">
-              <div class="card h-100 bg-body-tertiary border">
-                <div class="card-body py-2">
-                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao5') }}</div>
-                  <div class="flow-figure">{{ flow.runStats.ao5 == null ? '-' : fmtTotal(flow.runStats.ao5) }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="card h-100 bg-body-tertiary border">
-                <div class="card-body py-2">
-                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao12') }}</div>
-                  <div class="flow-figure">{{ flow.runStats.ao12 == null ? '-' : fmtTotal(flow.runStats.ao12) }}</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="card h-100 bg-body-tertiary border">
-                <div class="card-body py-2">
-                  <div class="text-muted text-uppercase small">{{ $t('flow.runs_best') }}</div>
-                  <div class="flow-figure text-success">
-                    {{ flow.runStats.best == null ? '-' : fmtTotal(flow.runStats.best.ms) }}
-                  </div>
+        <template v-if="hasSeries">
+          <div class="col-6 col-sm-4">
+            <div class="card h-100 bg-body-tertiary border">
+              <div class="card-body py-3">
+                <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao5') }}</div>
+                <div class="flow-figure">{{ stats.ao5 == null ? '-' : fmtTotal(stats.ao5) }}</div>
+                <div class="text-muted small">
+                  <template v-if="stats.ao12 != null">
+                    {{ $t('flow.runs_ao12') }} {{ fmtTotal(stats.ao12) }}
+                  </template>
+                  <template v-else-if="stats.ao5 == null">{{ $t('flow.ao5_needs_more') }}</template>
+                  <template v-else>{{ $t('flow.over_n_runs', {n: stats.count}) }}</template>
                 </div>
               </div>
             </div>
           </div>
-          <div class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-              <thead>
-              <tr>
-                <th>{{ $t('flow.col_run') }}</th>
-                <th>{{ $t('flow.col_time') }}</th>
-                <th>{{ $t('flow.col_pause') }}</th>
-                <th>{{ $t('flow.fig_accuracy') }}</th>
-                <th>{{ $t('flow.col_when') }}</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="r in runRows" :key="r.at">
-                <td class="text-muted">{{ r.nr }}</td>
-                <td class="fw-semibold" :class="{'text-success': r.isBest}">
-                  {{ fmtTotal(r.ms) }}<span v-if="r.isBest">&nbsp;{{ $t('flow.runs_best_marker') }}</span>
-                </td>
-                <td class="text-muted">{{ Math.round(100 * r.pauseMs / Math.max(1, r.execMs + r.pauseMs + r.recoveryMs)) }}%</td>
-                <td class="text-muted">{{ r.firstTry }} / {{ r.cases }}</td>
-                <td class="text-muted">{{ when(r.at) }}</td>
-              </tr>
-              </tbody>
-            </table>
+          <div class="col-6 col-sm-4">
+            <div class="card h-100 bg-body-tertiary border">
+              <div class="card-body py-3">
+                <div class="text-muted text-uppercase small">{{ $t('flow.runs_best') }}</div>
+                <div class="flow-figure text-success">
+                  {{ stats.best == null ? '-' : fmtTotal(stats.best.ms) }}
+                </div>
+                <div class="text-muted small">{{ $t('flow.over_n_runs', {n: stats.count}) }}</div>
+              </div>
+            </div>
           </div>
         </template>
       </div>
 
-      <div v-else>
-        <p v-if="s.wrongCases.length === 0" class="text-muted mb-0">
-          {{ $t('flow.no_mistakes') }}
-        </p>
-        <div v-else class="table-responsive">
-          <table class="table table-sm align-middle mb-0">
-            <thead>
-            <tr>
-              <th>{{ $t('flow.col_case') }}</th>
-              <th>{{ $t('flow.col_times_wrong') }}</th>
-              <th>{{ $t('flow.col_pages') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="w in s.wrongCases" :key="w.key">
-              <td class="fw-semibold">{{ label(w.key) }}</td>
-              <td>{{ w.count }}</td>
-              <td class="text-muted">{{ w.pages.join(', ') }}</td>
-            </tr>
-            </tbody>
-          </table>
+      <!-- how the runs compare with each other -->
+      <div v-if="timeChart" class="mb-4">
+        <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_run_times') }}</div>
+        <div class="chart-hover-wrap">
+          <svg ref="chartRef" :viewBox="`0 0 ${timeChart.width} ${timeChart.height}`"
+               class="flow-chart" role="img" :aria-label="$t('flow.chart_run_times')"
+               @mousemove="onChartMove" @mouseleave="onChartLeave">
+            <line v-for="(g, i) in timeChart.grid" :key="'g' + i"
+                  :x1="timeChart.pad.l" :y1="g.y" :x2="timeChart.width - timeChart.pad.r" :y2="g.y"
+                  class="chart-grid"/>
+            <text v-for="(g, i) in timeChart.grid" :key="'t' + i"
+                  :x="timeChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+              {{ axisTime(g.v, timeChart.grid[2].v) }}
+            </text>
+            <line v-if="hover" :x1="hover.crosshair" :y1="timeChart.pad.t"
+                  :x2="hover.crosshair" :y2="timeChart.height - timeChart.pad.b"
+                  class="chart-crosshair"/>
+            <path :d="timeChart.path" class="chart-line" fill="none"/>
+            <circle v-for="pt in timeChart.points" :key="pt.i"
+                    :cx="pt.x" :cy="pt.y" :r="pointClass(pt.i) === 'chart-dot' ? 4 : 6"
+                    :class="pointClass(pt.i)"/>
+          </svg>
+          <div v-if="hover" class="chart-tooltip"
+               :style="{left: hover.left + 'px', top: (hover.top - 34) + 'px'}">
+            {{ hover.text }}
+          </div>
         </div>
+        <p class="text-muted small mb-0">
+          <span class="dot-key dot-key-best"></span>{{ $t('flow.chart_best_key') }}
+          <span class="dot-key dot-key-current ms-3"></span>{{ $t('flow.chart_current_key') }}
+        </p>
       </div>
+
+      <!-- the secondary reading: how fluid it was -->
+      <div v-if="pauseChart" class="mb-4">
+        <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_pause_share') }}</div>
+        <svg :viewBox="`0 0 ${pauseChart.width} ${pauseChart.height}`"
+             class="flow-chart flow-chart-small" role="img"
+             :aria-label="$t('flow.chart_pause_share')">
+          <line v-for="(g, i) in pauseChart.grid" :key="'g' + i"
+                :x1="pauseChart.pad.l" :y1="g.y" :x2="pauseChart.width - pauseChart.pad.r" :y2="g.y"
+                class="chart-grid"/>
+          <text v-for="(g, i) in pauseChart.grid" :key="'t' + i"
+                :x="pauseChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+            {{ Math.round(g.v) }}%
+          </text>
+          <path :d="pauseChart.path" class="chart-line chart-line-quiet" fill="none"/>
+          <g v-for="pt in pauseChart.points" :key="pt.i">
+            <title>{{ `#${pt.i + 1} · ${Math.round(pt.v)}%` }}</title>
+            <circle :cx="pt.x" :cy="pt.y" r="4" class="chart-dot-quiet"/>
+          </g>
+        </svg>
+        <p class="text-muted small mb-0">
+          {{ fmt(s.pauseMs) }} · {{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}
+        </p>
+      </div>
+
+      <!-- the cases worth drilling next -->
+      <div class="mb-4">
+        <div class="text-muted text-uppercase small mb-1">
+          {{ $t('flow.bucket_title') }}<span v-if="flow.bucket.length"> ({{ flow.bucket.length }})</span>
+        </div>
+        <p v-if="flow.bucket.length === 0" class="text-muted small mb-0">
+          {{ $t('flow.bucket_empty') }}
+        </p>
+        <template v-else>
+          <p class="text-muted small mb-2">{{ $t('flow.bucket_intro') }}</p>
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <span v-for="key in bucketShown" :key="key" class="bucket-chip">{{ label(key) }}</span>
+            <span v-if="bucketRest" class="text-muted small">
+              {{ $t('flow.bucket_more', {n: bucketRest}) }}
+            </span>
+          </div>
+          <button class="btn btn-warning mt-3" type="button" tabindex="-1"
+                  @keydown.space.prevent="" @click="drillBucket">
+            {{ $t('flow.bucket_drill', {n: flow.bucket.length}) }}
+          </button>
+        </template>
+      </div>
+
+      <details class="flow-details">
+        <summary class="text-muted">{{ $t('flow.details') }}</summary>
+        <div class="pt-3">
+          <div class="mb-4">
+            <div class="text-muted text-uppercase small mb-2">{{ $t('flow.where_time_went') }}</div>
+            <div class="split-bar mb-2">
+              <div v-for="part in splitParts" :key="part.id"
+                   :class="'split-' + part.id"
+                   :style="{width: part.pct + '%'}"
+                   :title="`${part.label} ${fmt(part.ms)}`"></div>
+            </div>
+            <div class="small">
+              <span v-for="part in splitParts" :key="part.id" class="me-3">
+                <span class="split-key" :class="'split-' + part.id"></span>
+                {{ part.label }} <strong>{{ Math.round(part.pct) }}%</strong>&nbsp;<span
+                  class="text-muted">{{ fmt(part.ms) }}</span>
+              </span>
+            </div>
+          </div>
+
+          <div v-if="caseChart" class="mb-4">
+            <div class="text-muted text-uppercase small mb-2">{{ $t('flow.per_case_chart') }}</div>
+            <div class="chart-scroll">
+              <svg :viewBox="`0 0 ${caseChart.width} ${caseChart.height}`" class="flow-chart"
+                   role="img" :aria-label="$t('flow.per_case_chart')">
+                <line v-for="(g, i) in caseChart.grid" :key="'g' + i"
+                      :x1="caseChart.padLeft" :y1="g.y" :x2="caseChart.width - caseChart.padRight" :y2="g.y"
+                      class="chart-grid"/>
+                <text v-for="(g, i) in caseChart.grid" :key="'t' + i"
+                      :x="caseChart.padLeft - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+                  {{ g.text }}
+                </text>
+                <line v-for="(x, i) in caseChart.dividers" :key="'d' + i"
+                      :x1="x" y1="14" :x2="x" :y2="caseChart.height - 24" class="chart-divider"/>
+                <g v-for="(b, i) in caseChart.bars" :key="'b' + i">
+                  <title>{{ b.title }}</title>
+                  <rect :x="b.x" :y="b.execY" :width="b.w" :height="b.execH"
+                        :class="b.wrong ? 'chart-bar-wrong' : 'chart-bar'"/>
+                  <rect :x="b.x" :y="b.pauseY" :width="b.w" :height="b.pauseH"
+                        :class="b.wrong ? 'chart-bar-wrong-pause' : 'chart-bar-pause'"/>
+                </g>
+              </svg>
+            </div>
+            <p class="text-muted small mb-0 text-center">{{ $t('flow.per_case_chart_legend') }}</p>
+          </div>
+
+          <ul class="nav nav-pills gap-1 mb-3">
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{active: tab === 'runs'}"
+                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'runs'">
+                {{ $t('flow.tab_runs') }}<span v-if="stats.count > 1"> ({{ stats.count }})</span>
+              </button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{active: tab === 'cases'}"
+                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'cases'">
+                {{ $t('flow.tab_cases') }}
+              </button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="nav-link" :class="{active: tab === 'wrong'}"
+                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'wrong'">
+                {{ $t('flow.tab_wrong') }}<span v-if="s.wrongCases.length"> ({{ s.cases - s.firstTry }})</span>
+              </button>
+            </li>
+          </ul>
+
+          <div v-if="tab === 'runs'">
+            <p class="text-muted small">
+              {{ $t('flow.runs_intro', {pages: flow.pageCount}, flow.pageCount) }}
+            </p>
+            <div v-if="stats.count < 2" class="text-muted mb-0">
+              {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
+            </div>
+            <div v-else class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                  <th>{{ $t('flow.col_run') }}</th>
+                  <th>{{ $t('flow.col_time') }}</th>
+                  <th>{{ $t('flow.col_pause') }}</th>
+                  <th>{{ $t('flow.fig_accuracy') }}</th>
+                  <th>{{ $t('flow.col_when') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="r in runRows" :key="r.at">
+                  <td class="text-muted">{{ r.nr }}</td>
+                  <td class="fw-semibold" :class="{'text-success': r.isBest}">
+                    {{ fmtTotal(r.ms) }}<span v-if="r.isBest">&nbsp;{{ $t('flow.runs_best_marker') }}</span>
+                  </td>
+                  <td class="text-muted">{{ Math.round(pauseShare(r)) }}%</td>
+                  <td class="text-muted">{{ r.firstTry }} / {{ r.cases }}</td>
+                  <td class="text-muted">{{ when(r.at) }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div v-else-if="tab === 'cases'" class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+              <tr>
+                <th>{{ $t('flow.col_case') }}</th>
+                <th>{{ $t('flow.col_total') }}</th>
+                <th>{{ $t('flow.col_pause') }}</th>
+                <th>{{ $t('flow.col_execution') }}</th>
+                <th>{{ $t('flow.col_tps') }}</th>
+                <th>{{ $t('flow.col_delta') }}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr v-for="(c, i) in s.perCase" :key="i">
+                <td class="fw-semibold">
+                  {{ label(c.key) }}<span v-if="c.wrong" class="text-danger"> !</span>
+                </td>
+                <td>{{ fmt(c.totalMs) }}</td>
+                <td class="text-muted">{{ fmt(c.pauseMs) }}</td>
+                <td class="text-muted">{{ fmt(c.execMs) }}</td>
+                <td>{{ num(c.tps) }}</td>
+                <td :class="c.deltaMs != null && c.deltaMs > 0 ? 'text-danger' : 'text-muted'">
+                  <template v-if="c.deltaMs == null">-</template>
+                  <template v-else>{{ (c.deltaMs >= 0 ? '+' : '-') + fmt(Math.abs(c.deltaMs)) }}</template>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div v-else>
+            <p v-if="s.wrongCases.length === 0" class="text-muted mb-0">
+              {{ $t('flow.no_mistakes') }}
+            </p>
+            <div v-else class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                <tr>
+                  <th>{{ $t('flow.col_case') }}</th>
+                  <th>{{ $t('flow.col_times_wrong') }}</th>
+                  <th>{{ $t('flow.col_pages') }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="w in s.wrongCases" :key="w.key">
+                  <td class="fw-semibold">{{ label(w.key) }}</td>
+                  <td>{{ w.count }}</td>
+                  <td class="text-muted">{{ w.pages.join(', ') }}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </details>
     </template>
 
     <!-- without a cube only the pages were measured -->
     <template v-else-if="!flow.tracked && pageStats.pages > 0">
       <div class="mb-4">
-        <div class="flow-figure-lg">
+        <div class="flow-hero">
           {{ $t('flow.headline',
               {cases: pageStats.cases, time: fmtTotal(pageStats.totalMs)}, pageStats.cases) }}
         </div>
-        <div class="text-muted">
+        <div class="flow-hero-context text-muted">
           {{ $t('flow.headline_sub_untracked', {perCase: fmt(pageStats.msPerCase)}) }}
         </div>
       </div>
@@ -406,18 +583,23 @@ const goSelect = () => router.push('select')
   margin: 0 auto;
   padding: 1rem 0 2rem;
 }
+.flow-hero {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.flow-hero-context {
+  font-size: 1.05rem;
+  margin-top: 0.15rem;
+}
 .flow-figure {
   font-size: clamp(1.35rem, 5.5vw, 2rem);
   font-weight: 600;
   line-height: 1.2;
 }
-.flow-figure-lg {
-  font-size: clamp(1.5rem, 5vw, 2.25rem);
-  font-weight: 600;
-  line-height: 1.2;
-}
 .split-bar {
   display: flex;
+  gap: 2px;
   height: 14px;
   width: 100%;
   border-radius: 7px;
@@ -435,14 +617,35 @@ const goSelect = () => router.push('select')
 .split-exec { background-color: var(--bs-primary); }
 .split-pause { background-color: var(--bs-primary); opacity: 0.4; }
 .split-recovery { background-color: var(--bs-danger); }
+
 .chart-scroll {
   overflow-x: auto;
+}
+.chart-hover-wrap {
+  position: relative;
 }
 .flow-chart {
   width: 100%;
   min-width: 320px;
   height: auto;
   max-height: 240px;
+  cursor: crosshair;
+}
+.flow-chart-small {
+  max-height: 130px;
+  cursor: default;
+}
+.chart-tooltip {
+  position: absolute;
+  transform: translateX(-50%);
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
 }
 .chart-bar { fill: var(--bs-primary); }
 .chart-bar-pause { fill: var(--bs-primary); opacity: 0.35; }
@@ -450,7 +653,51 @@ const goSelect = () => router.push('select')
 .chart-bar-wrong-pause { fill: var(--bs-danger); opacity: 0.35; }
 .chart-grid { stroke: currentColor; opacity: 0.18; stroke-width: 1; }
 .chart-divider { stroke: currentColor; opacity: 0.25; stroke-width: 1; stroke-dasharray: 3 3; }
+.chart-crosshair { stroke: currentColor; opacity: 0.35; stroke-width: 1; }
 .chart-label { fill: currentColor; opacity: 0.6; font-size: 11px; }
+.chart-line {
+  stroke: var(--bs-primary);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.chart-line-quiet { stroke: var(--bs-primary); opacity: 0.45; }
+.chart-dot { fill: var(--bs-primary); opacity: 0.55; }
+.chart-dot-quiet { fill: var(--bs-primary); opacity: 0.55; }
+/* the two points worth picking out; a ring keeps them readable on the line */
+.chart-dot-best {
+  fill: var(--bs-success);
+  stroke: var(--bs-body-bg);
+  stroke-width: 2;
+}
+.chart-dot-current {
+  fill: var(--bs-primary);
+  stroke: var(--bs-body-bg);
+  stroke-width: 2;
+}
+/* the emphasis colours carry meaning, so they are named in text too */
+.dot-key {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+}
+.dot-key-best { background: var(--bs-success); }
+.dot-key-current { background: var(--bs-primary); }
+.bucket-chip {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.flow-details > summary {
+  cursor: pointer;
+  padding: 0.25rem 0;
+}
 .page-no { width: 1.5rem; }
 .page-time { width: 5rem; text-align: right; }
 .page-bar-track {

@@ -51,7 +51,7 @@ rest of the app reads case data from.
 | `AlgsetStore` | the active set, its cases, the hierarchy, case labels |
 | `SelectedStore` | which cases the user selected |
 | `SessionStore` | the run: case picking, the timer state machine, stats, SRS |
-| `FlowStore` | a flow run: pages of five cases, its own timing, and the history of finished runs |
+| `FlowStore` | a flow run: pages of five cases, its own timing, the history of finished runs, and the bucket of cases that keep going wrong |
 | `BluetoothCubeStore` | **the** smart cube connection, the virtual cube, gestures |
 | `SolveSyncStore` | the cloud queue for solves |
 | `SettingsStore` | all user settings, one flat persisted object |
@@ -63,11 +63,13 @@ booting. Most run data is namespaced per algset (`<key>:<algsetId>`), so sets
 keep separate sessions and histories. `storage_resilience.test.ts` pins this
 down — extend it whenever a persisted shape changes.
 
-Flow keeps its own run history under `algfolded_flow_runs:<algsetId>` (capped,
-oldest first) so runs can be compared with each other. It is not a second
-statistics store: it holds whole runs, which the solve-level stores have no
-concept of, and it belongs to the store that produces them. Per-solve history
-still goes through `recordSolve` and nowhere else.
+Flow keeps two things of its own, both per algset and both belonging to the
+store that produces them: the run history under `algfolded_flow_runs` (capped,
+oldest first) so runs can be compared with each other, and the trouble tally
+under `algfolded_flow_trouble`, which is the bucket of cases that keep going
+wrong. Neither is a second statistics store — one holds whole runs and the
+other holds "wrong execution", concepts the solve-level stores do not have.
+Per-solve history still goes through `recordSolve` and nowhere else.
 
 ### Picking the next case
 
@@ -94,6 +96,15 @@ local `store.stats` entry instead.
   settings toggle. The selector lives in `SelectSideCard.vue`; the chosen mode
   is `SessionStore.store.mode` (`'practice' | 'recap' | 'flow'`), persisted with
   the run.
+- **A summary answers questions, it does not dump data.** Practice is
+  repetition, so the flow summary leads with how fast and how clean this run
+  was, then how it sits against the runs before it, and turns the per-case
+  findings into one actionable thing — the bucket. Tables that have to be read
+  row by row live behind `Details`.
+- **Charts: one measure per plot, never two y-scales.** Line for a trend, bars
+  from a baseline for magnitude, emphasis (one accent, the rest recessive)
+  instead of a categorical palette when one point is the story. Colour that
+  carries meaning is named in text too.
 - **Do not render a control that has no effect** in the current mode or without
   a connected cube. The "timed" checkbox is hidden in flow because flow does not
   use the timer; the summary omits TPS and the per-case tables when there was no

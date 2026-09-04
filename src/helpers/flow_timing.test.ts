@@ -4,6 +4,7 @@ import {
   CASES_PER_PAGE,
   armAttempt, noteFirstMove, flagWrong, retryAttempt, completeAttempt, attemptElapsedMs,
   summarizeFlow, summarizePages, summarizeRuns,
+  troubleDelta, updateTrouble, troubleCases,
   type CaseRecord, type FlowRun,
 } from '@/helpers/flow_timing'
 
@@ -202,5 +203,70 @@ describe('comparing runs with each other', () => {
 
   it('survives an empty history', () => {
     expect(summarizeRuns([])).toEqual({count: 0, ao5: null, ao12: null, best: null, mean: null})
+  })
+})
+
+describe('the bucket of cases that keep going wrong', () => {
+  const rec = (key: string, over: Partial<CaseRecord> = {}) =>
+    record({key, ...over})
+
+  // 'a' averages 2s; 'b' has no history at all
+  const ema = {a: 2, b: null}
+
+  it('counts a wrong execution twice as heavily as a slow one', () => {
+    expect(troubleDelta(rec('a', {wrong: true, execMs: 500}), 2)).toBe(2)
+    expect(troubleDelta(rec('a', {execMs: 3500}), 2)).toBe(1)   // 1.75x the average
+  })
+
+  it('takes a strike away for a case executed at or under its average', () => {
+    expect(troubleDelta(rec('a', {execMs: 1800}), 2)).toBe(-1)
+    expect(troubleDelta(rec('a', {execMs: 2000}), 2)).toBe(-1)
+  })
+
+  it('leaves a merely-a-bit-slow case alone', () => {
+    expect(troubleDelta(rec('a', {execMs: 2600}), 2)).toBe(0)   // 1.3x, under the factor
+  })
+
+  it('says nothing about a case it has no average for', () => {
+    expect(troubleDelta(rec('b', {execMs: 99000}), null)).toBe(0)
+    // ...but a wrong execution is wrong whether or not there is history
+    expect(troubleDelta(rec('b', {wrong: true}), null)).toBe(2)
+  })
+
+  it('only buckets a case once it has misbehaved repeatedly', () => {
+    let trouble = updateTrouble({}, [rec('a', {wrong: true})], ema, 1)
+    expect(troubleCases(trouble)).toEqual([])          // one bad run is not a pattern
+    trouble = updateTrouble(trouble, [rec('a', {execMs: 9000})], ema, 2)
+    expect(troubleCases(trouble)).toEqual(['a'])       // wrong + slow = trouble
+  })
+
+  it('lets a case work its way out again by being executed well', () => {
+    let trouble = updateTrouble({}, [rec('a', {wrong: true}), rec('a', {wrong: true})], ema, 1)
+    expect(troubleCases(trouble)).toEqual(['a'])
+    for (let i = 0; i < 4; i++) trouble = updateTrouble(trouble, [rec('a', {execMs: 1500})], ema, 2)
+    expect(troubleCases(trouble)).toEqual([])
+    expect(trouble.a).toBeUndefined()                   // and stops being tracked at all
+  })
+
+  it('caps the tally so a case is always clearable in a few repetitions', () => {
+    let trouble = {}
+    for (let i = 0; i < 10; i++) trouble = updateTrouble(trouble, [rec('a', {wrong: true})], ema, i)
+    expect((trouble as Record<string, {strikes: number}>).a.strikes).toBe(5)
+  })
+
+  it('sorts the worst offenders first', () => {
+    const trouble = {
+      mild: {strikes: 3, lastAt: 5},
+      worst: {strikes: 5, lastAt: 1},
+      middling: {strikes: 4, lastAt: 2},
+      clean: {strikes: 1, lastAt: 9},
+    }
+    expect(troubleCases(trouble)).toEqual(['worst', 'middling', 'mild'])
+  })
+
+  it('never mutates the tally it was handed', () => {
+    const before = {a: {strikes: 2, lastAt: 1}}
+    updateTrouble(before, [rec('a', {wrong: true})], ema, 2)
+    expect(before.a.strikes).toBe(2)
   })
 })
