@@ -223,6 +223,13 @@ const when = (at) => new Date(at).toLocaleString(locale.value, {
   month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
 })
 
+// The best run is worth naming, not just timing: "run 3 of 8" tells you
+// whether you are still improving or peaked a while ago.
+const bestNr = computed(() => {
+  const i = series.value.findIndex(r => r.at === bestAt.value)
+  return i < 0 ? null : i + 1
+})
+
 const goSelect = () => router.push('select')
 </script>
 
@@ -257,16 +264,21 @@ const goSelect = () => router.push('select')
         </div>
       </div>
 
+      <!-- Each tile says what its number is in the number itself: "3 von 5"
+           needs no caption, a bare "60%" does. The icon carries the meaning
+           before the label is even read. -->
       <div class="row g-3 mb-4">
         <div class="col-12" :class="hasSeries ? 'col-sm-4' : 'col-sm-6'">
           <div class="card h-100 bg-body-tertiary border">
             <div class="card-body py-3">
-              <div class="text-muted text-uppercase small">{{ $t('flow.fig_accuracy') }}</div>
-              <div class="flow-figure" :class="{'text-success': s.firstTry === s.cases}">
-                {{ Math.round(s.accuracy * 100) }}%
+              <div class="tile-label">
+                <i class="bi bi-check2-circle"></i> {{ $t('flow.fig_accuracy') }}
               </div>
-              <div class="text-muted small">
-                {{ $t('flow.right_first_time_of', {right: s.firstTry, total: s.cases}) }}
+              <div class="flow-figure" :class="{'text-success': s.firstTry === s.cases}">
+                {{ $t('flow.right_of_total', {right: s.firstTry, total: s.cases}) }}
+              </div>
+              <div class="tile-meter mt-2">
+                <div class="tile-meter-fill" :style="{width: (s.accuracy * 100) + '%'}"></div>
               </div>
             </div>
           </div>
@@ -275,14 +287,16 @@ const goSelect = () => router.push('select')
           <div class="col-6 col-sm-4">
             <div class="card h-100 bg-body-tertiary border">
               <div class="card-body py-3">
-                <div class="text-muted text-uppercase small">{{ $t('flow.runs_ao5') }}</div>
+                <div class="tile-label">
+                  <i class="bi bi-speedometer2"></i> {{ $t('flow.fig_ao5') }}
+                </div>
                 <div class="flow-figure">{{ stats.ao5 == null ? '-' : fmtTotal(stats.ao5) }}</div>
                 <div class="text-muted small">
                   <template v-if="stats.ao12 != null">
                     {{ $t('flow.runs_ao12') }} {{ fmtTotal(stats.ao12) }}
                   </template>
                   <template v-else-if="stats.ao5 == null">{{ $t('flow.ao5_needs_more') }}</template>
-                  <template v-else>{{ $t('flow.over_n_runs', {n: stats.count}) }}</template>
+                  <template v-else>{{ $t('flow.ao12_needs_more') }}</template>
                 </div>
               </div>
             </div>
@@ -290,11 +304,15 @@ const goSelect = () => router.push('select')
           <div class="col-6 col-sm-4">
             <div class="card h-100 bg-body-tertiary border">
               <div class="card-body py-3">
-                <div class="text-muted text-uppercase small">{{ $t('flow.runs_best') }}</div>
+                <div class="tile-label">
+                  <i class="bi bi-trophy"></i> {{ $t('flow.fig_best') }}
+                </div>
                 <div class="flow-figure text-success">
                   {{ stats.best == null ? '-' : fmtTotal(stats.best.ms) }}
                 </div>
-                <div class="text-muted small">{{ $t('flow.over_n_runs', {n: stats.count}) }}</div>
+                <div class="text-muted small">
+                  {{ bestNr == null ? '' : $t('flow.best_run_nr', {nr: bestNr, total: stats.count}) }}
+                </div>
               </div>
             </div>
           </div>
@@ -545,6 +563,26 @@ const goSelect = () => router.push('select')
 .flow-hero-context {
   font-size: 1.05rem;
   margin-top: 0.15rem;
+}
+/* icon + plain label; sentence case, so tiles do not read as section headers */
+.tile-label {
+  font-size: 0.9rem;
+  color: var(--bs-secondary-color, #6c757d);
+  margin-bottom: 0.1rem;
+}
+.tile-label .bi {
+  margin-right: 0.2rem;
+}
+/* the ratio, drawn: how much of the run was right first time */
+.tile-meter {
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(128, 128, 128, 0.25);
+  overflow: hidden;
+}
+.tile-meter-fill {
+  height: 100%;
+  background-color: var(--bs-success);
 }
 .flow-figure {
   font-size: clamp(1.35rem, 5.5vw, 2rem);

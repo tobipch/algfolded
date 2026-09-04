@@ -132,7 +132,6 @@
       "headline_sub_untracked": "{perCase} per caso, dedotto dai tempi di pagina",
       "pause_share": "{pct}% della sessione speso a ricordare",
       "fig_accuracy": "Giusti al primo colpo",
-      "right_first_time_of": "{right} su {total} senza secondo tentativo",
       "where_time_went": "Dove è finito il tempo",
       "split_execution": "Esecuzione",
       "split_pause": "Pausa",
@@ -157,7 +156,6 @@
       "runs_none": "Questa è stata la tua prima serie completa di una pagina. Falne qualcuna in più e qui comparirà il confronto. | Questa è stata la tua prima serie completa di {pages} pagine. Falne qualcuna in più e qui comparirà il confronto.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
-      "runs_best": "Migliore",
       "runs_best_marker": "(migliore)",
       "col_run": "Serie",
       "col_time": "Tempo",
@@ -166,7 +164,6 @@
       "vs_slower": "{delta} più lento della tua {against}",
       "vs_same": "esattamente sulla tua {against}",
       "runs_mean": "media",
-      "over_n_runs": "su {n} serie",
       "ao5_needs_more": "da 5 serie in poi",
       "chart_pause_share": "Flow · quota di tempo passata a ricordare",
       "bucket_title": "Casi difficili",
@@ -176,7 +173,12 @@
       "bucket_drill": "Allena questi {n} casi",
       "details": "Dettagli",
       "col_right": "Giusti",
-      "runs_only_complete": "Solo serie complete con il cubo."
+      "runs_only_complete": "Solo serie complete con il cubo.",
+      "right_of_total": "{right} su {total}",
+      "fig_ao5": "Media (Ao5)",
+      "fig_best": "Tempo migliore",
+      "best_run_nr": "serie {nr} su {total}",
+      "ao12_needs_more": "Ao12 da 12 serie in poi"
     },
     "stats_card": {
       "stats_title": "Cronologia:",

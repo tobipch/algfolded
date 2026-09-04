@@ -132,7 +132,6 @@
       "headline_sub_untracked": "{perCase} pro Fall, aus den Seitenzeiten abgeleitet",
       "pause_share": "{pct}% der Gesamtzeit ging ins Erinnern",
       "fig_accuracy": "Auf Anhieb richtig",
-      "right_first_time_of": "{right} von {total} ohne zweiten Versuch",
       "where_time_went": "Wohin die Zeit ging",
       "split_execution": "Ausführung",
       "split_pause": "Pause",
@@ -157,7 +156,6 @@
       "runs_none": "Das war dein erster vollständiger Durchgang mit einer Seite. Mach ein paar mehr, dann erscheint hier der Vergleich. | Das war dein erster vollständiger Durchgang mit {pages} Seiten. Mach ein paar mehr, dann erscheint hier der Vergleich.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
-      "runs_best": "Bester",
       "runs_best_marker": "(bester)",
       "col_run": "Durchgang",
       "col_time": "Zeit",
@@ -166,7 +164,6 @@
       "vs_slower": "{delta} langsamer als dein {against}",
       "vs_same": "genau auf deinem {against}",
       "runs_mean": "Schnitt",
-      "over_n_runs": "über {n} Durchgänge",
       "ao5_needs_more": "ab 5 Durchgängen",
       "chart_pause_share": "Flow · Anteil der Zeit im Erinnern",
       "bucket_title": "Schwierige Fälle",
@@ -176,7 +173,12 @@
       "bucket_drill": "Diese {n} Fälle üben",
       "details": "Details",
       "col_right": "Richtig",
-      "runs_only_complete": "Nur vollständige Durchgänge mit Würfel."
+      "runs_only_complete": "Nur vollständige Durchgänge mit Würfel.",
+      "right_of_total": "{right} von {total}",
+      "fig_ao5": "Schnitt (Ao5)",
+      "fig_best": "Beste Zeit",
+      "best_run_nr": "Durchgang {nr} von {total}",
+      "ao12_needs_more": "Ao12 ab 12 Durchgängen"
     },
     "stats_card": {
       "stats_title": "Verlauf:",

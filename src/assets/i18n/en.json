@@ -132,7 +132,6 @@
       "headline_sub_untracked": "{perCase} per case, derived from the page times",
       "pause_share": "{pct}% of the whole session spent recalling",
       "fig_accuracy": "Right first time",
-      "right_first_time_of": "{right} of {total} needed no retry",
       "where_time_went": "Where the time went",
       "split_execution": "Execution",
       "split_pause": "Pause",
@@ -157,7 +156,6 @@
       "runs_none": "This was your first completed run of one page. Do a few more and the comparison shows up here. | This was your first completed run of {pages} pages. Do a few more and the comparison shows up here.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
-      "runs_best": "Best",
       "runs_best_marker": "(best)",
       "col_run": "Run",
       "col_time": "Time",
@@ -166,7 +164,6 @@
       "vs_slower": "{delta} slower than your {against}",
       "vs_same": "right on your {against}",
       "runs_mean": "average",
-      "over_n_runs": "over {n} runs",
       "ao5_needs_more": "from 5 runs on",
       "chart_pause_share": "Flow · share of the time spent recalling",
       "bucket_title": "Difficult cases",
@@ -176,7 +173,12 @@
       "bucket_drill": "Drill these {n} cases",
       "details": "Details",
       "col_right": "Right",
-      "runs_only_complete": "Complete runs with a cube only."
+      "runs_only_complete": "Complete runs with a cube only.",
+      "right_of_total": "{right} of {total}",
+      "fig_ao5": "Average (Ao5)",
+      "fig_best": "Best time",
+      "best_run_nr": "run {nr} of {total}",
+      "ao12_needs_more": "Ao12 from 12 runs on"
     },
     "stats_card": {
       "stats_title": "History:",

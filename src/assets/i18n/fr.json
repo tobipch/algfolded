@@ -132,7 +132,6 @@
       "headline_sub_untracked": "{perCase} par cas, déduit des temps de page",
       "pause_share": "{pct}% de la session passés à se rappeler",
       "fig_accuracy": "Justes du premier coup",
-      "right_first_time_of": "{right} sur {total} sans reprise",
       "where_time_went": "Où est passé le temps",
       "split_execution": "Exécution",
       "split_pause": "Pause",
@@ -157,7 +156,6 @@
       "runs_none": "C'était votre première série complète d'une page. Faites-en quelques-unes de plus et la comparaison apparaîtra ici. | C'était votre première série complète de {pages} pages. Faites-en quelques-unes de plus et la comparaison apparaîtra ici.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
-      "runs_best": "Meilleure",
       "runs_best_marker": "(meilleure)",
       "col_run": "Série",
       "col_time": "Temps",
@@ -166,7 +164,6 @@
       "vs_slower": "{delta} plus lent que votre {against}",
       "vs_same": "pile sur votre {against}",
       "runs_mean": "moyenne",
-      "over_n_runs": "sur {n} séries",
       "ao5_needs_more": "à partir de 5 séries",
       "chart_pause_share": "Flow · part du temps passé à se rappeler",
       "bucket_title": "Cas difficiles",
@@ -176,7 +173,12 @@
       "bucket_drill": "Travailler ces {n} cas",
       "details": "Détails",
       "col_right": "Justes",
-      "runs_only_complete": "Uniquement les séries complètes avec cube."
+      "runs_only_complete": "Uniquement les séries complètes avec cube.",
+      "right_of_total": "{right} sur {total}",
+      "fig_ao5": "Moyenne (Ao5)",
+      "fig_best": "Meilleur temps",
+      "best_run_nr": "série {nr} sur {total}",
+      "ao12_needs_more": "Ao12 à partir de 12 séries"
     },
     "stats_card": {
       "stats_title": "Historique :",
