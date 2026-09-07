@@ -14299,8 +14299,8 @@
   "GOY": {
     "algs": [
       "[D R': [U, R' D R]]",
-      "[x: [D2, L' U L]]",
-      "[U R2 U': [R' U R, D']]"
+      "[U R2 U': [R' U R, D']]",
+      "[x: [D2, L' U L]]"
     ],
     "buffers": {
       "UBR": [
@@ -18032,8 +18032,8 @@
   "GYO": {
     "algs": [
       "[D R': [R' D R, U]]",
-      "[x: [L' U L, D2]]",
-      "[U R2 U': [D', R' U R]]"
+      "[U R2 U': [D', R' U R]]",
+      "[x: [L' U L, D2]]"
     ],
     "buffers": {
       "UBR": [
@@ -18779,8 +18779,8 @@
   },
   "JAD": {
     "algs": [
-      "[R' U' D': [R' D R, U']]",
       "[R' D R U': [R' D' R, U']]",
+      "[R' U' D': [R' D R, U']]",
       "[R' D' R U': [R' D R, U']]",
       "[R' U2 D: [R D R', U']]",
       "[R': [U, L' D2 L]]",
@@ -19474,6 +19474,7 @@
       "[L': [U2, L' D' L]]",
       "[U2 R': [U2, R' D' R]]",
       "[R2 D R' U: [U, R D' R']]",
+      "[R' B' R2 U: [R' D' R, U2]]",
       "[R2 U' D': [R' D' R, U']]",
       "[R': [F2, L' B' L]]"
     ],
@@ -19802,8 +19803,8 @@
       "[l': [R' D R, U2]]",
       "[R D': [R D R', U2]]",
       "[D R U: [R' D R, U2]]",
-      "[R U: [R' D2 R, U2]]",
       "[D' R U: [R' D' R, U2]]",
+      "[R U: [R' D2 R, U2]]",
       "[L' U: [L D L', U2]]",
       "[U R U R' U: [R D' R', U2]]"
     ],
@@ -20398,8 +20399,8 @@
     "algs": [
       "[R2 D': [D', R U' R']]",
       "[U' D R' U: [R U' R', D]]",
-      "[R2: [D', R2 U' R U R2]]",
       "[F R: [U', R D' R']]",
+      "[R2: [D', R2 U' R U R2]]",
       "[D' R U' R': [D, R' U R]]",
       "[D': [R2, U L U']]",
       "[R2 D' R' D R', F]"
@@ -20808,8 +20809,8 @@
       "[R' F R U2 D: [R' D' R, U']]",
       "[R' F' R: [R D2 R', U]]",
       "[R' F R: [U, R D2 R']]",
-      "[L': [U2, R' D2 R]]",
       "[R' F R D': [U, R D' R']]",
+      "[L': [U2, R' D2 R]]",
       "[R' D R2 U': [F, U R' U' R]]",
       "[R F' R' D: [R' D' R, U2]]"
     ],
@@ -20887,11 +20888,11 @@
   },
   "JDG": {
     "algs": [
+      "[R' B' R: [R D R', U']]",
       "[l': [U, R' D2 R]]",
       "[x R': [U, R' D2 R]]",
       "l' U R' D2 R U' R' D2 R2 x'",
       "[R': [F, R' B2 R]]",
-      "[R' B' R: [R D R', U']]",
       "[R' D R U: [U, R' D' R]]",
       "[R D R' U': [R D' R', U2]]",
       "[R' D' R U: [U, R' D R]]",
@@ -20931,8 +20932,8 @@
   },
   "JDH": {
     "algs": [
-      "[R' U D: [R D R', U2]]",
       "[R' D': [U2, R' D R]]",
+      "[R' U D: [R D R', U2]]",
       "[r': [L' D2 L, U2]]",
       "[x L': [L' U2 L, D2]]",
       "[r2: [B2, r U2 r']]",
@@ -20977,8 +20978,8 @@
       "[U R D: [R D' R', U2]]",
       "[F: [U' L' U, R2]]",
       "[R D R' U' D': [R D R', U2]]",
-      "[R' U2: [R, U' R' F R U]]",
       "[U R U D': [R' D' R, U2]]",
+      "[R' U2: [R, U' R' F R U]]",
       "[R D2 R': [R' D R, U2]]",
       "[x U: [R2, U L2 U']]"
     ],
@@ -21086,10 +21087,10 @@
       "[D' R D' R': [R' D R, U2]]",
       "[R' U D R': [U, R' D R]]",
       "[R' U': [U' R U, L2]]",
+      "[R' D' R: [R U2 R', D]]",
       "[R2 D': [B2, D R' D' R]]",
       "[D': [D' R2 U R2 D, R2]]",
       "[R' B R: [D2, R U R']]",
-      "[R' D' R: [R U2 R', D]]",
       "[U' R' B R U: [R' D' R, U2]]",
       "[U2, L2 D' L2 D L2]"
     ],
@@ -21474,6 +21475,7 @@
       "[L': [L' D' L, U2]]",
       "[U2 R': [R' D' R, U2]]",
       "[R2 D R' U: [R D' R', U]]",
+      "[R' B' R2 U': [R' D' R, U2]]",
       "[R2 U2 D': [R' D' R, U]]",
       "[R': [L' B' L, F2]]"
     ],
@@ -22508,8 +22510,8 @@
   },
   "JFP": {
     "algs": [
-      "[R' D': [R' U R, D2]]",
       "[U' R' U': [R D' R', U']]",
+      "[R' D': [R' U R, D2]]",
       "[U R' F R: [R D' R', U']]",
       "[D' R B': [D, R' U' R]]",
       "[D' R' U: [U, R' D' R]]",
@@ -22972,11 +22974,11 @@
   },
   "JGD": {
     "algs": [
+      "[R' B' R: [U', R D R']]",
       "[l': [R' D2 R, U]]",
       "[x R': [R' D2 R, U]]",
       "[R': [R' B2 R, F]]",
       "x R2 D2 R U R' D2 R U' l",
-      "[R' B' R: [U', R D R']]",
       "[R' D R U: [R' D' R, U]]",
       "[R D R' U: [R D' R', U2]]",
       "[R' D' R U: [R' D R, U]]",
@@ -24273,9 +24275,9 @@
       "[U R D: [U2, R D' R']]",
       "[R D R' U D': [R D R', U2]]",
       "[F: [R2, U' L' U]]",
+      "[U R U' D': [R' D' R, U2]]",
       "[R' U' R2 U R, B']",
       "[R' U2: [U' R' F R U, R]]",
-      "[U R U' D': [R' D' R, U2]]",
       "[R D2 R': [U2, R' D R]]",
       "[x U: [U L2 U', R2]]"
     ],
@@ -24581,9 +24583,9 @@
       "[R': [R2 D' R2 D R2, U]]",
       "[R B R' U: [R D R', U2]]",
       "[D: [U R' F R, D' R D R']]",
+      "[R': [R' D R U' R D' R', U]]",
       "[U' D R': [R' D2 R, U2]]",
       "[y' R': [R' D2 R, U2]]",
-      "[R': [R' D R U' R D' R', U]]",
       "[R: [R2 U' R2 U R2, D]]",
       "[U L': [L' D L, U2]]",
       "[F2: [R' U' R, D2]]"
@@ -24796,8 +24798,8 @@
       "[R' F' R U: [R' D' R, U2]]",
       "[R': [D', R2 U R2 U' R2]]",
       "[F', R U R2 U' R']",
-      "[B: [R' D' R, U2]]",
       "[R: [U', R D' R' U R' D R]]",
+      "[B: [R' D' R, U2]]",
       "[D': [D R' D' R, U' R B' R']]",
       "[R: [U', R2 D R2 D' R2]]",
       "[B2: [D2, R U R']]",
@@ -26206,8 +26208,8 @@
     "algs": [
       "[R2 D': [R U' R', D']]",
       "[U' D R' U: [D, R U' R']]",
-      "[U': [R, U R2 D' R2 U']]",
       "[F R: [R D' R', U']]",
+      "[U': [R, U R2 D' R2 U']]",
       "[D' R U' R': [R' U R, D]]",
       "[D': [U L U', R2]]",
       "[F, R2 D' R' D R']",
@@ -26244,10 +26246,10 @@
       "[D' R D' R': [U2, R' D R]]",
       "[R' U D R': [R' D R, U]]",
       "[R' U': [L2, U' R U]]",
+      "[R' D' R: [D, R U2 R']]",
       "[D R F' R' U: [R D R', U2]]",
       "[D': [R2, D' R2 U R2 D]]",
       "[R' B R: [R U R', D2]]",
-      "[R' D' R: [D, R U2 R']]",
       "[U' R' B R U': [R' D' R, U2]]",
       "[L2 D' L2 D L2, U2]"
     ],
@@ -26584,8 +26586,8 @@
     "algs": [
       "[R U' D': [R' U R, D2]]",
       "[U': [R', U R2 D' R2 U']]",
-      "[R U: [D2, R U R']]",
       "[R2 U': [R' U' R, D']]",
+      "[R U: [D2, R U R']]",
       "[D' R: [R' D R U' R D' R', U]]",
       "[L': [L' U L, D2]]",
       "[l' D: [R U R', D2]]"
@@ -26620,6 +26622,7 @@
       "[R U D: [D, R U R']]",
       "[D': [U L2 U', R2]]",
       "[D' R B: [D, R' U R]]",
+      "[D' R U' R': [R' U R, D']]",
       "[x' D': [R' U R, D2]]",
       "[x' U2: [D2, R U R']]"
     ],
@@ -27433,8 +27436,8 @@
       "[R' U' R: [R D' R', U']]",
       "[L2, U' R' U]",
       "[U': [U r2 D', R']]",
-      "[z: [U2, R' D' R]]",
       "[F: [R U R', D2]]",
+      "[z: [U2, R' D' R]]",
       "[F, R D' R D R2]"
     ],
     "buffers": {
@@ -28232,9 +28235,9 @@
       "[f': [R D R', U2]]",
       "[U R U D': [R' D R, U2]]",
       "[R': [U, R2 D' R2 D R2]]",
+      "[R': [U, R' D R U' R D' R']]",
       "[R B R' U': [R D R', U2]]",
       "[D: [D' R D R', U R' F R]]",
-      "[R': [U, R' D R U' R D' R']]",
       "[U' D R': [U2, R' D2 R]]",
       "[y' R': [U2, R' D2 R]]",
       "[R: [D, R2 U' R2 U R2]]",
@@ -28456,9 +28459,11 @@
       "[D', R2 U R2 U' R2]",
       "[F' R U: [R' D' R, U2]]",
       "[R U' R' U' D: [R D' R', U2]]",
+      "[D', R U' R' D R' U R]",
       "[D: [R2, U L2 U']]",
       "[D R U' R': [D', R' U R]]",
       "[y U: [L2, U R2 U']]",
+      "[U' D' R' U R: [R U' R', D]]",
       "[z x' R: [D2, R U2 R']]",
       "[D R B: [R' U R, D]]",
       "[R U' R' D': [R' D' R, U2]]"
@@ -29516,8 +29521,8 @@
     "algs": [
       "[R U' D: [R' U R, D2]]",
       "[R2: [D', R2 U' R' U R2]]",
-      "[R U: [R U R', D2]]",
       "[R2 U': [D', R' U' R]]",
+      "[R U: [R U R', D2]]",
       "[D' R: [U, R' D R U' R D' R']]",
       "[L': [D2, L' U L]]",
       "[l' D': [R U R', D2]]"
@@ -29547,8 +29552,8 @@
     "algs": [
       "[U': [U' L U, R']]",
       "[R' D': [R' U' R, D2]]",
-      "[D' R D': [U, R' D R]]",
       "[D' R D R': [U, R' D' R]]",
+      "[D' R D': [U, R' D R]]",
       "[D R' D: [F', D' R D R']]",
       "[l U D: [R D' R', U2]]",
       "[U R' D': [U2, R D R']]",
@@ -30102,6 +30107,7 @@
       "[D: [R2 U R2 U' R2, D]]",
       "[R U D: [R U R', D]]",
       "[D' R B: [R' U R, D]]",
+      "[D' R U' R': [D', R' U R]]",
       "[x' D: [R' U R, D2]]",
       "[x U: [R' D R, U2]]",
       "[D': [R2, U L2 U']]",
@@ -30315,9 +30321,9 @@
       "[D, R2 U R2 U' R2]",
       "[U' R' F': [R U' R', D']]",
       "[R U' R' D: [R' D' R, U2]]",
+      "[U' R' U R: [D, R U' R']]",
       "[U': [R2, U' L2 U]]",
       "[R U' R' U': [R D2 R', U2]]",
-      "[U' R' U R: [D, R U' R']]",
       "[z R': [D2, R' U2 R]]"
     ],
     "buffers": {
@@ -30970,9 +30976,11 @@
       "[R2 U R2 U' R2, D']",
       "[F' R U': [R' D' R, U2]]",
       "[R U' R' U D: [R D' R', U2]]",
+      "[R U' R' D R' U R, D']",
       "[D: [U L2 U', R2]]",
       "[D R U' R': [R' U R, D']]",
       "[y U: [U R2 U', L2]]",
+      "[U' D' R' U R: [D, R U' R']]",
       "[z x' R: [R U2 R', D2]]",
       "[D R B: [D, R' U R]]",
       "[R U' R' D': [U2, R' D' R]]"
@@ -31075,9 +31083,9 @@
       "[R2 U R2 U' R2, D]",
       "[U' R' F': [D', R U' R']]",
       "[R U' R' D: [U2, R' D' R]]",
+      "[U' R' U R: [R U' R', D]]",
       "[U': [U' L2 U, R2]]",
       "[R U' R' U: [R D2 R', U2]]",
-      "[U' R' U R: [R U' R', D]]",
       "[z R': [R' U2 R, D2]]"
     ],
     "buffers": {
@@ -31185,8 +31193,8 @@
     "algs": [
       "[R: [R' U R U', F]]",
       "[F: [R U R', D]]",
-      "[U L U', R]",
       "[D' R' U': [R U R', D]]",
+      "[U L U', R]",
       "[U' R' U: [D', R U' R']]",
       "[z: [R U R', D]]",
       "[l U: [R U' R', D]]"
@@ -32080,11 +32088,11 @@
       "[R': [R2 U R2 U' R2, D']]",
       "[R U R2 U' R', F']",
       "[B: [U2, R' D' R]]",
+      "[R: [R D' R' U R' D R, U']]",
       "[U D' R: [R D2 R', U2]]",
       "[D': [U' R B' R', D R' D' R]]",
       "[R: [R2 D R2 D' R2, U']]",
       "[B2: [R U R', D2]]",
-      "[R: [R D' R' U R' D R, U']]",
       "[U' l U': [R' D' R, U2]]",
       "[U' L: [L D' L', U2]]",
       "[R' U: [F2, D' R D R']]"
