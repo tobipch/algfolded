@@ -213,8 +213,8 @@ describe('the bucket of cases that keep going wrong', () => {
   // 'a' averages 2s; 'b' has no history at all
   const ema = {a: 2, b: null}
 
-  it('counts a wrong execution twice as heavily as a slow one', () => {
-    expect(troubleDelta(rec('a', {wrong: true, execMs: 500}), 2)).toBe(2)
+  it('weighs a wrong execution far heavier than a slow one', () => {
+    expect(troubleDelta(rec('a', {wrong: true, execMs: 500}), 2)).toBe(3)
     expect(troubleDelta(rec('a', {execMs: 3500}), 2)).toBe(1)   // 1.75x the average
   })
 
@@ -230,21 +230,42 @@ describe('the bucket of cases that keep going wrong', () => {
   it('says nothing about a case it has no average for', () => {
     expect(troubleDelta(rec('b', {execMs: 99000}), null)).toBe(0)
     // ...but a wrong execution is wrong whether or not there is history
-    expect(troubleDelta(rec('b', {wrong: true}), null)).toBe(2)
+    expect(troubleDelta(rec('b', {wrong: true}), null)).toBe(3)
   })
 
-  it('only buckets a case once it has misbehaved repeatedly', () => {
-    let trouble = updateTrouble({}, [rec('a', {wrong: true})], ema, 1)
-    expect(troubleCases(trouble)).toEqual([])          // one bad run is not a pattern
+  it('buckets a case the first time it goes wrong', () => {
+    // The picker draws from the whole selection, so a second failure of the
+    // same case may be hundreds of draws away. Waiting for one means the
+    // bucket never fills.
+    const trouble = updateTrouble({}, [rec('a', {wrong: true})], ema, 1)
+    expect(troubleCases(trouble)).toEqual(['a'])
+  })
+
+  it('needs a case to be slow repeatedly before it counts', () => {
+    let trouble = updateTrouble({}, [rec('a', {execMs: 9000})], ema, 1)
+    expect(troubleCases(trouble)).toEqual([])
     trouble = updateTrouble(trouble, [rec('a', {execMs: 9000})], ema, 2)
-    expect(troubleCases(trouble)).toEqual(['a'])       // wrong + slow = trouble
+    expect(troubleCases(trouble)).toEqual([])
+    trouble = updateTrouble(trouble, [rec('a', {execMs: 9000})], ema, 3)
+    expect(troubleCases(trouble)).toEqual(['a'])
+  })
+
+  it('collects a run with a couple of mistakes in it', () => {
+    // What a real run looks like: five cases, two of them botched.
+    const run = [
+      rec('a', {execMs: 1500}), rec('b', {wrong: true}), rec('c', {execMs: 1500}),
+      rec('d', {wrong: true}), rec('e', {execMs: 1500}),
+    ]
+    const emas = {a: 2, b: 2, c: 2, d: 2, e: 2}
+    expect(troubleCases(updateTrouble({}, run, emas, 1)).sort()).toEqual(['b', 'd'])
   })
 
   it('lets a case work its way out again by being executed well', () => {
-    let trouble = updateTrouble({}, [rec('a', {wrong: true}), rec('a', {wrong: true})], ema, 1)
+    let trouble = updateTrouble({}, [rec('a', {wrong: true})], ema, 1)
     expect(troubleCases(trouble)).toEqual(['a'])
-    for (let i = 0; i < 4; i++) trouble = updateTrouble(trouble, [rec('a', {execMs: 1500})], ema, 2)
-    expect(troubleCases(trouble)).toEqual([])
+    trouble = updateTrouble(trouble, [rec('a', {execMs: 1500})], ema, 2)
+    expect(troubleCases(trouble)).toEqual([])           // out after one clean rep
+    for (let i = 0; i < 3; i++) trouble = updateTrouble(trouble, [rec('a', {execMs: 1500})], ema, 3)
     expect(trouble.a).toBeUndefined()                   // and stops being tracked at all
   })
 
@@ -252,6 +273,9 @@ describe('the bucket of cases that keep going wrong', () => {
     let trouble = {}
     for (let i = 0; i < 10; i++) trouble = updateTrouble(trouble, [rec('a', {wrong: true})], ema, i)
     expect((trouble as Record<string, {strikes: number}>).a.strikes).toBe(5)
+    // ...so five clean repetitions clear even the worst offender
+    for (let i = 0; i < 5; i++) trouble = updateTrouble(trouble, [rec('a', {execMs: 1500})], ema, 20)
+    expect(troubleCases(trouble)).toEqual([])
   })
 
   it('sorts the worst offenders first', () => {

@@ -360,6 +360,6 @@ export const useFlowStore = defineStore('flow', () => {
         start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
         advancePageManually, finish, reset, elapsedMs, currentCaseMs,
         summary, pageSummary, runs, comparableRuns, runStats, runRecorded,
-        trouble, bucket,
+        trouble, bucket, emaSnapshot,
     }
 })

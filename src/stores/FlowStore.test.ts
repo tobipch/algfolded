@@ -331,23 +331,21 @@ describe('the bucket of difficult cases', () => {
     return at
   }
 
-  it('stays empty after a single bad run — one bad run is not a pattern', async () => {
+  it('collects the cases that went wrong in a single run', async () => {
+    // The picker draws from the whole selection, so waiting for a second
+    // failure of the same case means the bucket never fills at all.
     const { flow } = await load()
     flow.start({ pages: 1, tracked: true }, 0)
     badPage(flow, 0)
-    expect(flow.bucket).toEqual([])
-    expect(Object.keys(flow.trouble)).toHaveLength(5)   // ...but it is being watched
+    expect(flow.bucket).toHaveLength(5)
   })
 
-  it('fills once cases keep going wrong, and survives a reload', async () => {
+  it('survives a reload', async () => {
     const { flow } = await load()
     flow.start({ pages: 1, tracked: true }, 0)
-    const t = badPage(flow, 0)
-    flow.start({ pages: 1, tracked: true }, t + 1000)
-    badPage(flow, t + 1000)
-    expect(flow.bucket.length).toBeGreaterThan(0)
+    badPage(flow, 0)
     const stored = JSON.parse(localStorage.getItem('algfolded_flow_trouble:testset')!)
-    expect(Object.keys(stored).length).toBeGreaterThan(0)
+    expect(Object.keys(stored).length).toBe(5)
   })
 
   it('collects a case that is repeatedly much slower than its own average', async () => {
@@ -392,7 +390,7 @@ describe('the bucket of difficult cases', () => {
     flow.completeCurrent(10, 3000)
     flow.finish(4000)                          // the Finish button
     expect(flow.runs).toHaveLength(0)          // not comparable...
-    expect(Object.keys(flow.trouble)).toHaveLength(1)  // ...but the case still misbehaved
+    expect(flow.bucket).toHaveLength(1)        // ...but the case still misbehaved
   })
 
   it('ignores a run nobody measured', async () => {

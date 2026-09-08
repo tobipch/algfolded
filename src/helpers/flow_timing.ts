@@ -298,8 +298,13 @@ export const summarizeRuns = (runs: FlowRun[]): RunStats => {
 // of a run is not a table: it is a short list of cases worth drilling next.
 // Each run adds strikes to the cases that went wrong or came out noticeably
 // slower than the user's own average for them, and takes strikes away from the
-// ones that went clean and quick. A case is only in the bucket once it has
-// misbehaved *repeatedly*, and it leaves again by being executed well.
+// ones that went clean and quick.
+//
+// A wrong execution is enough on its own — you know you had trouble with it,
+// and waiting for a second one never happens: the picker draws from the whole
+// selection, so with a few hundred cases the same one rarely comes back inside
+// a session. Being *slow* is the judgement that needs repeating before it
+// counts. Either way a case leaves again by being executed well.
 
 /** How many strikes a case needs before it counts as trouble. */
 export const TROUBLE_THRESHOLD = 3
@@ -321,7 +326,8 @@ export const troubleDelta = (
     record: CaseRecord,
     ema: number | null | undefined,
 ): number => {
-    if (record.wrong) return 2
+    // straight to the threshold: one wrong execution is already trouble
+    if (record.wrong) return TROUBLE_THRESHOLD
     // Without history there is nothing to be slow against, so a clean
     // execution of an unknown case is neither good nor bad news.
     if (ema == null) return 0

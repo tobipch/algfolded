@@ -6,6 +6,7 @@ import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {msToHumanReadable, msToClock} from "@/helpers/time_formatter";
+import {troubleDelta} from "@/helpers/flow_timing";
 import {useI18n} from "vue-i18n";
 
 // Practice is repetition, so the summary answers the two questions a repetition
@@ -91,13 +92,16 @@ const makeLine = (values, height, padLeft) => {
 const series = computed(() => flow.comparableRuns)
 const hasSeries = computed(() => series.value.length >= 2)
 
-// Pause share is the "flow" reading: less recall, more turning.
-const pauseShare = (r) => {
+// Flow is the share of the run actually spent turning. Stated positively on
+// purpose: the line going up means the practice is getting more fluid, which
+// is the thing worth chasing. Its mirror image, the pause, is right there in
+// the split bar below for anyone who wants it that way round.
+const flowShare = (r) => {
   const total = r.execMs + r.pauseMs + r.recoveryMs
-  return total > 0 ? (r.pauseMs / total) * 100 : 0
+  return total > 0 ? (r.execMs / total) * 100 : 0
 }
-const pauseChart = computed(() => hasSeries.value
-    ? makeLine(series.value.map(pauseShare), 240, 44) : null)
+const flowChart = computed(() => hasSeries.value
+    ? makeLine(series.value.map(flowShare), 240, 44) : null)
 
 const bestAt = computed(() => stats.value.best?.at ?? null)
 const isCurrent = (run) => flow.runRecorded && run.at === flow.endedAt
@@ -105,29 +109,70 @@ const pointClass = (run) => isCurrent(run) ? 'chart-dot-current' : 'chart-dot-qu
 
 // --- hover ----------------------------------------------------------------
 
+// A viewBox plus max-height letterboxes the drawing inside its element, so
+// mapping the pointer by element width alone puts the tooltip beside the mark
+// it belongs to. The SVG's own screen matrix is exact whatever the scaling.
+const svgPointer = (svg, clientX) => {
+  const ctm = svg.getScreenCTM()
+  return ctm ? (clientX - ctm.e) / ctm.a : null
+}
+const svgToBox = (svg, x, y) => {
+  const ctm = svg.getScreenCTM()
+  const rect = svg.getBoundingClientRect()
+  if (!ctm) return {left: 0, top: 0}
+  return {left: x * ctm.a + ctm.e - rect.left, top: y * ctm.d + ctm.f - rect.top}
+}
+
 const chartRef = ref(null)
 const hover = ref(null)
 
 const onChartMove = (e) => {
   const svg = chartRef.value
-  const chart = pauseChart.value
+  const chart = flowChart.value
   if (!svg || !chart) return
-  const rect = svg.getBoundingClientRect()
-  const ratio = (e.clientX - rect.left) / rect.width
-  const xInView = ratio * chart.width
+  const xInView = svgPointer(svg, e.clientX)
+  if (xInView == null) return
   let nearest = chart.points[0]
   for (const pt of chart.points) {
     if (Math.abs(pt.x - xInView) < Math.abs(nearest.x - xInView)) nearest = pt
   }
   const run = series.value[nearest.i]
   hover.value = {
-    left: (nearest.x / chart.width) * rect.width,
-    top: (nearest.y / chart.height) * rect.height,
+    ...svgToBox(svg, nearest.x, nearest.y),
     crosshair: nearest.x,
-    text: `#${nearest.i + 1} · ${Math.round(pauseShare(run))}% · ${fmtTotal(run.ms)}`,
+    text: `#${nearest.i + 1} · ${Math.round(flowShare(run))}% · ${fmtTotal(run.ms)}`,
   }
 }
 const onChartLeave = () => { hover.value = null }
+
+// Hovering a bar names the case and what it cost — the chart is otherwise a
+// shape without labels.
+const caseChartRef = ref(null)
+const caseHover = ref(null)
+
+const onCaseMove = (e) => {
+  const svg = caseChartRef.value
+  const chart = caseChart.value
+  if (!svg || !chart) return
+  const xInView = svgPointer(svg, e.clientX)
+  if (xInView == null) return
+  const centre = (b) => b.x + b.w / 2
+  let nearest = 0
+  for (let i = 1; i < chart.bars.length; i++) {
+    if (Math.abs(centre(chart.bars[i]) - xInView) < Math.abs(centre(chart.bars[nearest]) - xInView)) {
+      nearest = i
+    }
+  }
+  const bar = chart.bars[nearest]
+  const record = flow.records[nearest]
+  caseHover.value = {
+    ...svgToBox(svg, centre(bar), bar.pauseY),
+    label: label(record.key),
+    text: fmt(record.pauseMs + record.execMs),
+    wrong: record.wrong,
+  }
+}
+const onCaseLeave = () => { caseHover.value = null }
 
 // --- the bucket -----------------------------------------------------------
 
@@ -151,8 +196,8 @@ const tab = ref('cases')
 
 const splitTotalMs = computed(() =>
     s.value.execMs + s.value.pauseMs + s.value.recoveryMs + flow.abandonedMs)
-const pausePct = computed(() =>
-    splitTotalMs.value > 0 ? (s.value.pauseMs / splitTotalMs.value) * 100 : 0)
+const flowPct = computed(() =>
+    splitTotalMs.value > 0 ? (s.value.execMs / splitTotalMs.value) * 100 : 0)
 
 const splitParts = computed(() => {
   const total = splitTotalMs.value || 1
@@ -221,6 +266,22 @@ const runRows = computed(() => series.value
     .slice(0, 50))
 const when = (at) => new Date(at).toLocaleString(locale.value, {
   month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+})
+
+// The cases of THIS run that gave trouble: the ones that went wrong, and the
+// ones that came out well off the user's own pace. Same judgement the bucket
+// uses, so the two never contradict each other.
+const struggled = computed(() => {
+  const seen = new Map()
+  for (const r of flow.records) {
+    const delta = troubleDelta(r, flow.emaSnapshot[r.key])
+    if (delta <= 0) continue
+    const entry = seen.get(r.key)
+    if (!entry || delta > entry.delta) {
+      seen.set(r.key, {key: r.key, delta, wrong: r.wrong, execMs: r.execMs})
+    }
+  }
+  return [...seen.values()].sort((a, b) => b.delta - a.delta || b.execMs - a.execMs)
 })
 
 // The best run is worth naming, not just timing: "run 3 of 8" tells you
@@ -323,23 +384,23 @@ const goSelect = () => router.push('select')
            the list for the times themselves -->
       <div v-if="hasSeries" class="row g-3 mb-4">
         <div class="col-12 col-lg-7">
-          <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_pause_share') }}</div>
+          <div class="text-muted text-uppercase small mb-1">{{ $t('flow.chart_flow_share') }}</div>
           <div class="chart-hover-wrap">
-            <svg ref="chartRef" :viewBox="`0 0 ${pauseChart.width} ${pauseChart.height}`"
-                 class="flow-chart" role="img" :aria-label="$t('flow.chart_pause_share')"
+            <svg ref="chartRef" :viewBox="`0 0 ${flowChart.width} ${flowChart.height}`"
+                 class="flow-chart" role="img" :aria-label="$t('flow.chart_flow_share')"
                  @mousemove="onChartMove" @mouseleave="onChartLeave">
-              <line v-for="(g, i) in pauseChart.grid" :key="'g' + i"
-                    :x1="pauseChart.pad.l" :y1="g.y"
-                    :x2="pauseChart.width - pauseChart.pad.r" :y2="g.y" class="chart-grid"/>
-              <text v-for="(g, i) in pauseChart.grid" :key="'t' + i"
-                    :x="pauseChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+              <line v-for="(g, i) in flowChart.grid" :key="'g' + i"
+                    :x1="flowChart.pad.l" :y1="g.y"
+                    :x2="flowChart.width - flowChart.pad.r" :y2="g.y" class="chart-grid"/>
+              <text v-for="(g, i) in flowChart.grid" :key="'t' + i"
+                    :x="flowChart.pad.l - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
                 {{ Math.round(g.v) }}%
               </text>
-              <line v-if="hover" :x1="hover.crosshair" :y1="pauseChart.pad.t"
-                    :x2="hover.crosshair" :y2="pauseChart.height - pauseChart.pad.b"
+              <line v-if="hover" :x1="hover.crosshair" :y1="flowChart.pad.t"
+                    :x2="hover.crosshair" :y2="flowChart.height - flowChart.pad.b"
                     class="chart-crosshair"/>
-              <path :d="pauseChart.path" class="chart-line chart-line-quiet" fill="none"/>
-              <circle v-for="pt in pauseChart.points" :key="pt.i"
+              <path :d="flowChart.path" class="chart-line chart-line-quiet" fill="none"/>
+              <circle v-for="pt in flowChart.points" :key="pt.i"
                       :cx="pt.x" :cy="pt.y" :r="isCurrent(series[pt.i]) ? 6 : 4"
                       :class="pointClass(series[pt.i])"/>
             </svg>
@@ -349,13 +410,13 @@ const goSelect = () => router.push('select')
             </div>
           </div>
           <p class="text-muted small mb-0">
-            {{ fmt(s.pauseMs) }} · {{ $t('flow.pause_share', {pct: Math.round(pausePct)}) }}
+            {{ $t('flow.flow_share', {pct: Math.round(flowPct)}) }}
           </p>
         </div>
 
         <div class="col-12 col-lg-5">
           <div class="text-muted text-uppercase small mb-1">
-            {{ $t('flow.tab_runs') }} ({{ stats.count }})
+            {{ $t('flow.runs_title') }} ({{ stats.count }})
           </div>
           <div class="run-list">
             <table class="table table-sm align-middle mb-0">
@@ -378,147 +439,119 @@ const goSelect = () => router.push('select')
               </tbody>
             </table>
           </div>
-          <p class="text-muted small mb-0 mt-1">{{ $t('flow.runs_only_complete') }}</p>
         </div>
       </div>
 
-      <!-- the cases worth drilling next -->
+      <!-- where the time went, and what each case cost -->
       <div class="mb-4">
-        <div class="text-muted text-uppercase small mb-1">
-          {{ $t('flow.bucket_title') }}<span v-if="flow.bucket.length"> ({{ flow.bucket.length }})</span>
+        <div class="text-muted text-uppercase small mb-2">{{ $t('flow.where_time_went') }}</div>
+        <div class="split-bar mb-2">
+          <div v-for="part in splitParts" :key="part.id"
+               :class="'split-' + part.id"
+               :style="{width: part.pct + '%'}"
+               :title="`${part.label} ${fmt(part.ms)}`"></div>
         </div>
-        <p v-if="flow.bucket.length === 0" class="text-muted small mb-0">
-          {{ $t('flow.bucket_empty') }}
-        </p>
-        <template v-else>
-          <p class="text-muted small mb-2">{{ $t('flow.bucket_intro') }}</p>
+        <div class="small">
+          <span v-for="part in splitParts" :key="part.id" class="me-3">
+            <span class="split-key" :class="'split-' + part.id"></span>
+            {{ part.label }} <strong>{{ Math.round(part.pct) }}%</strong>&nbsp;<span
+              class="text-muted">{{ fmt(part.ms) }}</span>
+          </span>
+        </div>
+      </div>
+
+      <div v-if="caseChart" class="mb-4">
+        <div class="text-muted text-uppercase small mb-2">{{ $t('flow.per_case_chart') }}</div>
+        <div class="chart-hover-wrap">
+          <svg ref="caseChartRef" :viewBox="`0 0 ${caseChart.width} ${caseChart.height}`"
+               class="flow-chart" role="img" :aria-label="$t('flow.per_case_chart')"
+               @mousemove="onCaseMove" @mouseleave="onCaseLeave">
+            <line v-for="(g, i) in caseChart.grid" :key="'g' + i"
+                  :x1="caseChart.padLeft" :y1="g.y"
+                  :x2="caseChart.width - caseChart.padRight" :y2="g.y" class="chart-grid"/>
+            <text v-for="(g, i) in caseChart.grid" :key="'t' + i"
+                  :x="caseChart.padLeft - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
+              {{ g.text }}
+            </text>
+            <line v-for="(x, i) in caseChart.dividers" :key="'d' + i"
+                  :x1="x" y1="14" :x2="x" :y2="caseChart.height - 24" class="chart-divider"/>
+            <g v-for="(b, i) in caseChart.bars" :key="'b' + i">
+              <rect :x="b.x" :y="b.execY" :width="b.w" :height="b.execH"
+                    :class="b.wrong ? 'chart-bar-wrong' : 'chart-bar'"/>
+              <rect :x="b.x" :y="b.pauseY" :width="b.w" :height="b.pauseH"
+                    :class="b.wrong ? 'chart-bar-wrong-pause' : 'chart-bar-pause'"/>
+            </g>
+          </svg>
+          <div v-if="caseHover" class="chart-tooltip"
+               :style="{left: caseHover.left + 'px', top: (caseHover.top - 34) + 'px'}">
+            <strong>{{ caseHover.label }}</strong> {{ caseHover.text }}
+          </div>
+        </div>
+        <p class="text-muted small mb-0">{{ $t('flow.per_case_chart_legend') }}</p>
+
+        <!-- the cases of this run that gave trouble, right under the shape
+             that shows them -->
+        <div v-if="struggled.length" class="mt-3">
+          <div class="text-muted small mb-1">{{ $t('flow.struggled_title') }}</div>
+          <div class="d-flex flex-wrap gap-2">
+            <span v-for="c in struggled" :key="c.key" class="case-chip"
+                  :class="c.wrong ? 'case-chip-wrong' : 'case-chip-slow'">
+              <i class="bi" :class="c.wrong ? 'bi-x-lg' : 'bi-hourglass-split'"></i>
+              {{ label(c.key) }}
+            </span>
+          </div>
+          <div class="text-muted small mt-1">{{ $t('flow.struggled_legend') }}</div>
+        </div>
+      </div>
+
+      <!-- the cases worth drilling next; nothing to show when nothing is due -->
+      <div v-if="flow.bucket.length" class="mb-4">
+        <div class="text-muted text-uppercase small mb-1">
+          {{ $t('flow.bucket_title') }} ({{ flow.bucket.length }})
+        </div>
+        <p class="text-muted small mb-2">{{ $t('flow.bucket_intro') }}</p>
           <div class="d-flex flex-wrap align-items-center gap-2">
             <span v-for="key in bucketShown" :key="key" class="bucket-chip">{{ label(key) }}</span>
             <span v-if="bucketRest" class="text-muted small">
               {{ $t('flow.bucket_more', {n: bucketRest}) }}
             </span>
           </div>
-          <button class="btn btn-warning mt-3" type="button" tabindex="-1"
-                  @keydown.space.prevent="" @click="drillBucket">
-            {{ $t('flow.bucket_drill', {n: flow.bucket.length}) }}
-          </button>
-        </template>
+        <button class="btn btn-warning mt-3" type="button" tabindex="-1"
+                @keydown.space.prevent="" @click="drillBucket">
+          {{ $t('flow.bucket_drill', {n: flow.bucket.length}) }}
+        </button>
       </div>
 
       <details class="flow-details">
         <summary class="text-muted">{{ $t('flow.details') }}</summary>
-        <div class="pt-3">
-          <div class="mb-4">
-            <div class="text-muted text-uppercase small mb-2">{{ $t('flow.where_time_went') }}</div>
-            <div class="split-bar mb-2">
-              <div v-for="part in splitParts" :key="part.id"
-                   :class="'split-' + part.id"
-                   :style="{width: part.pct + '%'}"
-                   :title="`${part.label} ${fmt(part.ms)}`"></div>
-            </div>
-            <div class="small">
-              <span v-for="part in splitParts" :key="part.id" class="me-3">
-                <span class="split-key" :class="'split-' + part.id"></span>
-                {{ part.label }} <strong>{{ Math.round(part.pct) }}%</strong>&nbsp;<span
-                  class="text-muted">{{ fmt(part.ms) }}</span>
-              </span>
-            </div>
-          </div>
-
-          <div v-if="caseChart" class="mb-4">
-            <div class="text-muted text-uppercase small mb-2">{{ $t('flow.per_case_chart') }}</div>
-            <div class="chart-scroll">
-              <svg :viewBox="`0 0 ${caseChart.width} ${caseChart.height}`" class="flow-chart"
-                   role="img" :aria-label="$t('flow.per_case_chart')">
-                <line v-for="(g, i) in caseChart.grid" :key="'g' + i"
-                      :x1="caseChart.padLeft" :y1="g.y" :x2="caseChart.width - caseChart.padRight" :y2="g.y"
-                      class="chart-grid"/>
-                <text v-for="(g, i) in caseChart.grid" :key="'t' + i"
-                      :x="caseChart.padLeft - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
-                  {{ g.text }}
-                </text>
-                <line v-for="(x, i) in caseChart.dividers" :key="'d' + i"
-                      :x1="x" y1="14" :x2="x" :y2="caseChart.height - 24" class="chart-divider"/>
-                <g v-for="(b, i) in caseChart.bars" :key="'b' + i">
-                  <title>{{ b.title }}</title>
-                  <rect :x="b.x" :y="b.execY" :width="b.w" :height="b.execH"
-                        :class="b.wrong ? 'chart-bar-wrong' : 'chart-bar'"/>
-                  <rect :x="b.x" :y="b.pauseY" :width="b.w" :height="b.pauseH"
-                        :class="b.wrong ? 'chart-bar-wrong-pause' : 'chart-bar-pause'"/>
-                </g>
-              </svg>
-            </div>
-            <p class="text-muted small mb-0 text-center">{{ $t('flow.per_case_chart_legend') }}</p>
-          </div>
-
-          <ul class="nav nav-pills gap-1 mb-3">
-            <li class="nav-item">
-              <button type="button" class="nav-link" :class="{active: tab === 'cases'}"
-                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'cases'">
-                {{ $t('flow.tab_cases') }}
-              </button>
-            </li>
-            <li class="nav-item">
-              <button type="button" class="nav-link" :class="{active: tab === 'wrong'}"
-                      tabindex="-1" @keydown.space.prevent="" @click="tab = 'wrong'">
-                {{ $t('flow.tab_wrong') }}<span v-if="s.wrongCases.length"> ({{ s.cases - s.firstTry }})</span>
-              </button>
-            </li>
-          </ul>
-
-          <div v-if="tab === 'cases'" class="table-responsive">
-            <table class="table table-sm align-middle mb-0">
-              <thead>
-              <tr>
-                <th>{{ $t('flow.col_case') }}</th>
-                <th>{{ $t('flow.col_total') }}</th>
-                <th>{{ $t('flow.col_pause') }}</th>
-                <th>{{ $t('flow.col_execution') }}</th>
-                <th>{{ $t('flow.col_tps') }}</th>
-                <th>{{ $t('flow.col_delta') }}</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr v-for="(c, i) in s.perCase" :key="i">
-                <td class="fw-semibold">
-                  {{ label(c.key) }}<span v-if="c.wrong" class="text-danger"> !</span>
-                </td>
-                <td>{{ fmt(c.totalMs) }}</td>
-                <td class="text-muted">{{ fmt(c.pauseMs) }}</td>
-                <td class="text-muted">{{ fmt(c.execMs) }}</td>
-                <td>{{ num(c.tps) }}</td>
-                <td :class="c.deltaMs != null && c.deltaMs > 0 ? 'text-danger' : 'text-muted'">
-                  <template v-if="c.deltaMs == null">-</template>
-                  <template v-else>{{ (c.deltaMs >= 0 ? '+' : '-') + fmt(Math.abs(c.deltaMs)) }}</template>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div v-else>
-            <p v-if="s.wrongCases.length === 0" class="text-muted mb-0">
-              {{ $t('flow.no_mistakes') }}
-            </p>
-            <div v-else class="table-responsive">
-              <table class="table table-sm align-middle mb-0">
-                <thead>
-                <tr>
-                  <th>{{ $t('flow.col_case') }}</th>
-                  <th>{{ $t('flow.col_times_wrong') }}</th>
-                  <th>{{ $t('flow.col_pages') }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="w in s.wrongCases" :key="w.key">
-                  <td class="fw-semibold">{{ label(w.key) }}</td>
-                  <td>{{ w.count }}</td>
-                  <td class="text-muted">{{ w.pages.join(', ') }}</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div class="pt-3 table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+            <tr>
+              <th>{{ $t('flow.col_case') }}</th>
+              <th>{{ $t('flow.col_total') }}</th>
+              <th>{{ $t('flow.col_pause') }}</th>
+              <th>{{ $t('flow.col_execution') }}</th>
+              <th>{{ $t('flow.col_tps') }}</th>
+              <th>{{ $t('flow.col_delta') }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(c, i) in s.perCase" :key="i">
+              <td class="fw-semibold">
+                {{ label(c.key) }}<span v-if="c.wrong" class="text-danger"> !</span>
+              </td>
+              <td>{{ fmt(c.totalMs) }}</td>
+              <td class="text-muted">{{ fmt(c.pauseMs) }}</td>
+              <td class="text-muted">{{ fmt(c.execMs) }}</td>
+              <td>{{ num(c.tps) }}</td>
+              <td :class="c.deltaMs != null && c.deltaMs > 0 ? 'text-danger' : 'text-muted'">
+                <template v-if="c.deltaMs == null">-</template>
+                <template v-else>{{ (c.deltaMs >= 0 ? '+' : '-') + fmt(Math.abs(c.deltaMs)) }}</template>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </details>
     </template>
@@ -675,6 +708,25 @@ const goSelect = () => router.push('select')
   fill: var(--bs-primary);
   stroke: var(--bs-body-bg);
   stroke-width: 2;
+}
+/* this run's problem cases: icon plus label, so the tint is never the only
+   thing carrying the meaning */
+.case-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--bs-border-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.case-chip-wrong {
+  color: var(--bs-danger);
+  border-color: var(--bs-danger);
+}
+.case-chip-slow {
+  color: var(--bs-body-color);
 }
 .bucket-chip {
   display: inline-block;
