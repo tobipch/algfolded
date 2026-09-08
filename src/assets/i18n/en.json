@@ -136,7 +136,6 @@
       "split_pause": "Pause",
       "split_recovery": "Recovery",
       "per_case_chart": "Time per case",
-      "per_case_chart_legend": "One bar per case in the order drilled: pale is the pause before the first turn, solid is the execution. Red bars went wrong. Dashed lines are page boundaries.",
       "col_case": "Case",
       "col_total": "Total",
       "col_pause": "Pause",
@@ -171,9 +170,10 @@
       "ao12_needs_more": "Ao12 from 12 runs on",
       "chart_flow_share": "Flow · share of the time spent turning",
       "flow_share": "{pct}% of the session was turning, the rest recall",
-      "struggled_title": "Gave trouble in this run",
-      "struggled_legend": "Cross: went wrong. Hourglass: well off your own pace for that case.",
-      "runs_title": "Runs"
+      "struggled_title": "Trouble:",
+      "runs_title": "Runs",
+      "struggled_wrong": "went wrong",
+      "struggled_slow": "well off your own pace for this case"
     },
     "stats_card": {
       "stats_title": "History:",

@@ -136,7 +136,6 @@
       "split_pause": "Pausa",
       "split_recovery": "Recupero",
       "per_case_chart": "Tempo per caso",
-      "per_case_chart_legend": "Una barra per caso nell'ordine allenato: in chiaro la pausa prima della prima mossa, in pieno l'esecuzione. Le barre rosse sono andate male. Le linee tratteggiate segnano le pagine.",
       "col_case": "Caso",
       "col_total": "Totale",
       "col_pause": "Pausa",
@@ -171,9 +170,10 @@
       "ao12_needs_more": "Ao12 da 12 serie in poi",
       "chart_flow_share": "Flow · quota di tempo in esecuzione",
       "flow_share": "{pct}% della sessione in esecuzione, il resto a ricordare",
-      "struggled_title": "Difficoltà in questa serie",
-      "struggled_legend": "Croce: andato male. Clessidra: ben sotto il tuo ritmo per quel caso.",
-      "runs_title": "Serie"
+      "struggled_title": "Difficoltà:",
+      "runs_title": "Serie",
+      "struggled_wrong": "andato male",
+      "struggled_slow": "ben sotto il tuo ritmo per questo caso"
     },
     "stats_card": {
       "stats_title": "Cronologia:",

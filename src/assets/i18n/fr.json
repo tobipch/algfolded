@@ -136,7 +136,6 @@
       "split_pause": "Pause",
       "split_recovery": "Reprise",
       "per_case_chart": "Temps par cas",
-      "per_case_chart_legend": "Une barre par cas dans l'ordre travaillé : en clair la pause avant le premier mouvement, en plein l'exécution. Les barres rouges ont échoué. Les traits pointillés marquent les pages.",
       "col_case": "Cas",
       "col_total": "Total",
       "col_pause": "Pause",
@@ -171,9 +170,10 @@
       "ao12_needs_more": "Ao12 à partir de 12 séries",
       "chart_flow_share": "Flow · part du temps en exécution",
       "flow_share": "{pct}% de la session en exécution, le reste à se rappeler",
-      "struggled_title": "Difficultés dans cette série",
-      "struggled_legend": "Croix : échoué. Sablier : nettement sous votre rythme pour ce cas.",
-      "runs_title": "Séries"
+      "struggled_title": "Difficultés :",
+      "runs_title": "Séries",
+      "struggled_wrong": "échoué",
+      "struggled_slow": "nettement sous votre rythme pour ce cas"
     },
     "stats_card": {
       "stats_title": "Historique :",

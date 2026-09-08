@@ -139,6 +139,13 @@ const onKeyDown = (e) => {
     if (currentKey.value) showHint.value = !showHint.value
     return
   }
+  // On the summary, Enter is "again" — the whole point of flow is repetition,
+  // and reaching for the mouse between runs breaks it.
+  if (e.key === "Enter" && flow.finished) {
+    e.preventDefault()
+    if (!e.repeat) beginRun()
+    return
+  }
   if (e.key !== " " || flow.finished) return
   e.preventDefault()
   if (e.repeat) return

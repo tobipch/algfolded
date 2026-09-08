@@ -487,29 +487,24 @@ const goSelect = () => router.push('select')
             <strong>{{ caseHover.label }}</strong> {{ caseHover.text }}
           </div>
         </div>
-        <p class="text-muted small mb-0">{{ $t('flow.per_case_chart_legend') }}</p>
-
         <!-- the cases of this run that gave trouble, right under the shape
              that shows them -->
-        <div v-if="struggled.length" class="mt-3">
-          <div class="text-muted small mb-1">{{ $t('flow.struggled_title') }}</div>
-          <div class="d-flex flex-wrap gap-2">
-            <span v-for="c in struggled" :key="c.key" class="case-chip"
-                  :class="c.wrong ? 'case-chip-wrong' : 'case-chip-slow'">
-              <i class="bi" :class="c.wrong ? 'bi-x-lg' : 'bi-hourglass-split'"></i>
-              {{ label(c.key) }}
-            </span>
-          </div>
-          <div class="text-muted small mt-1">{{ $t('flow.struggled_legend') }}</div>
+        <div v-if="struggled.length" class="mt-3 d-flex flex-wrap align-items-center gap-2">
+          <span class="text-muted small me-1">{{ $t('flow.struggled_title') }}</span>
+          <span v-for="c in struggled" :key="c.key" class="case-chip"
+                :class="c.wrong ? 'case-chip-wrong' : 'case-chip-slow'"
+                :title="$t(c.wrong ? 'flow.struggled_wrong' : 'flow.struggled_slow')">
+            <i class="bi" :class="c.wrong ? 'bi-x-lg' : 'bi-hourglass-split'"></i>
+            {{ label(c.key) }}
+          </span>
         </div>
       </div>
 
       <!-- the cases worth drilling next; nothing to show when nothing is due -->
       <div v-if="flow.bucket.length" class="mb-4">
-        <div class="text-muted text-uppercase small mb-1">
+        <div class="text-muted text-uppercase small mb-2" :title="$t('flow.bucket_intro')">
           {{ $t('flow.bucket_title') }} ({{ flow.bucket.length }})
         </div>
-        <p class="text-muted small mb-2">{{ $t('flow.bucket_intro') }}</p>
           <div class="d-flex flex-wrap align-items-center gap-2">
             <span v-for="key in bucketShown" :key="key" class="bucket-chip">{{ label(key) }}</span>
             <span v-if="bucketRest" class="text-muted small">

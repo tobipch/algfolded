@@ -136,7 +136,6 @@
       "split_pause": "Pause",
       "split_recovery": "Korrektur",
       "per_case_chart": "Zeit pro Fall",
-      "per_case_chart_legend": "Ein Balken pro Fall in der geübten Reihenfolge: hell die Pause vor dem ersten Zug, kräftig die Ausführung. Rote Balken gingen daneben. Gestrichelte Linien sind Seitengrenzen.",
       "col_case": "Fall",
       "col_total": "Gesamt",
       "col_pause": "Pause",
@@ -171,9 +170,10 @@
       "ao12_needs_more": "Ao12 ab 12 Durchgängen",
       "chart_flow_share": "Flow · Anteil der Zeit in Ausführung",
       "flow_share": "{pct}% der Session war Ausführung, der Rest Erinnern",
-      "struggled_title": "Mühe gehabt in diesem Durchgang",
-      "struggled_legend": "Kreuz: danebengegangen. Sanduhr: deutlich unter deinem Tempo für diesen Fall.",
-      "runs_title": "Durchgänge"
+      "struggled_title": "Mühe gehabt:",
+      "runs_title": "Durchgänge",
+      "struggled_wrong": "danebengegangen",
+      "struggled_slow": "deutlich unter deinem Tempo für diesen Fall"
     },
     "stats_card": {
       "stats_title": "Verlauf:",
