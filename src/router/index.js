@@ -21,6 +21,11 @@ const router = createRouter({
       redirect: '/select',
     },
     {
+      path: '/flow',
+      name: 'flow',
+      component: () => import("@/views/FlowView.vue")
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import("@/views/AboutView.vue")

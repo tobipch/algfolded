@@ -99,7 +99,7 @@ const openSettings = () => router.push({name: 'settings', query: {from: route.na
 const closeSettings = () => router.push({name: route.query.from === 'timer' ? 'timer' : 'select'})
 const statsBtnClass = computed(() => isStatsView.value ? 'btn-info' : 'btn-outline-info')
 const tinySelectBtnText = computed(() => {
-  return isTimerView && session.store.recapMode
+  return isTimerView && session.store.mode === 'recap'
       ? (session.casesWithZeroCount.length + '/' + selected.totalCasesSelected())
       : selected.totalCasesSelected()
 })
@@ -156,7 +156,7 @@ onUnmounted(() => {
         <span class="mx-2 d-none d-sm-inline-block">
           {{ $t("nav.n_cases", selected.totalCasesSelected()) }}
         </span>
-        <span class="mx-2 d-none d-sm-inline-block" v-if="isTimerView && session.store.recapMode">
+        <span class="mx-2 d-none d-sm-inline-block" v-if="isTimerView && session.store.mode === 'recap'">
           {{ $t("nav.n_to_recap", session.casesWithZeroCount.length) }}
         </span>
       </div>

@@ -26,7 +26,8 @@ const makeDefaultStore = () => ({
     // array of keys selected
     "keys": [],
 
-    "recapMode": false,
+    // 'practice' | 'recap' | 'flow' — how the next "start" runs
+    "mode": "practice",
 
     // map key => count
     "keysCount": {},
@@ -56,11 +57,18 @@ migrateToNamespaced(storeKey, LEGACY_ALGSET_ID, isFlatSession)
 migrateToNamespaced(srsKey, LEGACY_ALGSET_ID, isFlatSrs)
 migrateToNamespaced(srsCounterKey, LEGACY_ALGSET_ID, isFlatNumber)
 
+export const MODES = ['practice', 'recap', 'flow']
+
 // Read a set's run slot, defaulting to an empty run and guarding old shapes.
 const loadStore = (id) => {
     const s = readNamespaced(storeKey, id, makeDefaultStore())
     if (!Array.isArray(s.upcoming)) s.upcoming = [] // pre-lookahead persisted runs
     if (!Array.isArray(s.stats)) s.stats = []
+    // Modes used to be a single boolean. A run stored before flow existed
+    // carries `recapMode` instead of `mode`, and must come back as the mode it
+    // was left in.
+    if (!MODES.includes(s.mode)) s.mode = s.recapMode === true ? 'recap' : 'practice'
+    delete s.recapMode
     return s
 }
 
@@ -139,7 +147,7 @@ export const useSessionStore = defineStore('session', () => {
     // Returns null only when no admissible key exists (recap exhausted).
     const chooseKey = (avoid = new Set()) => {
         if (store.keys.length === 0) return null
-        if (store.recapMode) {
+        if (store.mode === 'recap') {
             const zero = casesWithZeroCount.value
             const pool = zero.filter(k => !avoid.has(k))
             return pool.length > 0 ? random_element(pool) : null
@@ -204,15 +212,15 @@ export const useSessionStore = defineStore('session', () => {
             return
         }
         // Recap finished: drop the queue chosen under recap constraints.
-        if (store.recapMode && casesWithZeroCount.value.length === 0) {
-            store.recapMode = false
+        if (store.mode === 'recap' && casesWithZeroCount.value.length === 0) {
+            store.mode = 'practice'
             store.upcoming = []
         }
         let next = store.upcoming.shift()
         if (!next) {
             next = commitCase(reservedKeys())
             if (!next) { // recap exhausted with an empty queue
-                store.recapMode = false
+                store.mode = 'practice'
                 next = commitCase(reservedKeys())
             }
         }
@@ -240,7 +248,7 @@ export const useSessionStore = defineStore('session', () => {
             else refillUpcoming() // ensure the preview queue is populated after a reload
             return
         }
-        store.recapMode = false
+        if (store.mode === 'recap') store.mode = 'practice'
         store.keys = keys
         recentCases.value = []
         store.upcoming = []
@@ -340,50 +348,69 @@ export const useSessionStore = defineStore('session', () => {
         return algUsed
     }
 
+    // Book one completed case: the session stats entry, the recap count, the
+    // cloud queue, the "didn't know" flag and the SRS average. Deliberately
+    // knows nothing about *which* case comes next or about the timer state
+    // machine — flow mode records solves too, and drives its own advancing.
+    //
+    // `extra` is merged into the local stats entry only. The solves API
+    // normalises `source` to "smartcube" or "timer", so a mode is marked here
+    // and never in the payload.
+    const recordSolve = ({key, ms, scramble = null, extra = null}) => {
+        if (key == null) return null
+        if (!sessionStartedAt.value) sessionStartedAt.value = Date.now()
+        const index = store.stats.length
+        const clientId = makeClientId()
+        const bt = useBluetoothCubeStore()
+        const algUsed = detectExecutedAlg(key)
+
+        store.stats.push({
+            "i": index,
+            "key": key,
+            "scramble": scramble,
+            "ms": ms,
+            "clientId": clientId,
+            ...(extra || {})
+        })
+        store.keysCount[key] = (store.keysCount[key] || 0) + 1;
+
+        // Persist the solve to the account database (queued while offline).
+        useSolveSyncStore().enqueue({
+            clientId,
+            algset: algset.activeId,
+            caseKey: key,
+            ms,
+            scramble,
+            algUsed,
+            source: bt.connected ? 'smartcube' : 'timer',
+            solvedAt: new Date().toISOString(),
+        })
+
+        // Clear "Didn't know" flag so it can be re-applied next time
+        delete didntKnowMap[key]
+
+        // Update SRS data
+        srsCounter.value++
+        const old = srsData[key] || { a: null, n: 0, s: 0 }
+        srsData[key] = {
+            a: updateEma(old.a, ms / 1000),
+            n: old.n + 1,
+            s: srsCounter.value
+        }
+        writeNamespaced(srsKey, algset.activeId, srsData)
+        writeNamespaced(srsCounterKey, algset.activeId, srsCounter.value)
+        return {index, clientId, algUsed}
+    }
+
     const stopTimer = () => {
         const index = store.stats.length
         if (!sessionStartedAt.value) sessionStartedAt.value = Date.now()
         if (store.currentKey !== null) {
-            const key = store.currentKey
-            const ms = Date.now() - timerStarted.value
-            const clientId = makeClientId()
-            const bt = useBluetoothCubeStore()
-            const algUsed = detectExecutedAlg(key)
-
-            store.stats.push({
-                "i": index,
-                "key": key,
-                "scramble": currentScramble.value,
-                "ms": ms,
-                "clientId": clientId
-            })
-            store.keysCount[key]++;
-
-            // Persist the solve to the account database (queued while offline).
-            useSolveSyncStore().enqueue({
-                clientId,
-                algset: algset.activeId,
-                caseKey: key,
-                ms,
+            recordSolve({
+                key: store.currentKey,
+                ms: Date.now() - timerStarted.value,
                 scramble: currentScramble.value,
-                algUsed,
-                source: bt.connected ? 'smartcube' : 'timer',
-                solvedAt: new Date().toISOString(),
             })
-
-            // Clear "Didn't know" flag so it can be re-applied next time
-            delete didntKnowMap[key]
-
-            // Update SRS data
-            srsCounter.value++
-            const old = srsData[key] || { a: null, n: 0, s: 0 }
-            srsData[key] = {
-                a: updateEma(old.a, ms / 1000),
-                n: old.n + 1,
-                s: srsCounter.value
-            }
-            writeNamespaced(srsKey, algset.activeId, srsData)
-            writeNamespaced(srsCounterKey, algset.activeId, srsCounter.value)
         }
         setRandomCase()
         timerState.value = TimerState.STOPPING;
@@ -414,7 +441,7 @@ export const useSessionStore = defineStore('session', () => {
 
     const startRecap = () => {
         resetKeysCount()
-        store.recapMode = true
+        store.mode = 'recap'
         store.upcoming = [] // drop non-recap picks so the queue reflects recap order
         setRandomCase()
     }
@@ -444,6 +471,6 @@ export const useSessionStore = defineStore('session', () => {
     return { store, srsData, didntKnowMap, sessionStartedAt, clearSession, setSelectedKeys, stats, deleteResult,
         observingResult, timerStarted, timerState, getTimerReady, startTimer, stopTimer,
         startRecap, currentScramble, casesWithZeroCount, flagDidntKnow, unflagDidntKnow,
-        untimedCount, lastPracticed, advanceCase
+        untimedCount, lastPracticed, advanceCase, recordSolve, commitCase
     }
 });

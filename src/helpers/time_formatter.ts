@@ -20,3 +20,21 @@ export const msToHumanReadable = (ms: number, numDigitsMs = 2, displayMs = true)
 
   return `${hoursString}${minutesString}${secondsString}${millisecondsString}`;
 }
+
+// A wall clock for a whole session. Units that are zero are left off, so under
+// a minute it reads "34.14" rather than "0:34.14"; a minute in, "1:02.45".
+// `hundredths` appends the fraction where the exact total matters.
+export const msToClock = (ms: number, hundredths = false): string => {
+  if (!Number.isFinite(ms) || ms < 0) {
+    ms = 0
+  }
+  const total = Math.floor(ms / 1000)
+  const seconds = total % 60
+  const minutes = Math.floor(total / 60) % 60
+  const hours = Math.floor(total / 3600)
+  const pad = (num: number): string => (num < 10 ? "0" : "") + num
+  const fraction = hundredths ? `.${pad(Math.floor((ms % 1000) / 10))}` : ""
+  if (hours > 0) return `${hours}:${pad(minutes)}:${pad(seconds)}${fraction}`
+  if (minutes > 0) return `${minutes}:${pad(seconds)}${fraction}`
+  return `${seconds}${fraction}`
+}

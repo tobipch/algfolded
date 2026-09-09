@@ -11,7 +11,7 @@ import { useThemeStore } from '@/stores/ThemeStore'
 import { useLetterSchemeStore } from '@/stores/LetterSchemeStore'
 import { useBluetoothCubeStore } from '@/stores/BluetoothCubeStore'
 import { useDisplayStore } from '@/stores/DisplayStore'
-import { supportedLocales, setLocaleAndReload } from '@/locale'
+import { supportedLocales, setLocale } from '@/locale'
 
 // Reactive, context-aware list of palette commands. Each command is
 // { id, section, title, icon?, keywords?, active?, run() }; the palette closes
@@ -55,9 +55,11 @@ export const useCommands = () => {
     if (selected.totalCasesSelected() > 0) {
       cmds.push(
         { id: 'practice.start', section: S.practice, icon: 'bi-play-fill', title: t('cmd.start_practice'),
-          run: () => { session.store.recapMode = false; router.push('timer') } },
+          run: () => { session.store.mode = 'practice'; router.push('timer') } },
         { id: 'practice.recap', section: S.practice, icon: 'bi-arrow-repeat', title: t('cmd.recap'),
           run: () => { session.startRecap(); router.push('timer') } },
+        { id: 'practice.flow', section: S.practice, icon: 'bi-lightning-charge', title: t('cmd.flow'),
+          run: () => { session.store.mode = 'flow'; router.push('flow') } },
       )
     }
 
@@ -107,7 +109,7 @@ export const useCommands = () => {
       cmds.push({
         id: `lang.${loc.code}`, section: S.settings, icon: 'bi-translate',
         title: t('cmd.set_lang', { lang: loc.name }), keywords: `${loc.name} ${loc.code}`,
-        run: () => setLocaleAndReload(loc.code),
+        run: () => setLocale(loc.code),
       })
     }
 

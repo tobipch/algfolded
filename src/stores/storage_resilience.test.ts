@@ -64,6 +64,40 @@ describe('stores survive corrupt localStorage', () => {
     expect(s.store.keys).toEqual([])
   })
 
+  it('SessionStore reads a pre-flow run as the mode it was left in', async () => {
+    // Modes used to be a boolean. A run stored before flow existed must come
+    // back as 'recap', not silently drop the user's half-finished recap.
+    localStorage.setItem('ltct_store:commCorner', JSON.stringify({
+      keys: ['k1'], recapMode: true, keysCount: {k1: 0}, currentKey: null,
+      currentScramble: null, upcoming: [], stats: [],
+    }))
+    const { useSessionStore } = await import('@/stores/SessionStore')
+    const s = useSessionStore()
+    expect(s.store.mode).toBe('recap')
+    expect('recapMode' in s.store).toBe(false)
+  })
+
+  it('SessionStore reads a pre-flow run without recap as practice', async () => {
+    localStorage.setItem('ltct_store:commCorner', JSON.stringify({
+      keys: [], recapMode: false, keysCount: {}, currentKey: null,
+      currentScramble: null, upcoming: [], stats: [],
+    }))
+    const { useSessionStore } = await import('@/stores/SessionStore')
+    expect(useSessionStore().store.mode).toBe('practice')
+  })
+
+  it('SessionStore keeps a stored mode and repairs a nonsense one', async () => {
+    for (const [stored, expected] of [['flow', 'flow'], ['nonsense', 'practice'], [7, 'practice']] as const) {
+      vi.resetModules(); localStorage.clear(); freshPinia()
+      localStorage.setItem('ltct_store:commCorner', JSON.stringify({
+        keys: [], mode: stored, keysCount: {}, currentKey: null,
+        currentScramble: null, upcoming: [], stats: [],
+      }))
+      const { useSessionStore } = await import('@/stores/SessionStore')
+      expect(useSessionStore().store.mode).toBe(expected)
+    }
+  })
+
   it('SelectedStore comes up with an empty selection', async () => {
     localStorage.setItem('currentLtctArray:commCorner', 'nope')
     const { useSelectedStore } = await import('@/stores/SelectedStore')

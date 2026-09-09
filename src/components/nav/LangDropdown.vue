@@ -1,6 +1,6 @@
 <script setup>
 
-import {setLocaleAndReload, supportedLocales} from "@/locale"
+import {setLocale, supportedLocales} from "@/locale"
 
 </script>
 
@@ -18,7 +18,7 @@ import {setLocaleAndReload, supportedLocales} from "@/locale"
     </button>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLang">
       <li v-for="locale in supportedLocales" :key="locale.code">
-        <a class="dropdown-item clickable d-flex align-items-center gap-2" @click="setLocaleAndReload(locale.code)">
+        <a class="dropdown-item clickable d-flex align-items-center gap-2" @click="setLocale(locale.code)">
           <img :src="locale.flag" :alt="locale.code" class="lang-flag">
           {{locale.name}}
         </a>
