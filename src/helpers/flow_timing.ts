@@ -16,7 +16,7 @@
  * the per-case EMA. Pause and recovery are session data.
  */
 
-import {aoN} from '@/helpers/srs'
+import {aoN, bestAoN} from '@/helpers/srs'
 
 export const CASES_PER_PAGE = 5
 
@@ -272,6 +272,9 @@ export interface RunStats {
     /** WCA-style averages of the most recent 5 / 12 runs, best and worst dropped */
     ao5: number | null
     ao12: number | null
+    /** the fastest Ao5 / Ao12 the series ever had, not just the current one */
+    bestAo5: number | null
+    bestAo12: number | null
     best: FlowRun | null
     mean: number | null
 }
@@ -287,6 +290,8 @@ export const summarizeRuns = (runs: FlowRun[]): RunStats => {
         count: runs.length,
         ao5: aoN(times, 5),
         ao12: aoN(times, 12),
+        bestAo5: bestAoN(times, 5),
+        bestAo12: bestAoN(times, 12),
         best: runs.length > 0 ? runs.reduce((b, r) => (r.ms < b.ms ? r : b)) : null,
         mean: times.length > 0 ? times.reduce((t, ms) => t + ms, 0) / times.length : null,
     }

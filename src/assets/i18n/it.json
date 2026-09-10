@@ -150,6 +150,7 @@
       "runs_none": "Questa è stata la tua prima serie completa di una pagina. Falne qualcuna in più e qui comparirà il confronto. | Questa è stata la tua prima serie completa di {pages} pagine. Falne qualcuna in più e qui comparirà il confronto.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
+      "runs_best_ao": "migliore: {values}",
       "runs_best_marker": "(migliore)",
       "col_run": "Serie",
       "col_time": "Tempo",

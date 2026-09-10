@@ -150,6 +150,7 @@
       "runs_none": "Das war dein erster vollständiger Durchgang mit einer Seite. Mach ein paar mehr, dann erscheint hier der Vergleich. | Das war dein erster vollständiger Durchgang mit {pages} Seiten. Mach ein paar mehr, dann erscheint hier der Vergleich.",
       "runs_ao5": "Ao5",
       "runs_ao12": "Ao12",
+      "runs_best_ao": "Bestwert: {values}",
       "runs_best_marker": "(bester)",
       "col_run": "Durchgang",
       "col_time": "Zeit",

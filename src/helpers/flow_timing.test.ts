@@ -201,8 +201,38 @@ describe('comparing runs with each other', () => {
     expect(summarizeRuns(runs).best!.ms).toBe(9000)
   })
 
+  it('keeps the fastest Ao5 the series ever had, not just the current one', () => {
+    // the fast window sits in the middle: runs 2..6 average 20s once best and
+    // worst are dropped, while the last five are far slower
+    const runs = [90000, 10000, 20000, 20000, 20000, 30000, 80000, 85000, 95000]
+        .map((ms) => run(ms))
+    const s = summarizeRuns(runs)
+    expect(s.bestAo5).toBe(20000)
+    expect(s.ao5).toBeGreaterThan(s.bestAo5!)
+  })
+
+  it('has no best Ao5 before five runs, and no best Ao12 before twelve', () => {
+    const four = Array.from({length: 4}, (_, i) => run((i + 1) * 1000))
+    expect(summarizeRuns(four).bestAo5).toBeNull()
+    const five = [...four, run(5000)]
+    expect(summarizeRuns(five).bestAo5).not.toBeNull()
+
+    const eleven = Array.from({length: 11}, (_, i) => run((i + 1) * 1000))
+    expect(summarizeRuns(eleven).bestAo12).toBeNull()
+    expect(summarizeRuns([...eleven, run(12000)]).bestAo12).not.toBeNull()
+  })
+
+  it('reports the current Ao5 as the best one when the series only just got there', () => {
+    const runs = [50000, 40000, 30000, 20000, 10000].map((ms) => run(ms))
+    const s = summarizeRuns(runs)
+    expect(s.bestAo5).toBe(s.ao5)
+  })
+
   it('survives an empty history', () => {
-    expect(summarizeRuns([])).toEqual({count: 0, ao5: null, ao12: null, best: null, mean: null})
+    expect(summarizeRuns([])).toEqual({
+      count: 0, ao5: null, ao12: null, bestAo5: null, bestAo12: null,
+      best: null, mean: null,
+    })
   })
 })
 
