@@ -5,6 +5,8 @@
       "select_btn": "select",
       "n_cases": "no cases selected | one case selected | {count} cases selected",
       "n_to_recap": "{count} to recap",
+      "recap_again": "Recap again",
+      "recap_again_title": "Recap the selected cases from the start",
       "language": "Language",
       "settings": "Settings",
       "toggle_night_mode": "Toggle night mode",

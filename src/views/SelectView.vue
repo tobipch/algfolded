@@ -5,9 +5,14 @@ import AlgsetPicker from "@/components/select_view/AlgsetPicker.vue";
 import SelectToolbar from "@/components/select_view/SelectToolbar.vue";
 import {useRouter} from "vue-router";
 import {onMounted} from "vue";
+import {useSessionStore} from "@/stores/SessionStore";
 
 const router = useRouter();
+const session = useSessionStore();
 onMounted(() => {
+  // Back on the selection screen the finished recap is history: the "recap
+  // again" offer in the navbar goes away until the next recap runs out.
+  session.clearRecapDone()
   window.addEventListener('keydown', event => {
     if (event.key === "t" && event.altKey) {
       event.preventDefault()

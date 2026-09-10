@@ -5,6 +5,8 @@
       "select_btn": "sélectionner",
       "n_cases": "aucun cas sélectionné | un cas sélectionné | {count} cas sélectionnés",
       "n_to_recap": "{count} à réviser",
+      "recap_again": "Revoir encore",
+      "recap_again_title": "Revoir les cas sélectionnés depuis le début",
       "language": "Langue",
       "settings": "Paramètres",
       "toggle_night_mode": "Basculer en mode nuit",

@@ -5,6 +5,8 @@
       "select_btn": "auswählen",
       "n_cases": "keine Fälle ausgewählt | ein Fall ausgewählt | {count} Fälle ausgewählt",
       "n_to_recap": "{count} zum Wiederholen",
+      "recap_again": "Recap-Again",
+      "recap_again_title": "Die ausgewählten Fälle wieder von vorne recapen",
       "language": "Sprache",
       "settings": "Einstellungen",
       "toggle_night_mode": "Nachtmodus umschalten",

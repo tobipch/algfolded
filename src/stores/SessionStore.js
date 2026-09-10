@@ -29,6 +29,11 @@ const makeDefaultStore = () => ({
     // 'practice' | 'recap' | 'flow' — how the next "start" runs
     "mode": "practice",
 
+    // true once a recap ran out of cases: every selected case has been seen,
+    // so the trainer offers to recap the same selection again. Stays set until
+    // a new recap starts or the user goes back to the selection screen.
+    "recapDone": false,
+
     // map key => count
     "keysCount": {},
 
@@ -69,6 +74,7 @@ const loadStore = (id) => {
     // was left in.
     if (!MODES.includes(s.mode)) s.mode = s.recapMode === true ? 'recap' : 'practice'
     delete s.recapMode
+    if (typeof s.recapDone !== 'boolean') s.recapDone = false // pre-recap-again runs
     return s
 }
 
@@ -214,12 +220,14 @@ export const useSessionStore = defineStore('session', () => {
         // Recap finished: drop the queue chosen under recap constraints.
         if (store.mode === 'recap' && casesWithZeroCount.value.length === 0) {
             store.mode = 'practice'
+            store.recapDone = true
             store.upcoming = []
         }
         let next = store.upcoming.shift()
         if (!next) {
             next = commitCase(reservedKeys())
             if (!next) { // recap exhausted with an empty queue
+                if (store.mode === 'recap') store.recapDone = true
                 store.mode = 'practice'
                 next = commitCase(reservedKeys())
             }
@@ -249,6 +257,7 @@ export const useSessionStore = defineStore('session', () => {
             return
         }
         if (store.mode === 'recap') store.mode = 'practice'
+        store.recapDone = false // a different selection is a different recap
         store.keys = keys
         recentCases.value = []
         store.upcoming = []
@@ -442,6 +451,7 @@ export const useSessionStore = defineStore('session', () => {
     const startRecap = () => {
         resetKeysCount()
         store.mode = 'recap'
+        store.recapDone = false
         store.upcoming = [] // drop non-recap picks so the queue reflects recap order
         setRandomCase()
     }
@@ -465,12 +475,16 @@ export const useSessionStore = defineStore('session', () => {
         }
     }
 
+    // The "recap again" offer is dismissed by returning to the selection
+    // screen — the only place the recap's scope can change.
+    const clearRecapDone = () => { store.recapDone = false }
+
     // may be undefined
     const currentScramble = computed(() => store.currentScramble)
 
     return { store, srsData, didntKnowMap, sessionStartedAt, clearSession, setSelectedKeys, stats, deleteResult,
         observingResult, timerStarted, timerState, getTimerReady, startTimer, stopTimer,
-        startRecap, currentScramble, casesWithZeroCount, flagDidntKnow, unflagDidntKnow,
+        startRecap, clearRecapDone, currentScramble, casesWithZeroCount, flagDidntKnow, unflagDidntKnow,
         untimedCount, lastPracticed, advanceCase, recordSolve, commitCase
     }
 });

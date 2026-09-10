@@ -5,6 +5,8 @@
       "select_btn": "seleziona",
       "n_cases": "nessun caso selezionato | un caso selezionato | {count} casi selezionati",
       "n_to_recap": "{count} da ripassare",
+      "recap_again": "Ripassa ancora",
+      "recap_again_title": "Ripassa i casi selezionati dall'inizio",
       "language": "Lingua",
       "settings": "Impostazioni",
       "toggle_night_mode": "Attiva modalità notturna",
