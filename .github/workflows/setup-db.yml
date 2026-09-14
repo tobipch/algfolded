@@ -1,5 +1,8 @@
 # Creates (or upgrades) the Algfolded tables on the Hostpoint MariaDB.
-# Run it manually from the Actions tab whenever the schema changes.
+# Runs by itself whenever scripts/setup_db.mjs lands on master, so a new table
+# exists before the API that queries it goes live (a schema change that is only
+# in the repo makes every request touching the new table a 500). Can still be
+# run by hand from the Actions tab.
 #
 # Required repository secrets (Settings -> Secrets and variables -> Actions):
 #   MYSQL_HOST      external Hostpoint URL, e.g. tobipch.mysql.db.hostpoint.ch
@@ -13,6 +16,11 @@
 name: Setup database
 
 on:
+  push:
+    branches: [master]
+    paths:
+      - 'scripts/setup_db.mjs'
+      - '.github/workflows/setup-db.yml'
   workflow_dispatch:
 
 jobs:
