@@ -143,6 +143,16 @@ onUnmounted(() => {
           </i>
         </button>
         <button
+            v-if="isTimerView && session.store.recapDone"
+            tabindex="-1"
+            @keydown.space.prevent=""
+            @click="session.startRecap()"
+            :title="$t('nav.recap_again_title')"
+            class="mx-2 btn btn-outline-primary">
+          <i class="bi bi-arrow-repeat"/>
+          <span class="d-none d-sm-inline-block ms-1">{{ $t("nav.recap_again") }}</span>
+        </button>
+        <button
             v-if="isTimerView"
             @click="displayStore.showStatistics = !displayStore.showStatistics"
             :class="displayStore.showStatistics ? 'btn-primary' : 'btn-outline-primary'"

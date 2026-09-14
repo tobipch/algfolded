@@ -37,6 +37,18 @@ export function aoN(times, n) {
     return last.slice(1, -1).reduce((s, t) => s + t, 0) / (n - 2)
 }
 
+// The best aoN the series ever had: the fastest window of n consecutive
+// entries. Every aoN a user was ever shown is one of these windows, so this is
+// exactly "my best Ao5 so far".
+export function bestAoN(times, n) {
+    let best = null
+    for (let start = 0; start + n <= times.length; start++) {
+        const a = aoN(times.slice(start, start + n), n)
+        if (a != null && (best == null || a < best)) best = a
+    }
+    return best
+}
+
 export function median(arr) {
     if (arr.length === 0) return 1
     const sorted = [...arr].sort((a, b) => a - b)

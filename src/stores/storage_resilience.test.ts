@@ -86,6 +86,16 @@ describe('stores survive corrupt localStorage', () => {
     expect(useSessionStore().store.mode).toBe('practice')
   })
 
+  it('SessionStore reads a run stored before "recap again" existed', async () => {
+    // No recapDone in the persisted shape must not surface the navbar offer.
+    localStorage.setItem('ltct_store:commCorner', JSON.stringify({
+      keys: ['k1'], mode: 'practice', keysCount: {k1: 1}, currentKey: null,
+      currentScramble: null, upcoming: [], stats: [],
+    }))
+    const { useSessionStore } = await import('@/stores/SessionStore')
+    expect(useSessionStore().store.recapDone).toBe(false)
+  })
+
   it('SessionStore keeps a stored mode and repairs a nonsense one', async () => {
     for (const [stored, expected] of [['flow', 'flow'], ['nonsense', 'practice'], [7, 'practice']] as const) {
       vi.resetModules(); localStorage.clear(); freshPinia()

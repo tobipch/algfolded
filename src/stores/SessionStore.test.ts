@@ -219,3 +219,72 @@ describe('persistence', () => {
     expect(s.store.stats).toEqual([])
   })
 })
+
+describe('recap', () => {
+  // Recap walks every selected case once. When it runs out the run falls back
+  // to practice, and the navbar offers to recap the same selection again.
+  it('offers a repeat once every selected case has come up', async () => {
+    const s = await load()
+    s.setSelectedKeys(['c1', 'c2', 'c3'])
+    s.startRecap()
+    expect(s.store.recapDone).toBe(false)
+    for (let i = 0; i < 3; i++) { s.startTimer(); s.stopTimer() }
+
+    expect(s.casesWithZeroCount).toEqual([])
+    expect(s.store.mode).toBe('practice')
+    expect(s.store.recapDone).toBe(true)
+  })
+
+  it('does not offer a repeat while cases are left', async () => {
+    const s = await load()
+    s.setSelectedKeys(['c1', 'c2', 'c3'])
+    s.startRecap()
+    s.startTimer(); s.stopTimer()
+    expect(s.store.mode).toBe('recap')
+    expect(s.store.recapDone).toBe(false)
+  })
+
+  it('starts the recap over and drops the offer', async () => {
+    const s = await load()
+    s.setSelectedKeys(['c1', 'c2'])
+    s.startRecap()
+    s.startTimer(); s.stopTimer()
+    s.startTimer(); s.stopTimer()
+    expect(s.store.recapDone).toBe(true)
+
+    s.startRecap()
+    expect(s.store.recapDone).toBe(false)
+    expect(s.store.mode).toBe('recap')
+    expect(s.casesWithZeroCount.sort()).toEqual(['c1', 'c2'])
+  })
+
+  it('survives a reload so the offer is still there', async () => {
+    const s = await load()
+    s.setSelectedKeys(['c1'])
+    s.startRecap()
+    s.startTimer(); s.stopTimer()
+    expect(s.store.recapDone).toBe(true)
+    await new Promise((r) => setTimeout(r, 0))
+
+    vi.resetModules()
+    setActivePinia(createPinia())
+    const again = await load()
+    expect(again.store.recapDone).toBe(true)
+  })
+
+  it('drops the offer when the selection changes or the user re-selects', async () => {
+    const s = await load()
+    s.setSelectedKeys(['c1'])
+    s.startRecap()
+    s.startTimer(); s.stopTimer()
+    expect(s.store.recapDone).toBe(true)
+
+    s.clearRecapDone()
+    expect(s.store.recapDone).toBe(false)
+
+    s.startRecap()
+    s.startTimer(); s.stopTimer()
+    s.setSelectedKeys(['c1', 'c2']) // a different selection is a different recap
+    expect(s.store.recapDone).toBe(false)
+  })
+})

@@ -37,6 +37,16 @@ const pageStats = computed(() => flow.pageSummary)
 const wallMs = computed(() => Math.max(0, flow.endedAt - flow.startedAt))
 const stats = computed(() => flow.runStats)
 
+// The Ao5 the user is chasing: the fastest window the series ever had, shown
+// next to the current one so a run can be read against a personal best and not
+// only against the last few.
+const bestAoText = computed(() => {
+  const parts = []
+  if (stats.value.bestAo5 != null) parts.push(`${t('flow.runs_ao5')} ${fmtTotal(stats.value.bestAo5)}`)
+  if (stats.value.bestAo12 != null) parts.push(`${t('flow.runs_ao12')} ${fmtTotal(stats.value.bestAo12)}`)
+  return parts.length > 0 ? t('flow.runs_best_ao', {values: parts.join(' \u00b7 ')}) : null
+})
+
 // --- how this run sits against the ones before it -------------------------
 
 const isNewBest = computed(() =>
@@ -359,6 +369,7 @@ const goSelect = () => router.push('select')
                   <template v-else-if="stats.ao5 == null">{{ $t('flow.ao5_needs_more') }}</template>
                   <template v-else>{{ $t('flow.ao12_needs_more') }}</template>
                 </div>
+                <div v-if="bestAoText" class="text-muted small">{{ bestAoText }}</div>
               </div>
             </div>
           </div>
