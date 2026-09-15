@@ -175,6 +175,7 @@
       "flow_share": "{pct}% della sessione in esecuzione, il resto a ricordare",
       "struggled_title": "Difficoltà:",
       "runs_title": "Serie",
+      "runs_scope": "serie sugli stessi casi, {pages} pagine ciascuna",
       "struggled_wrong": "andato male",
       "struggled_slow": "ben sotto il tuo ritmo per questo caso"
     },

@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import {
   CASES_PER_PAGE,
   armAttempt, noteFirstMove, flagWrong, retryAttempt, completeAttempt, attemptElapsedMs,
-  summarizeFlow, summarizePages, summarizeRuns,
+  summarizeFlow, summarizePages, summarizeRuns, selectionSignature,
   troubleDelta, updateTrouble, troubleCases,
   type CaseRecord, type FlowRun,
 } from '@/helpers/flow_timing'
@@ -233,6 +233,37 @@ describe('comparing runs with each other', () => {
       count: 0, ao5: null, ao12: null, bestAo5: null, bestAo12: null,
       best: null, mean: null,
     })
+  })
+})
+
+describe('the fingerprint of a selection', () => {
+  it('does not depend on the order the cases were selected in', () => {
+    expect(selectionSignature(['c3', 'c1', 'c2']))
+        .toBe(selectionSignature(['c1', 'c2', 'c3']))
+  })
+
+  it('ignores a case selected twice', () => {
+    expect(selectionSignature(['c1', 'c2', 'c1']))
+        .toBe(selectionSignature(['c1', 'c2']))
+  })
+
+  it('tells two different selections apart', () => {
+    // the UBL pairs and the UBR pairs: same size, same algset, different work
+    expect(selectionSignature(['UBL-A', 'UBL-B']))
+        .not.toBe(selectionSignature(['UBR-A', 'UBR-B']))
+  })
+
+  it('tells a subset from the set it was taken out of', () => {
+    expect(selectionSignature(['c1', 'c2']))
+        .not.toBe(selectionSignature(['c1', 'c2', 'c3']))
+  })
+
+  it('does not run two case ids together', () => {
+    expect(selectionSignature(['ab', 'c'])).not.toBe(selectionSignature(['a', 'bc']))
+  })
+
+  it('has a signature for the empty selection too', () => {
+    expect(typeof selectionSignature([])).toBe('string')
   })
 })
 

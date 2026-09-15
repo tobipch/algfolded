@@ -3,7 +3,7 @@ import {computed, ref, shallowRef, watch} from 'vue'
 import {
     CASES_PER_PAGE, armAttempt, noteFirstMove, flagWrong, retryAttempt,
     completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages, summarizeRuns,
-    updateTrouble, troubleCases,
+    updateTrouble, troubleCases, selectionSignature,
 } from '@/helpers/flow_timing'
 import {useSessionStore} from '@/stores/SessionStore'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
@@ -96,12 +96,25 @@ export const useFlowStore = defineStore('flow', () => {
         trouble.value = loadTrouble(id)
     })
 
+    // Which selection the series is read for. A run drilled on the UBL pairs
+    // and one drilled on the UBR pairs live in the same algset and may well be
+    // the same length, but they are different practice and averaging them
+    // together describes neither. Kept in step with the selection while no run
+    // is going, and frozen for the duration of one, so a run is always filed
+    // under the cases it actually drew from.
+    const selection = ref(selectionSignature(session.store.keys))
+    watch(() => session.store.keys, (keys) => {
+        if (!active.value) selection.value = selectionSignature(keys)
+    })
+
     /** The cases worth drilling next, worst first. */
     const bucket = computed(() => troubleCases(trouble.value))
 
-    // Only runs of the same length are comparable with each other, so the
-    // series is the one matching the run that was just done.
-    const comparableRuns = computed(() => runs.value.filter(r => r.pages === pageCount.value))
+    // Only runs over the same cases and of the same length are comparable with
+    // each other, so the series is the one matching the run that was just done.
+    // Runs stored before the split carry no selection and match nothing.
+    const comparableRuns = computed(() => runs.value.filter(
+        r => r.pages === pageCount.value && r.sel === selection.value))
     const runStats = computed(() => summarizeRuns(comparableRuns.value))
 
     const currentPage = computed(() => pages.value[pageIndex.value] || [])
@@ -166,6 +179,7 @@ export const useFlowStore = defineStore('flow', () => {
     const start = ({pages: count, tracked: isTracked}, now = Date.now()) => {
         pageCount.value = Math.max(1, Math.floor(count) || 1)
         tracked.value = !!isTracked
+        selection.value = selectionSignature(session.store.keys)
         active.value = true
         finished.value = false
         advancing.value = false
@@ -278,6 +292,7 @@ export const useFlowStore = defineStore('flow', () => {
         runs.value.push({
             at: now,
             pages: pageCount.value,
+            sel: selection.value,
             cases: s.cases,
             ms: Math.max(0, now - startedAt.value),
             execMs: Math.round(s.execMs),
@@ -359,7 +374,7 @@ export const useFlowStore = defineStore('flow', () => {
         currentPage, currentCase, caseStates, totalCases, completedCases, progress,
         start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
         advancePageManually, finish, reset, elapsedMs, currentCaseMs,
-        summary, pageSummary, runs, comparableRuns, runStats, runRecorded,
+        summary, pageSummary, runs, comparableRuns, runStats, runRecorded, selection,
         trouble, bucket, emaSnapshot,
     }
 })

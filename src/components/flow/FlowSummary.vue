@@ -429,6 +429,9 @@ const goSelect = () => router.push('select')
           <div class="text-muted text-uppercase small mb-1">
             {{ $t('flow.runs_title') }} ({{ stats.count }})
           </div>
+          <div class="text-muted small mb-1">
+            {{ $t('flow.runs_scope', {pages: flow.pageCount}) }}
+          </div>
           <div class="run-list">
             <table class="table table-sm align-middle mb-0">
               <thead>

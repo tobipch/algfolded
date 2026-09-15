@@ -249,6 +249,34 @@ export const summarizePages = (
 }
 
 /**
+ * A fingerprint of the cases a run was drilled from.
+ *
+ * Two runs are only worth comparing when they drew from the same selection.
+ * Drilling the UBL letter pairs and then the UBR ones is the same algset and
+ * the same page count, but not the same practice, and an average over the two
+ * together describes neither of them.
+ *
+ * Order-independent, duplicate-proof and stable across sessions, so the same
+ * selection always yields the same signature. FNV-1a over the sorted case ids,
+ * with the count in front: short enough to sit in every stored run, and
+ * specific enough that two different selections practically never collide.
+ */
+export const selectionSignature = (keys: readonly string[]): string => {
+    const sorted = [...new Set(keys)].sort()
+    let hash = 0x811c9dc5
+    for (const key of sorted) {
+        for (let i = 0; i < key.length; i++) {
+            hash ^= key.charCodeAt(i)
+            hash = Math.imul(hash, 0x01000193)
+        }
+        // A separator, so ['ab', 'c'] and ['a', 'bc'] are not the same run.
+        hash ^= 0x2f
+        hash = Math.imul(hash, 0x01000193)
+    }
+    return `${sorted.length}-${(hash >>> 0).toString(16)}`
+}
+
+/**
  * One finished run, kept so runs can be compared with each other. Only runs
  * that went the whole distance are stored: an Ao5 over runs of different
  * lengths would not mean anything.
@@ -258,6 +286,12 @@ export interface FlowRun {
     at: number
     pages: number
     cases: number
+    /**
+     * `selectionSignature` of the cases this run drew from. Absent on runs
+     * stored before the series was split per selection; those are kept, but
+     * cannot be attributed to a selection, so they compare against nothing.
+     */
+    sel?: string
     /** the session clock: first move to last completion */
     ms: number
     execMs: number
@@ -281,8 +315,8 @@ export interface RunStats {
 
 /**
  * Compare a series of runs the way a speedcuber compares solves. `runs` must be
- * oldest first and already narrowed to comparable ones (same algset, same page
- * count) — `aoN` reads the most recent n off the end.
+ * oldest first and already narrowed to comparable ones (same algset, same
+ * selection, same page count) — `aoN` reads the most recent n off the end.
  */
 export const summarizeRuns = (runs: FlowRun[]): RunStats => {
     const times = runs.map(r => r.ms)
