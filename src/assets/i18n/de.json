@@ -175,6 +175,7 @@
       "flow_share": "{pct}% der Session war Ausführung, der Rest Erinnern",
       "struggled_title": "Mühe gehabt:",
       "runs_title": "Durchgänge",
+      "runs_scope": "Durchgänge über dieselben Fälle, je {pages} Seiten",
       "struggled_wrong": "danebengegangen",
       "struggled_slow": "deutlich unter deinem Tempo für diesen Fall"
     },

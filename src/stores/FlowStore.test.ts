@@ -283,6 +283,61 @@ describe('comparing one run with the next', () => {
     expect(flow.comparableRuns[0].pages).toBe(3)
   })
 
+  it('keeps the series of one selection apart from another', async () => {
+    // Drilling one letter pair group and then a different one is the same
+    // algset and the same page count, but not the same practice.
+    const { session, flow } = await load()
+    session.setSelectedKeys(['c1', 'c2', 'c3'])
+    await fullRun(flow, 2, 0, 2000)
+    expect(flow.comparableRuns).toHaveLength(1)
+
+    flow.reset()
+    session.setSelectedKeys(['c4', 'c5', 'c6'])
+    await fullRun(flow, 2, 1_000_000, 1000)
+    expect(flow.runs).toHaveLength(2)            // both are kept...
+    expect(flow.comparableRuns).toHaveLength(1)  // ...but compared apart
+    expect(flow.runStats.count).toBe(1)
+    expect(flow.runStats.best!.ms).toBe(flow.comparableRuns[0].ms)
+
+    // and going back to the first selection brings its own series back
+    flow.reset()
+    session.setSelectedKeys(['c1', 'c2', 'c3'])
+    await fullRun(flow, 2, 2_000_000, 3000)
+    expect(flow.comparableRuns).toHaveLength(2)
+    expect(flow.runStats.best!.ms).toBeLessThan(3000 * 10)
+  })
+
+  it('compares runs over the same cases whatever order they were selected in', async () => {
+    const { session, flow } = await load()
+    session.setSelectedKeys(['c1', 'c2', 'c3'])
+    await fullRun(flow, 2, 0, 2000)
+    flow.reset()
+    session.setSelectedKeys(['c3', 'c1', 'c2'])
+    await fullRun(flow, 2, 1_000_000, 1000)
+    expect(flow.comparableRuns).toHaveLength(2)
+  })
+
+  it('does not compare a run stored before the series was split per selection', async () => {
+    localStorage.setItem('algfolded_flow_runs:testset', JSON.stringify([{
+      at: 1, pages: 2, cases: 10, ms: 60000, execMs: 30000, pauseMs: 30000,
+      recoveryMs: 0, moves: 100, firstTry: 10,
+    }]))
+    const { flow } = await load()
+    expect(flow.runs).toHaveLength(1)            // still there
+    await fullRun(flow, 2, 1_000_000, 1000)
+    expect(flow.comparableRuns).toHaveLength(1)  // only the new one
+    expect(flow.comparableRuns[0].at).not.toBe(1)
+  })
+
+  it('files a finished run under the selection it was drilled from', async () => {
+    const { session, flow } = await load()
+    session.setSelectedKeys(['c1', 'c2', 'c3'])
+    await fullRun(flow, 1, 0, 2000)
+    const stored = JSON.parse(localStorage.getItem('algfolded_flow_runs:testset')!)
+    expect(typeof stored[0].sel).toBe('string')
+    expect(stored[0].sel).toBe(flow.selection)
+  })
+
   it('does not keep a run that was cut short', async () => {
     const { flow } = await load()
     flow.start({ pages: 3, tracked: true }, 0)
