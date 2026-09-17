@@ -3,8 +3,8 @@ import { describe, it, expect } from 'vitest'
 import {
   CASES_PER_PAGE,
   armAttempt, noteFirstMove, flagWrong, retryAttempt, completeAttempt, attemptElapsedMs,
-  summarizeFlow, summarizePages, summarizeRuns, selectionSignature,
-  troubleDelta, updateTrouble, troubleCases,
+  rebaseAttempt, summarizeFlow, summarizePages, summarizeRuns, mergeRuns,
+  selectionSignature, troubleDelta, updateTrouble, troubleCases,
   type CaseRecord, type FlowRun,
 } from '@/helpers/flow_timing'
 
@@ -83,6 +83,28 @@ describe('timing one case', () => {
     const r = completeAttempt(a, 800, {key: 'c1', page: 0, index: 0})
     expect(r.pauseMs).toBe(0)
     expect(r.execMs).toBe(0)
+  })
+})
+
+describe('anchoring the first case to the first move', () => {
+  it('moves the arming forward, so the wait before the run costs nothing', () => {
+    const a = rebaseAttempt(armAttempt(1000), 9000)
+    const r = completeAttempt(a, 11000, {key: 'c1', page: 0, index: 0, moves: 10})
+    expect(r).toMatchObject({pauseMs: 0, execMs: 2000})
+  })
+
+  it('leaves a case that is already running alone', () => {
+    let a = armAttempt(1000)
+    a = noteFirstMove(a, 1800)
+    expect(rebaseAttempt(a, 9000)).toEqual(a)
+  })
+
+  it('keeps what earlier attempts of the same case cost', () => {
+    let a = armAttempt(0)
+    a = retryAttempt(a, 3000)          // 3s thrown away
+    a = rebaseAttempt(a, 5000)
+    const r = completeAttempt(a, 7000, {key: 'c1', page: 0, index: 0})
+    expect(r).toMatchObject({recoveryMs: 3000, pauseMs: 0, execMs: 2000})
   })
 })
 
@@ -233,6 +255,35 @@ describe('comparing runs with each other', () => {
       count: 0, ao5: null, ao12: null, bestAo5: null, bestAo12: null,
       best: null, mean: null,
     })
+  })
+})
+
+describe('merging the local series with the account\'s', () => {
+  const run = (at: number, over: Partial<FlowRun> = {}): FlowRun => ({
+    at, pages: 5, cases: 25, ms: at, execMs: 0, pauseMs: 0,
+    recoveryMs: 0, moves: 250, firstTry: 25, ...over,
+  })
+
+  it('takes the union and puts it back in order', () => {
+    const merged = mergeRuns([run(300), run(100)], [run(200), run(400)])
+    expect(merged.map((r) => r.at)).toEqual([100, 200, 300, 400])
+  })
+
+  it('counts a run that is on both sides once, keeping the local copy', () => {
+    const merged = mergeRuns([run(100, {ms: 111})], [run(100, {ms: 999})])
+    expect(merged).toHaveLength(1)
+    expect(merged[0].ms).toBe(111)
+  })
+
+  it('keeps the newest runs when the series is longer than the cap', () => {
+    const local = Array.from({length: 5}, (_, i) => run(i + 1))
+    const merged = mergeRuns(local, [run(99)], 3)
+    expect(merged.map((r) => r.at)).toEqual([4, 5, 99])
+  })
+
+  it('drops entries that are not runs at all', () => {
+    const junk = [null, {at: 5}, {ms: 5}, 'run'] as unknown as FlowRun[]
+    expect(mergeRuns([run(1)], junk)).toHaveLength(1)
   })
 })
 

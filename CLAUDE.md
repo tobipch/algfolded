@@ -67,7 +67,11 @@ Flow keeps two things of its own, both per algset and both belonging to the
 store that produces them: the run history under `algfolded_flow_runs` (capped,
 oldest first) so runs can be compared with each other, and the trouble tally
 under `algfolded_flow_trouble`, which is the bucket of cases that keep going
-wrong. Neither is a second statistics store — one holds whole runs and the
+wrong. The run history is also mirrored to the account (`api/flow-runs.ts`,
+push on finish and merge on login) — an Ao5 and a personal best describe the
+user, not the browser. localStorage stays the first write: a run must survive
+being logged out and being offline. A run is identified by when it finished, so
+every upload is idempotent. Neither is a second statistics store — one holds whole runs and the
 other holds "wrong execution", concepts the solve-level stores do not have.
 Per-solve history still goes through `recordSolve` and nowhere else.
 

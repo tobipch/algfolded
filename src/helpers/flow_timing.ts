@@ -11,6 +11,11 @@
  *   execution - from the first move to the cube reaching the case's solved state
  *   recovery  - everything spent on attempts that were abandoned and re-armed
  *
+ * The first case of a run is the exception: it is armed while the user is
+ * still picking the cube up, so `rebaseAttempt` starts it on the first move
+ * instead — the same instant the run's own clock starts. The approach is
+ * setup, and setup belongs to neither the case nor the session.
+ *
  * Only `execution` is the same quantity the timer records elsewhere (there the
  * clock starts on the first move too), so only `execution` is ever allowed near
  * the per-case EMA. Pause and recovery are session data.
@@ -56,6 +61,23 @@ export const noteFirstMove = (attempt: Attempt, at: number): Attempt =>
 
 export const flagWrong = (attempt: Attempt): Attempt =>
     attempt.wrong ? attempt : {...attempt, wrong: true}
+
+/**
+ * Re-anchor an attempt that was armed before the run had started.
+ *
+ * The first case of a run is on screen while the user is still picking the
+ * cube up, so the wait in front of it is setup, not recall: it belongs to
+ * neither the case nor the session. The run's clock already starts on the
+ * first move; this starts the case there too, instead of booking the whole
+ * approach as that case's pause.
+ *
+ * Only meaningful before the first move — once the case is running, its pause
+ * is real and stays.
+ */
+export const rebaseAttempt = (attempt: Attempt, at: number): Attempt =>
+    attempt.firstMoveAt === null
+        ? {...attempt, armedAt: at, firstMoveAt: at}
+        : attempt
 
 /**
  * Abandon the running attempt and re-arm the same case against the cube as it
@@ -299,6 +321,33 @@ export interface FlowRun {
     recoveryMs: number
     moves: number
     firstTry: number
+}
+
+/**
+ * How many finished runs are kept. A run is a few dozen bytes, but this is the
+ * user's localStorage and nothing here is worth an unbounded list.
+ */
+export const MAX_RUNS = 200
+
+/**
+ * Merge a stored run series with the one held by the account.
+ *
+ * A run is identified by when it finished: the same run coming back from the
+ * server, or still sitting on a second device, is one run and not two. The
+ * local copy wins on a collision — it is the one that was written first-hand.
+ * Oldest first, and only the newest `max` are kept.
+ */
+export const mergeRuns = (
+    local: readonly FlowRun[],
+    incoming: readonly FlowRun[],
+    max = MAX_RUNS,
+): FlowRun[] => {
+    const byAt = new Map<number, FlowRun>()
+    for (const run of [...local, ...incoming]) {
+        if (!run || typeof run.at !== 'number' || typeof run.ms !== 'number') continue
+        if (!byAt.has(run.at)) byAt.set(run.at, run)
+    }
+    return [...byAt.values()].sort((a, b) => a.at - b.at).slice(-max)
 }
 
 export interface RunStats {

@@ -1,12 +1,14 @@
 import {defineStore} from 'pinia'
 import {computed, ref, shallowRef, watch} from 'vue'
 import {
-    CASES_PER_PAGE, armAttempt, noteFirstMove, flagWrong, retryAttempt,
-    completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages, summarizeRuns,
-    updateTrouble, troubleCases, selectionSignature,
+    CASES_PER_PAGE, MAX_RUNS, armAttempt, noteFirstMove, flagWrong, retryAttempt,
+    rebaseAttempt, completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages,
+    summarizeRuns, mergeRuns, updateTrouble, troubleCases, selectionSignature,
 } from '@/helpers/flow_timing'
 import {useSessionStore} from '@/stores/SessionStore'
 import {useAlgsetStore} from '@/stores/AlgsetStore'
+import {useAuthStore} from '@/stores/AuthStore'
+import {apiFetch} from '@/helpers/api'
 import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
 
 // The green flash on the fifth case, and nothing more. A few frames is enough
@@ -14,10 +16,10 @@ import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
 // whole point of flow is that the cases run into each other.
 export const PAGE_ADVANCE_MS = 60
 
-// Finished runs, per algset. Capped: a run is a few dozen bytes, but this is
-// the user's localStorage and nothing here is worth an unbounded list.
+// Finished runs, per algset. Capped in the helper: a run is a few dozen bytes,
+// but this is the user's localStorage and nothing here is worth an unbounded
+// list.
 const runsKey = 'algfolded_flow_runs'
-const MAX_RUNS = 200
 
 const loadRuns = (algsetId) => {
     const stored = readNamespaced(runsKey, algsetId, [])
@@ -51,6 +53,7 @@ const loadTrouble = (algsetId) => {
 export const useFlowStore = defineStore('flow', () => {
     const session = useSessionStore()
     const algset = useAlgsetStore()
+    const auth = useAuthStore()
 
     const pageCount = ref(1)
     const tracked = ref(false)          // a smart cube was connected at start
@@ -91,10 +94,52 @@ export const useFlowStore = defineStore('flow', () => {
     // read off. Reloaded when the algset changes, like every other run datum.
     const runs = ref(loadRuns(algset.activeId))
     const trouble = ref(loadTrouble(algset.activeId))
+
+    // --- the account's copy of the series ---------------------------------
+    //
+    // A finished run is written to localStorage first: it has to be kept
+    // whether or not anyone is logged in and whether or not the network is
+    // there. With an account the same runs are mirrored to it, so the series a
+    // run is compared against is the user's, not the browser's — signing in on
+    // another machine finds the same history instead of starting over.
+    //
+    // Runs are identified by when they finished, which makes every upload
+    // idempotent: a retry, or a second device that still has the run locally,
+    // writes the same row.
+
+    const pushRuns = (algsetId, list) => {
+        if (!auth.loggedIn || list.length === 0) return
+        apiFetch('/api/flow-runs', {method: 'POST', body: {algset: algsetId, runs: list}})
+            .catch(() => {}) // localStorage still has it; the next pull uploads it
+    }
+
+    const pullRuns = async () => {
+        if (!auth.loggedIn) return
+        const id = algset.activeId
+        let remote
+        try {
+            const data = await apiFetch('/api/flow-runs?algset=' + encodeURIComponent(id))
+            remote = data?.runs
+        } catch (_) {
+            return // offline / API unavailable: the local series stands
+        }
+        if (!Array.isArray(remote)) return
+        if (id !== algset.activeId) return // switched sets while the request was in flight
+        const known = new Set(remote.map(r => r?.at))
+        const merged = mergeRuns(runs.value, remote)
+        runs.value = merged
+        writeNamespaced(runsKey, id, merged)
+        // Runs this device has and the account does not: adopted, not dropped.
+        pushRuns(id, merged.filter(r => !known.has(r.at)))
+    }
+
     watch(() => algset.activeId, (id) => {
         runs.value = loadRuns(id)
         trouble.value = loadTrouble(id)
+        pullRuns()
     })
+    watch(() => auth.loggedIn, (isIn) => { if (isIn) pullRuns() })
+    pullRuns()
 
     // Which selection the series is read for. A run drilled on the UBL pairs
     // and one drilled on the UBR pairs live in the same algset and may well be
@@ -206,7 +251,15 @@ export const useFlowStore = defineStore('flow', () => {
 
     const noteMove = (now = Date.now()) => {
         if (!attempt) return
-        if (!startedAt.value) startedAt.value = now  // the run's first move starts the clock
+        if (!startedAt.value) {
+            // The run's first move starts the clock — and the first case with
+            // it. Everything before it was the user picking the cube up, not
+            // recalling the case, so it is neither the case's pause nor part
+            // of the session: the two clocks start at the same instant.
+            startedAt.value = now
+            attempt = rebaseAttempt(attempt, now)
+            return
+        }
         attempt = noteFirstMove(attempt, now)
     }
 
@@ -289,7 +342,7 @@ export const useFlowStore = defineStore('flow', () => {
     const recordRun = (now) => {
         if (!tracked.value || records.value.length === 0) return
         const s = summarizeFlow(records.value)
-        runs.value.push({
+        const run = {
             at: now,
             pages: pageCount.value,
             sel: selection.value,
@@ -300,9 +353,11 @@ export const useFlowStore = defineStore('flow', () => {
             recoveryMs: Math.round(s.recoveryMs + abandonedMs.value),
             moves: s.moves,
             firstTry: s.firstTry,
-        })
+        }
+        runs.value.push(run)
         if (runs.value.length > MAX_RUNS) runs.value = runs.value.slice(-MAX_RUNS)
         writeNamespaced(runsKey, algset.activeId, runs.value)
+        pushRuns(algset.activeId, [run])
     }
 
     // Every case the cube actually measured feeds the bucket, whether or not
@@ -353,7 +408,10 @@ export const useFlowStore = defineStore('flow', () => {
 
     /** Time the current case has cost so far, retries included. */
     const currentCaseMs = (now = Date.now()) =>
-        attempt ? attemptElapsedMs(attempt, now) : 0
+        // Before the run's first move the case has cost nothing: that wait is
+        // dropped on the first move, so counting it up here would only show a
+        // number that is about to be thrown away.
+        attempt && startedAt.value ? attemptElapsedMs(attempt, now) : 0
 
     /** Whether the run just finished was kept in the comparable series. */
     const runRecorded = computed(() =>
@@ -375,6 +433,6 @@ export const useFlowStore = defineStore('flow', () => {
         start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
         advancePageManually, finish, reset, elapsedMs, currentCaseMs,
         summary, pageSummary, runs, comparableRuns, runStats, runRecorded, selection,
-        trouble, bucket, emaSnapshot,
+        trouble, bucket, emaSnapshot, pullRuns,
     }
 })
