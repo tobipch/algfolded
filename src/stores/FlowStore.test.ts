@@ -33,6 +33,24 @@ vi.mock('@/stores/DisplayStore', () => ({
   useDisplayStore: () => ({ showToast: vi.fn() }),
 }))
 
+// The account side of the run series. `authState` is a plain object shared
+// with the store, so a test decides whether anyone is logged in; `apiCalls`
+// records what the store asked the backend for and `apiReply` answers it.
+const authState = { loggedIn: false }
+vi.mock('@/stores/AuthStore', () => ({ useAuthStore: () => authState }))
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const apiCalls: { path: string; method: string; body: any }[] = []
+let apiReply: (path: string) => any = () => null
+vi.mock('@/helpers/api', () => ({
+  ApiError: class ApiError extends Error {},
+  apiFetch: (path: string, options: any = {}) => {
+    apiCalls.push({ path, method: options.method ?? 'GET', body: options.body })
+    return Promise.resolve().then(() => apiReply(path))
+  },
+}))
+const posted = () => apiCalls.filter((c) => c.method === 'POST')
+
 const ema = (session: {srsData: unknown}) =>
   session.srsData as Record<string, {a: number, n: number, s: number}>
 
@@ -56,6 +74,9 @@ beforeEach(() => {
   vi.resetModules()
   localStorage.clear()
   enqueued.length = 0
+  apiCalls.length = 0
+  authState.loggedIn = false
+  apiReply = () => ({ runs: [] })
   setActivePinia(createPinia())
 })
 
@@ -110,19 +131,56 @@ describe('a tracked flow run', () => {
     expect(enqueued[0]).toMatchObject({ caseKey: key, ms: 2200, source: 'timer' })
   })
 
+  // The first case sits on screen while the user is still picking the cube up,
+  // so the wait in front of it is setup, not recall. The run's clock starts on
+  // the first move; the case has to start there too, or the split claims more
+  // time than the run ever took.
+  it('starts the first case on the first move, not when the page appears', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: true }, 0)
+    flow.noteMove(9000)            // cube picked up nine seconds later
+    flow.completeCurrent(10, 11000)
+
+    expect(flow.startedAt).toBe(9000)
+    expect(flow.records[0]).toMatchObject({ pauseMs: 0, execMs: 2000 })
+    expect(flow.currentCaseMs(5000)).toBe(0) // nothing was running before that
+  })
+
+  it('never books more time than the run took', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: true }, 0)
+    flow.noteMove(9000)
+    flow.completeCurrent(10, 11000)
+    for (let i = 1; i < 5; i++) solveCase(flow, 11000 + (i - 1) * 2000)
+    flow.nextPage(19000)
+
+    const s = flow.summary!
+    expect(s.execMs + s.pauseMs + s.recoveryMs + flow.abandonedMs)
+        .toBe(flow.endedAt - flow.startedAt)
+  })
+
+  it('keeps the recall of every case after the first', async () => {
+    const { flow } = await load()
+    flow.start({ pages: 1, tracked: true }, 0)
+    flow.noteMove(1000)
+    flow.completeCurrent(10, 2000)
+    solveCase(flow, 2000, 800, 1200)   // second case: 800ms recall is real
+    expect(flow.records.map((r: {pauseMs: number}) => r.pauseMs)).toEqual([0, 800])
+  })
+
   it('books an abandoned attempt as recovery and keeps the case retryable', async () => {
     const { session, flow } = await load()
     flow.start({ pages: 1, tracked: true }, 0)
     const key = flow.currentCase.key
 
-    flow.noteMove(500)
-    flow.retryCurrent(6000)      // botched: 6s thrown away
+    flow.noteMove(500)           // the run starts here, so the case does too
+    flow.retryCurrent(6000)      // botched: 5.5s thrown away
     expect(flow.caseIndex).toBe(0)
     flow.noteMove(6400)
     flow.completeCurrent(10, 8000)
 
     const record = flow.records[0]
-    expect(record).toMatchObject({ key, recoveryMs: 6000, pauseMs: 400, execMs: 1600, wrong: true })
+    expect(record).toMatchObject({ key, recoveryMs: 5500, pauseMs: 400, execMs: 1600, wrong: true })
     // only the clean execution reaches the average
     expect(ema(session)[key].a).toBeCloseTo(1.6, 6)
   })
@@ -460,5 +518,89 @@ describe('the bucket of difficult cases', () => {
     const { flow } = await load()
     expect(flow.trouble).toEqual({})
     expect(flow.bucket).toEqual([])
+  })
+})
+
+// A flow run is worth nothing if it is only in the browser that produced it:
+// the series an Ao5 and a personal best are read off has to be the user's own,
+// whichever machine they sit down at. Runs are still written to localStorage
+// first — being logged out, or offline, must never lose one.
+describe('the account\'s copy of the run series', () => {
+  const storedRuns = () =>
+    JSON.parse(localStorage.getItem('algfolded_flow_runs:testset') ?? '[]')
+
+  const fullRun = (flow: any, at: number) => {
+    flow.start({ pages: 1, tracked: true }, at)
+    let t = at
+    for (let c = 0; c < 5; c++) {
+      flow.noteMove(t + 500)
+      flow.completeCurrent(10, t + 2000)
+      t += 2000
+    }
+    flow.nextPage(t)
+    return t
+  }
+
+  it('uploads a finished run', async () => {
+    authState.loggedIn = true
+    const { flow } = await load()
+    fullRun(flow, 1_000_000)
+
+    expect(posted()).toHaveLength(1)
+    expect(posted()[0].path).toBe('/api/flow-runs')
+    expect(posted()[0].body.algset).toBe('testset')
+    expect(posted()[0].body.runs).toHaveLength(1)
+    expect(posted()[0].body.runs[0]).toMatchObject({ pages: 1, cases: 5, sel: flow.selection })
+  })
+
+  it('keeps the run locally when nobody is logged in', async () => {
+    const { flow } = await load()
+    fullRun(flow, 1_000_000)
+    expect(apiCalls).toHaveLength(0)
+    expect(storedRuns()).toHaveLength(1)
+    expect(flow.runs).toHaveLength(1)
+  })
+
+  it('adopts the account\'s runs and uploads the ones it does not have', async () => {
+    const local = {
+      at: 100, pages: 1, cases: 5, sel: 'x', ms: 9000,
+      execMs: 6000, pauseMs: 3000, recoveryMs: 0, moves: 50, firstTry: 5,
+    }
+    localStorage.setItem('algfolded_flow_runs:testset', JSON.stringify([local]))
+    const remote = { ...local, at: 200, ms: 8000 }
+    apiReply = () => ({ runs: [remote] })
+
+    // Signing in on a device that already has runs of its own.
+    const { flow } = await load()
+    authState.loggedIn = true
+    await flow.pullRuns()
+
+    expect(flow.runs.map((r: {at: number}) => r.at)).toEqual([100, 200])
+    expect(storedRuns().map((r: {at: number}) => r.at)).toEqual([100, 200])
+    // only the run the account is missing goes back up
+    expect(posted()).toHaveLength(1)
+    expect(posted()[0].body.runs.map((r: {at: number}) => r.at)).toEqual([100])
+  })
+
+  it('leaves the local series alone when the account cannot be reached', async () => {
+    const local = {
+      at: 100, pages: 1, cases: 5, sel: 'x', ms: 9000,
+      execMs: 6000, pauseMs: 3000, recoveryMs: 0, moves: 50, firstTry: 5,
+    }
+    localStorage.setItem('algfolded_flow_runs:testset', JSON.stringify([local]))
+    apiReply = () => { throw new Error('offline') }
+
+    const { flow } = await load()
+    authState.loggedIn = true
+    await flow.pullRuns()
+
+    expect(flow.runs).toHaveLength(1)
+    expect(posted()).toHaveLength(0)
+  })
+
+  it('asks the account for nothing while logged out', async () => {
+    const { flow } = await load()
+    await flow.pullRuns()
+    expect(apiCalls).toHaveLength(0)
   })
 })

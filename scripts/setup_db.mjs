@@ -51,6 +51,31 @@ const statements = [
     CONSTRAINT fk_presets_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   ) CHARACTER SET utf8mb4`,
 
+  // Finished flow runs, one series per algset. `at_ms` is when the run
+  // finished (epoch ms) and is the run's identity, so the same run uploaded
+  // from two devices is one row. `selection` is the fingerprint of the cases
+  // the run drew from — empty on runs stored before the series was split per
+  // selection, which is why it has a default rather than being NOT NULL alone.
+  `CREATE TABLE IF NOT EXISTS flow_runs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    algset VARCHAR(32) NOT NULL,
+    at_ms BIGINT NOT NULL,
+    selection VARCHAR(32) NOT NULL DEFAULT '',
+    pages SMALLINT UNSIGNED NOT NULL,
+    cases SMALLINT UNSIGNED NOT NULL,
+    ms INT UNSIGNED NOT NULL,
+    exec_ms INT UNSIGNED NOT NULL DEFAULT 0,
+    pause_ms INT UNSIGNED NOT NULL DEFAULT 0,
+    recovery_ms INT UNSIGNED NOT NULL DEFAULT 0,
+    moves INT UNSIGNED NOT NULL DEFAULT 0,
+    first_try SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_flow_runs_user_at (user_id, algset, at_ms),
+    INDEX idx_flow_runs_user_set (user_id, algset),
+    CONSTRAINT fk_flow_runs_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  ) CHARACTER SET utf8mb4`,
+
   `CREATE TABLE IF NOT EXISTS user_case_algs (
     user_id INT NOT NULL,
     algset VARCHAR(32) NOT NULL,
