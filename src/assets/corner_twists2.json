@@ -104,8 +104,8 @@
   "BQ": {
     "algs": [
       "U' D' R D R' U' R D' R' D R D' R' U R D R' U",
-      "D' R D R' U2 R D' R' D R D' R' U2 R D R'",
       "U' D R' D R U R' U' R U R' D' R U' R' U R D'",
+      "D' R D R' U2 R D' R' D R D' R' U2 R D R'",
       "U2 R D' R' U R U' R' U R D R' U' R U R' U",
       "U R U R' U' R D' R' U R U' R' U R D R' U2",
       "U D' R D R' U R D' R' D R D' R' U' R D R' U'",
@@ -409,8 +409,8 @@
       "U' L' U R U' L U L' U' L U R' U' L' U L",
       "R U R D' R' D R D' R' U' R D R' D' R D R2",
       "U' R D R' D' R D R' U2 R D' R' D R D' R' U'",
-      "U2 R U' R' L' U2 L U L' U R L U2 R' U",
-      "R' U2 R U2 R U R' U' R' U R U2 R U2 R' U"
+      "R' U2 R U2 R U R' U' R' U R U2 R U2 R' U",
+      "U2 R U' R' L' U2 L U L' U R L U2 R' U"
     ],
     "buffers": {
       "UFR": "LUB",
@@ -433,8 +433,8 @@
   },
   "EN": {
     "algs": [
-      "U' R' D R U' R' D' R D R' D' R U R' D R U D'",
       "U R' D R U R' D' R D R' D' R U' R' D R U' D'",
+      "U' R' D R U' R' D' R D R' D' R U R' D R U D'",
       "R' D R U2 R' D' R D R' D' R U2 R' D R D'",
       "U D' R' U' R D' R' U R U' R' U R D R' U' R D",
       "U2 R' D R U R' U' R U R' D' R U' R' U R U",
@@ -578,8 +578,8 @@
       "R' U R' D' R U R' D R D' R' D R U' R' D' R U' D R",
       "U R D R' D' R D R' U2 R D' R' D R D' R' U",
       "R U R' U R' U' R U R' D' R U' R' U R U' R' D R2 U' R'",
-      "R U' R' L' U2 L U L' U R L U2 R' U'",
-      "U' R U2 R' U2 R' U' R U R U' R' U2 R' U2 R"
+      "U' R U2 R' U2 R' U' R U R U' R' U2 R' U2 R",
+      "R U' R' L' U2 L U L' U R L U2 R' U'"
     ],
     "buffers": {
       "UFR": "BUL",
@@ -900,8 +900,8 @@
   "IP": {
     "algs": [
       "U R U' R' U R D' R' U' R U R' U' R D R'",
-      "R D' R' U' R U R' U' R D R' U R U' R' U",
       "U R D' R' U' R D R' D' R D R' U R D' R' U' D",
+      "R D' R' U' R U R' U' R D R' U R U' R' U",
       "U' R D' R' U R D R' D' R D R' U' R D' R' U D",
       "U' R' U R D' R' U' R U R' U' R D R' U R"
     ],
@@ -931,7 +931,8 @@
       "U D R D' R' U' R D R' D' R D R' U R D' R' U'",
       "U R U R' D' R U' R' U R U' R' D R U R' U2",
       "U' D R D' R' U R D R' D' R D R' U' R D' R' U",
-      "R D' R U R' U' R U R' D R U' R' U R U' R2"
+      "R D' R U R' U' R U R' D R U' R' U R U' R2",
+      "R' U R' D' R D R' D' R U' R' D R D' R' D R2"
     ],
     "buffers": {
       "UBR": "RDB",
@@ -1009,9 +1010,9 @@
     "algs": [
       "U' R D' R' U R U' R' U R D R' U' R U R'",
       "D' R D R' U' R D' R' D R D' R' U R D R'",
+      "U R' D2 R U' R' D2 R U' R D' R' U R D R'",
       "R' D2 R U R' U' R U R' D2 R U' R' U R U'",
-      "U' R' U R U' R' D2 R U R' U' R U R' D2 R",
-      "U R' D2 R U' R' D2 R U' R D' R' U R D R'"
+      "U' R' U R U' R' D2 R U R' U' R U R' D2 R"
     ],
     "buffers": {
       "UFR": "LDB",
