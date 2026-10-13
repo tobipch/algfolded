@@ -16,8 +16,8 @@ const TIMES = [90000, 10000, 20000, 20000, 20000, 30000, 80000, 95000]
 const RUNS = TIMES.map(run)
 
 const records = [
-  { key: 'c1', page: 0, index: 0, pauseMs: 500, execMs: 1500, recoveryMs: 0, moves: 10, wrong: false },
-  { key: 'c2', page: 0, index: 1, pauseMs: 400, execMs: 1600, recoveryMs: 0, moves: 11, wrong: false },
+  { key: 'c1', index: 0, pauseMs: 500, execMs: 1500, recoveryMs: 0, moves: 10, wrong: false },
+  { key: 'c2', index: 1, pauseMs: 400, execMs: 1600, recoveryMs: 0, moves: 11, wrong: false },
 ]
 
 const flow = {
@@ -25,12 +25,12 @@ const flow = {
   runRecorded: false,
   startedAt: 1000,
   endedAt: 61000,
-  pageCount: 4,
+  caseCount: 20,
   records,
   emaSnapshot: {},
   bucket: [] as string[],
   summary: summarizeFlow(records),
-  pageSummary: { pages: 0, cases: 0, totalMs: 0, msPerCase: 0, pageTimes: [] as number[] },
+  manualSummary: { cases: 0, totalMs: 0, msPerCase: 0, caseTimes: [] as number[] },
   comparableRuns: RUNS,
   runStats: summarizeRuns(RUNS),
 }

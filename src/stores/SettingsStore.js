@@ -19,8 +19,8 @@ const defaultSettings = {
     smartSelection: true,
     // start practice with the timer ("timed") or just step through cases
     timedMode: true,
-    // flow mode: how many pages of five cases one run drills
-    flowPages: 4,
+    // flow mode: how many cases one run drills
+    flowCases: 20,
     // how algorithms are displayed: "commutator" notation or "expanded" moves
     algNotation: "commutator",
     slownessPower: 2,
@@ -36,9 +36,15 @@ migrateLocalStorageKey("zbllTrainerSettings", localStorageKey)
 
 export const useSettingsStore = defineStore('settings', () => {
     // merge defaults so settings saved before a new key existed still get it
-    const store = reactive(
-        {...defaultSettings, ...readJson(localStorageKey, {})}
-    )
+    const saved = readJson(localStorageKey, {})
+    const store = reactive({...defaultSettings, ...saved})
+    // Flow runs used to be set in pages of five cases. Keep the length the
+    // user chose, so their runs stay comparable with the ones before.
+    if ('flowPages' in store) {
+        const pages = Math.floor(Number(store.flowPages))
+        if (pages >= 1 && saved.flowCases == null) store.flowCases = pages * 5
+        delete store.flowPages
+    }
 
     const resetDefaults = () => {
         for (let key in defaultSettings) {

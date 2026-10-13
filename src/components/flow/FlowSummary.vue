@@ -14,8 +14,8 @@ import {useI18n} from "vue-i18n";
 // ones before it. Everything that needs reading case by case is behind Details:
 // the useful per-case output is not a table, it is the bucket.
 //
-// Without a smart cube only page times exist, so all of it collapses to the
-// headline and the page trend rather than being shown empty.
+// Without a smart cube only the time per case (space to space) exists, so all
+// of it collapses to the headline and that trend rather than being shown empty.
 const {t, locale} = useI18n()
 const router = useRouter()
 const flow = useFlowStore()
@@ -33,7 +33,7 @@ const label = (key) => algset.caseLabel(key)
 const num = (v, digits = 1) => (v == null || !Number.isFinite(v)) ? '-' : v.toFixed(digits)
 
 const s = computed(() => flow.summary)
-const pageStats = computed(() => flow.pageSummary)
+const manual = computed(() => flow.manualSummary)
 const wallMs = computed(() => Math.max(0, flow.endedAt - flow.startedAt))
 const stats = computed(() => flow.runStats)
 
@@ -219,7 +219,7 @@ const splitParts = computed(() => {
 })
 
 // One stacked bar per case in the order drilled: pale is the pause before the
-// first turn, solid the turning itself. Page boundaries are marked.
+// first turn, solid the turning itself.
 const caseChart = computed(() => {
   const records = flow.records
   if (records.length === 0) return null
@@ -247,19 +247,16 @@ const caseChart = computed(() => {
       title: `${label(r.key)}: ${fmt(r.pauseMs)} + ${fmt(r.execMs)}`,
     }
   })
-  const dividers = records.map((r, i) =>
-      i > 0 && r.page !== records[i - 1].page ? padLeft + slot * i : null
-  ).filter(x => x !== null)
   const grid = [0, 0.5, 1].map(f => {
     const value = maxValue * f
     return {y: base - scale(value), text: (value / 1000).toFixed(1) + 's'}
   })
-  return {width, height, padLeft, padRight, bars, dividers, grid}
+  return {width, height, padLeft, padRight, bars, grid}
 })
 
-// Without a cube: the page-by-page trend, as bars of page time.
-const pageChart = computed(() => {
-  const times = pageStats.value?.pageTimes || []
+// Without a cube: the case-by-case trend, as bars of time per case.
+const caseTimeChart = computed(() => {
+  const times = manual.value?.caseTimes || []
   if (times.length === 0) return null
   const max = Math.max(...times) * 1.1 || 1
   return times.map((ms, i) => ({i, ms, pct: (ms / max) * 100}))
@@ -331,7 +328,7 @@ const goSelect = () => router.push('select')
           {{ headlineContext.text }}
         </div>
         <div v-else class="flow-hero-context text-muted">
-          {{ $t('flow.runs_none', {pages: flow.pageCount}, flow.pageCount) }}
+          {{ $t('flow.runs_none', {cases: flow.caseCount}, flow.caseCount) }}
         </div>
       </div>
 
@@ -430,7 +427,7 @@ const goSelect = () => router.push('select')
             {{ $t('flow.runs_title') }} ({{ stats.count }})
           </div>
           <div class="text-muted small mb-1">
-            {{ $t('flow.runs_scope', {pages: flow.pageCount}) }}
+            {{ $t('flow.runs_scope', {cases: flow.caseCount}) }}
           </div>
           <div class="run-list">
             <table class="table table-sm align-middle mb-0">
@@ -487,8 +484,6 @@ const goSelect = () => router.push('select')
                   :x="caseChart.padLeft - 8" :y="g.y + 4" text-anchor="end" class="chart-label">
               {{ g.text }}
             </text>
-            <line v-for="(x, i) in caseChart.dividers" :key="'d' + i"
-                  :x1="x" y1="14" :x2="x" :y2="caseChart.height - 24" class="chart-divider"/>
             <g v-for="(b, i) in caseChart.bars" :key="'b' + i">
               <rect :x="b.x" :y="b.execY" :width="b.w" :height="b.execH"
                     :class="b.wrong ? 'chart-bar-wrong' : 'chart-bar'"/>
@@ -565,24 +560,24 @@ const goSelect = () => router.push('select')
       </details>
     </template>
 
-    <!-- without a cube only the pages were measured -->
-    <template v-else-if="!flow.tracked && pageStats.pages > 0">
+    <!-- without a cube only the time per case was measured -->
+    <template v-else-if="!flow.tracked && manual.cases > 0">
       <div class="mb-4">
         <div class="flow-hero">
           {{ $t('flow.headline',
-              {cases: pageStats.cases, time: fmtTotal(pageStats.totalMs)}, pageStats.cases) }}
+              {cases: manual.cases, time: fmtTotal(manual.totalMs)}, manual.cases) }}
         </div>
         <div class="flow-hero-context text-muted">
-          {{ $t('flow.headline_sub_untracked', {perCase: fmt(pageStats.msPerCase)}) }}
+          {{ $t('flow.headline_sub_untracked', {perCase: fmt(manual.msPerCase)}) }}
         </div>
       </div>
-      <div class="text-muted text-uppercase small mb-2">{{ $t('flow.page_trend') }}</div>
-      <div v-for="row in pageChart" :key="row.i" class="d-flex align-items-center gap-2 mb-1">
-        <span class="text-muted small page-no">{{ row.i + 1 }}</span>
-        <div class="page-bar-track flex-grow-1">
-          <div class="page-bar" :style="{width: row.pct + '%'}"></div>
+      <div class="text-muted text-uppercase small mb-2">{{ $t('flow.case_trend') }}</div>
+      <div v-for="row in caseTimeChart" :key="row.i" class="d-flex align-items-center gap-2 mb-1">
+        <span class="text-muted small row-no">{{ row.i + 1 }}</span>
+        <div class="row-bar-track flex-grow-1">
+          <div class="row-bar" :style="{width: row.pct + '%'}"></div>
         </div>
-        <span class="small text-nowrap page-time">{{ fmt(row.ms) }}</span>
+        <span class="small text-nowrap row-time">{{ fmt(row.ms) }}</span>
       </div>
       <p class="text-muted small mt-3 mb-0">{{ $t('flow.untracked_note') }}</p>
     </template>
@@ -701,7 +696,6 @@ const goSelect = () => router.push('select')
 .chart-bar-wrong { fill: var(--bs-danger); }
 .chart-bar-wrong-pause { fill: var(--bs-danger); opacity: 0.35; }
 .chart-grid { stroke: currentColor; opacity: 0.18; stroke-width: 1; }
-.chart-divider { stroke: currentColor; opacity: 0.25; stroke-width: 1; stroke-dasharray: 3 3; }
 .chart-crosshair { stroke: currentColor; opacity: 0.35; stroke-width: 1; }
 .chart-label { fill: currentColor; opacity: 0.6; font-size: 11px; }
 .chart-line {
@@ -750,15 +744,15 @@ const goSelect = () => router.push('select')
   cursor: pointer;
   padding: 0.25rem 0;
 }
-.page-no { width: 1.5rem; }
-.page-time { width: 5rem; text-align: right; }
-.page-bar-track {
+.row-no { width: 1.5rem; }
+.row-time { width: 5rem; text-align: right; }
+.row-bar-track {
   height: 12px;
   background-color: rgba(128, 128, 128, 0.25);
   border-radius: 6px;
   overflow: hidden;
 }
-.page-bar {
+.row-bar {
   height: 100%;
   background-color: var(--bs-primary);
 }

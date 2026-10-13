@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia'
 import {computed, ref, shallowRef, watch} from 'vue'
 import {
-    CASES_PER_PAGE, MAX_RUNS, armAttempt, noteFirstMove, flagWrong, retryAttempt,
-    rebaseAttempt, completeAttempt, attemptElapsedMs, summarizeFlow, summarizePages,
+    VISIBLE_CASES, MAX_RUNS, armAttempt, noteFirstMove, flagWrong, retryAttempt,
+    rebaseAttempt, completeAttempt, attemptElapsedMs, summarizeFlow, summarizeManual,
     summarizeRuns, mergeRuns, updateTrouble, troubleCases, selectionSignature,
 } from '@/helpers/flow_timing'
 import {useSessionStore} from '@/stores/SessionStore'
@@ -10,11 +10,6 @@ import {useAlgsetStore} from '@/stores/AlgsetStore'
 import {useAuthStore} from '@/stores/AuthStore'
 import {apiFetch} from '@/helpers/api'
 import {readNamespaced, writeNamespaced} from '@/helpers/namespaced_storage'
-
-// The green flash on the fifth case, and nothing more. A few frames is enough
-// to register that the page landed; anything longer is felt as a wait, and the
-// whole point of flow is that the cases run into each other.
-export const PAGE_ADVANCE_MS = 60
 
 // Finished runs, per algset. Capped in the helper: a run is a few dozen bytes,
 // but this is the user's localStorage and nothing here is worth an unbounded
@@ -41,7 +36,9 @@ const loadTrouble = (algsetId) => {
 }
 
 /**
- * A flow run: pages of five cases, drilled back to back.
+ * A flow run: a fixed number of cases, drilled back to back. The current case
+ * is on screen with the next four under it, so the next one can be read while
+ * this one is still being turned - there is no page to wait for.
  *
  * The store owns the run's data and its arithmetic. Everything to do with the
  * cube itself lives in BluetoothCubeStore and is wired up by the view, which
@@ -55,21 +52,21 @@ export const useFlowStore = defineStore('flow', () => {
     const algset = useAlgsetStore()
     const auth = useAuthStore()
 
-    const pageCount = ref(1)
+    const caseCount = ref(1)
     const tracked = ref(false)          // a smart cube was connected at start
     const active = ref(false)
     const finished = ref(false)
 
-    // pages[i] = [{key, scramble}, ...] — only pages already reached exist
-    /** @type {import('vue').Ref<{key: string, scramble: string}[][]>} */
-    const pages = ref([])
-    const pageIndex = ref(0)
+    // Every case picked so far, in order: the ones done, the current one and
+    // the ones already on screen after it. Cases are picked as they come into
+    // view, not all up front, so the picker's SRS weighting and cooldown see
+    // the run's own solves.
+    /** @type {import('vue').Ref<{key: string, scramble: string}[]>} */
+    const queue = ref([])
     const caseIndex = ref(0)
     // Bumped every time a case is armed, so the view can (re)start tracking
     // even when the same case comes up twice in a row.
     const armSeq = ref(0)
-    // Advancing to the next page: the finished page is held on screen.
-    const advancing = ref(false)
 
     /** @type {import('vue').Ref<import('@/helpers/flow_timing').CaseRecord[]>} */
     const records = ref([])             // completed CaseRecords, in order
@@ -77,8 +74,8 @@ export const useFlowStore = defineStore('flow', () => {
     // was never completed, so it is not a case record, but it did cost time.
     const abandonedMs = ref(0)
     /** @type {import('vue').Ref<number[]>} */
-    const pageTimes = ref([])           // untracked runs: one wall time per page
-    const wrongIndex = ref(-1)          // case on this page shown as wrong
+    const caseTimes = ref([])           // untracked runs: one wall time per case
+    const wrongIndex = ref(-1)          // case in the queue shown as wrong
     const wrongFlash = ref(0)           // bumped to replay the shake
 
     const startedAt = ref(0)
@@ -88,7 +85,7 @@ export const useFlowStore = defineStore('flow', () => {
     const emaSnapshot = shallowRef({})
 
     let attempt = null                  // plain object from flow_timing
-    let pageStartedAt = 0
+    let caseStartedAt = 0               // untracked runs: when the case came up
 
     // Finished runs on the active algset, oldest first — the series an Ao5 is
     // read off. Reloaded when the algset changes, like every other run datum.
@@ -158,35 +155,45 @@ export const useFlowStore = defineStore('flow', () => {
     // Only runs over the same cases and of the same length are comparable with
     // each other, so the series is the one matching the run that was just done.
     // Runs stored before the split carry no selection and match nothing.
+    // Runs from the time of pages carry `cases` too (pages times five), so a
+    // run of four pages and a run of twenty cases are the same practice.
     const comparableRuns = computed(() => runs.value.filter(
-        r => r.pages === pageCount.value && r.sel === selection.value))
+        r => r.cases === caseCount.value && r.sel === selection.value))
     const runStats = computed(() => summarizeRuns(comparableRuns.value))
 
-    const currentPage = computed(() => pages.value[pageIndex.value] || [])
-    const currentCase = computed(() => currentPage.value[caseIndex.value] || null)
-    const totalCases = computed(() => pageCount.value * CASES_PER_PAGE)
+    const currentCase = computed(() => queue.value[caseIndex.value] || null)
+    // The case after the current one: on screen already, and what a
+    // cancellation into the next case is checked against.
+    const nextCase = computed(() =>
+        caseIndex.value + 1 < caseCount.value ? queue.value[caseIndex.value + 1] || null : null)
+    const totalCases = computed(() => caseCount.value)
     const completedCases = computed(() => tracked.value
         ? records.value.length
-        : pageTimes.value.length * CASES_PER_PAGE)
+        : caseTimes.value.length)
     const progress = computed(() => totalCases.value > 0
         ? Math.min(1, completedCases.value / totalCases.value) : 0)
 
-    // Case states for the page on screen: 'done' | 'current' | 'wrong' | 'ahead'
-    const caseStates = computed(() => currentPage.value.map((_, i) => {
-        if (i < caseIndex.value) return 'done'
-        if (i > caseIndex.value) return 'ahead'
-        return i === wrongIndex.value ? 'wrong' : 'current'
-    }))
+    // What is on screen: the current case and the ones after it, each with its
+    // position in the run (a stable key for the scroll) and its state,
+    // 'current' | 'wrong' | 'ahead'.
+    const visibleCases = computed(() =>
+        queue.value.slice(caseIndex.value, caseIndex.value + VISIBLE_CASES).map((item, i) => {
+            const index = caseIndex.value + i
+            const state = i > 0 ? 'ahead' : index === wrongIndex.value ? 'wrong' : 'current'
+            return {...item, index, state}
+        }))
 
-    // Fill a page from the session's picker: SRS weighting, cooldown and the
-    // user's selection, exactly as the timer gets them. Passing the page's own
-    // keys as `avoid` keeps a case from appearing twice on one page; with a
-    // selection smaller than five the picker falls back on its own.
-    const fillPage = () => {
-        const page = []
-        const avoid = new Set()
-        const labels = new Set()
-        for (let i = 0; i < CASES_PER_PAGE; i++) {
+    // Top the queue up to what has to be on screen, from the session's picker:
+    // SRS weighting, cooldown and the user's selection, exactly as the timer
+    // gets them. Passing the keys on screen as `avoid` keeps a case from
+    // appearing twice in view; with a selection smaller than that the picker
+    // falls back on its own.
+    const fillQueue = () => {
+        const want = Math.min(caseCount.value, caseIndex.value + VISIBLE_CASES)
+        while (queue.value.length < want) {
+            const inView = queue.value.slice(caseIndex.value)
+            const avoid = new Set(inView.map(c => c.key))
+            const labels = new Set(inView.map(c => algset.caseLabel(c.key)))
             let next = null
             // Two different cases can carry the same label (the same letter
             // pair from another buffer). With no scramble on screen to tell
@@ -198,44 +205,42 @@ export const useFlowStore = defineStore('flow', () => {
                 avoid.add(next.key)
                 if (!labels.has(algset.caseLabel(next.key))) break
             }
-            if (!next) break
-            labels.add(algset.caseLabel(next.key))
-            page.push(next)
+            if (!next) return
+            queue.value.push(next)
         }
-        return page
     }
 
     const armCurrent = (now = Date.now()) => {
         attempt = armAttempt(now)
+        caseStartedAt = now
         wrongIndex.value = -1
         armSeq.value++
     }
 
-    const loadPage = (index, now = Date.now()) => {
-        const page = fillPage()
-        if (page.length === 0) { finish(now); return }
-        pages.value[index] = page
-        pageIndex.value = index
-        caseIndex.value = 0
-        pageStartedAt = now
+    // Move on to the case after the current one, or end the run after the last.
+    const advance = (now = Date.now()) => {
+        caseIndex.value++
+        if (caseIndex.value >= caseCount.value) { finish(now, true); return }
+        fillQueue()
+        if (!currentCase.value) { finish(now); return }
         armCurrent(now)
     }
 
-    const start = ({pages: count, tracked: isTracked}, now = Date.now()) => {
-        pageCount.value = Math.max(1, Math.floor(count) || 1)
+    const start = ({cases: count, tracked: isTracked}, now = Date.now()) => {
+        caseCount.value = Math.max(1, Math.floor(count) || 1)
         tracked.value = !!isTracked
         selection.value = selectionSignature(session.store.keys)
         active.value = true
         finished.value = false
-        advancing.value = false
-        pages.value = []
+        queue.value = []
+        caseIndex.value = 0
         records.value = []
-        pageTimes.value = []
+        caseTimes.value = []
         wrongIndex.value = -1
         abandonedMs.value = 0
         // With a cube the clock waits for the first move, the way a solve is
         // timed: reading the first case is not part of the session. Without one
-        // there is no move to wait for, so it runs from the page appearing.
+        // there is no move to wait for, so it runs from the first case appearing.
         startedAt.value = isTracked ? 0 : now
         endedAt.value = 0
         const snapshot = {}
@@ -244,7 +249,9 @@ export const useFlowStore = defineStore('flow', () => {
             if (a != null) snapshot[key] = a
         }
         emaSnapshot.value = snapshot
-        loadPage(0, now)
+        fillQueue()
+        if (!currentCase.value) { finish(now); return }
+        armCurrent(now)
     }
 
     // --- events from the cube ------------------------------------------------
@@ -265,7 +272,7 @@ export const useFlowStore = defineStore('flow', () => {
 
     /** The cube stopped in a state the case cannot reach: a wrong execution. */
     const noteWrong = () => {
-        if (!attempt || advancing.value) return
+        if (!attempt) return
         attempt = flagWrong(attempt)
         wrongIndex.value = caseIndex.value
         wrongFlash.value++
@@ -273,26 +280,34 @@ export const useFlowStore = defineStore('flow', () => {
 
     /**
      * Start the current case over against the cube as it is now (D4/U4, or the
-     * user undoing back to the start). Cases already done on the page stay
-     * done; the abandoned attempt is booked as recovery.
+     * user undoing back to the start). Cases already done stay done; the
+     * abandoned attempt is booked as recovery.
      *
      * Both signals can arrive for the same gesture. Re-arming twice costs the
      * near-zero gap between them, so the second call is harmless.
      */
     const retryCurrent = (now = Date.now()) => {
-        if (!attempt || advancing.value) return
+        if (!attempt) return
         attempt = retryAttempt(attempt, now)
         wrongIndex.value = -1
         armSeq.value++
     }
 
-    /** The cube reached the case's solved state. `moves` is what it took. */
-    const completeCurrent = (moves = 0, now = Date.now()) => {
+    /**
+     * The cube reached the case's solved state. `moves` is what it took.
+     * `firstMoveAt` overrides when the case started being turned: when two
+     * cases were finished in one go (a cancellation between them), the second
+     * one never had a first move of its own that the cube could report.
+     * @param {number} [moves]
+     * @param {number} [now]
+     * @param {number | null} [firstMoveAt]
+     */
+    const completeCurrent = (moves = 0, now = Date.now(), firstMoveAt = null) => {
         const item = currentCase.value
-        if (!attempt || !item || advancing.value) return
+        if (!attempt || !item) return
+        if (firstMoveAt != null) attempt = noteFirstMove(attempt, firstMoveAt)
         const record = completeAttempt(attempt, now, {
             key: item.key,
-            page: pageIndex.value,
             index: caseIndex.value,
             moves,
         })
@@ -308,43 +323,26 @@ export const useFlowStore = defineStore('flow', () => {
             extra: {flow: true},
         })
 
-        caseIndex.value++
         wrongIndex.value = -1
-        if (caseIndex.value < currentPage.value.length) {
-            armCurrent(now)
-            return false
-        }
-        advancing.value = true
-        return true // caller holds the green, then calls nextPage()
+        advance(now)
     }
 
-    /** After the green flash: swap in the next page, or end the run. */
-    const nextPage = (now = Date.now()) => {
-        advancing.value = false
-        if (!active.value || finished.value) return
-        const next = pageIndex.value + 1
-        if (next >= pageCount.value) finish(now, true)
-        else loadPage(next, now)
-    }
-
-    /** Without a cube the only measurable unit is the page. */
-    const advancePageManually = (now = Date.now()) => {
+    /** Without a cube the user says when a case is done, with space. */
+    const advanceManually = (now = Date.now()) => {
         if (!active.value || finished.value || tracked.value) return
-        pageTimes.value.push(Math.max(0, now - pageStartedAt))
-        const next = pageIndex.value + 1
-        if (next >= pageCount.value) finish(now, true)
-        else loadPage(next, now)
+        caseTimes.value.push(Math.max(0, now - caseStartedAt))
+        attempt = null
+        advance(now)
     }
 
     // Keep a completed run so later runs have something to be compared against.
     // Runs cut short, and runs without a cube, are left out: an average over
-    // unequal work, or over pages nobody measured, would mean nothing.
+    // unequal work, or over cases nobody measured, would mean nothing.
     const recordRun = (now) => {
         if (!tracked.value || records.value.length === 0) return
         const s = summarizeFlow(records.value)
         const run = {
             at: now,
-            pages: pageCount.value,
             sel: selection.value,
             cases: s.cases,
             ms: Math.max(0, now - startedAt.value),
@@ -377,7 +375,6 @@ export const useFlowStore = defineStore('flow', () => {
         // the time it cost is real and belongs in the session's recovery.
         if (attempt) abandonedMs.value += attemptElapsedMs(attempt, now)
         attempt = null
-        advancing.value = false
         endedAt.value = now
         recordTrouble(now)
         if (completed) recordRun(now)
@@ -387,10 +384,10 @@ export const useFlowStore = defineStore('flow', () => {
     const reset = () => {
         active.value = false
         finished.value = false
-        advancing.value = false
-        pages.value = []
+        queue.value = []
+        caseIndex.value = 0
         records.value = []
-        pageTimes.value = []
+        caseTimes.value = []
         abandonedMs.value = 0
         wrongIndex.value = -1
         startedAt.value = 0
@@ -420,19 +417,18 @@ export const useFlowStore = defineStore('flow', () => {
     const summary = computed(() => tracked.value
         ? summarizeFlow(records.value, {emaByKey: emaSnapshot.value})
         : null)
-    const pageSummary = computed(() => tracked.value
+    const manualSummary = computed(() => tracked.value
         ? null
-        : summarizePages(pageTimes.value))
+        : summarizeManual(caseTimes.value))
 
     return {
-        CASES_PER_PAGE,
-        pageCount, tracked, active, finished, advancing,
-        pages, pageIndex, caseIndex, armSeq, records, pageTimes, abandonedMs,
+        caseCount, tracked, active, finished,
+        queue, caseIndex, armSeq, records, caseTimes, abandonedMs,
         wrongIndex, wrongFlash, startedAt, endedAt,
-        currentPage, currentCase, caseStates, totalCases, completedCases, progress,
-        start, noteMove, noteWrong, retryCurrent, completeCurrent, nextPage,
-        advancePageManually, finish, reset, elapsedMs, currentCaseMs,
-        summary, pageSummary, runs, comparableRuns, runStats, runRecorded, selection,
+        currentCase, nextCase, visibleCases, totalCases, completedCases, progress,
+        start, noteMove, noteWrong, retryCurrent, completeCurrent,
+        advanceManually, finish, reset, elapsedMs, currentCaseMs,
+        summary, manualSummary, runs, comparableRuns, runStats, runRecorded, selection,
         trouble, bucket, emaSnapshot, pullRuns,
     }
 })

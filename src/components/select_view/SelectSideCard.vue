@@ -6,7 +6,6 @@ import {useSessionStore} from "@/stores/SessionStore";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import SideAccordion from "@/components/select_view/SideAccordion.vue";
-import {CASES_PER_PAGE} from "@/helpers/flow_timing";
 import {useI18n} from "vue-i18n";
 
 const {t} = useI18n()
@@ -25,9 +24,9 @@ const mode = computed({
 })
 const isFlow = computed(() => mode.value === 'flow')
 
-const flowPages = computed({
-  get: () => settings.store.flowPages,
-  set: (v) => { settings.store.flowPages = Math.max(1, Math.floor(Number(v)) || 1) },
+const flowCases = computed({
+  get: () => settings.store.flowCases,
+  set: (v) => { settings.store.flowCases = Math.max(1, Math.floor(Number(v)) || 1) },
 })
 
 // "start" runs whichever mode the pills have selected.
@@ -87,20 +86,20 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
       <template v-if="isFlow">
         <p class="text-muted small my-1 mb-2">
-          {{ $t("select.flow_explainer", {n: CASES_PER_PAGE}) }}
+          {{ $t("select.flow_explainer") }}
         </p>
         <div class="d-flex align-items-center gap-2 my-1">
-          <label class="form-label mb-0 flex-grow-1 small" for="flowPagesInput">
-            {{ $t("select.flow_pages", {n: CASES_PER_PAGE}) }}
+          <label class="form-label mb-0 flex-grow-1 small" for="flowCasesInput">
+            {{ $t("select.flow_cases") }}
           </label>
           <input
-              id="flowPagesInput"
-              class="form-control form-control-sm flow-pages"
+              id="flowCasesInput"
+              class="form-control form-control-sm flow-cases"
               type="number"
               min="1"
               step="1"
               tabindex="-1" @keydown.space.prevent=""
-              v-model.number="flowPages">
+              v-model.number="flowCases">
         </div>
       </template>
 
@@ -136,7 +135,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 </template>
 
 <style scoped>
-.flow-pages {
+.flow-cases {
   width: 5rem;
   flex: none;
 }

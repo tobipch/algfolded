@@ -23,7 +23,8 @@
 
 import {aoN, bestAoN} from '@/helpers/srs'
 
-export const CASES_PER_PAGE = 5
+/** The current case and the ones coming up after it, all on screen at once. */
+export const VISIBLE_CASES = 5
 
 export interface Attempt {
     /** when the case became the current one, or was re-armed after a retry */
@@ -38,7 +39,7 @@ export interface Attempt {
 
 export interface CaseRecord {
     key: string
-    page: number
+    /** position in the run, 0-based */
     index: number
     pauseMs: number
     execMs: number
@@ -100,12 +101,11 @@ export const attemptElapsedMs = (attempt: Attempt, now: number): number =>
 export const completeAttempt = (
     attempt: Attempt,
     at: number,
-    {key, page, index, moves = 0}: {key: string, page: number, index: number, moves?: number},
+    {key, index, moves = 0}: {key: string, index: number, moves?: number},
 ): CaseRecord => {
     const firstMoveAt = attempt.firstMoveAt ?? at
     return {
         key,
-        page,
         index,
         pauseMs: Math.max(0, firstMoveAt - attempt.armedAt),
         execMs: Math.max(0, at - firstMoveAt),
@@ -127,18 +127,6 @@ export interface RankedCase extends CaseRecord {
     deltaMs: number | null
 }
 
-export interface PageSummary {
-    index: number
-    cases: number
-    execMs: number
-    pauseMs: number
-    recoveryMs: number
-    totalMs: number
-    moves: number
-    wrong: number
-    tps: number | null
-}
-
 export interface FlowSummary {
     cases: number
     totalMs: number
@@ -156,8 +144,7 @@ export interface FlowSummary {
     /** the user's own average over exactly the cases that came up */
     reference: {cases: number, execPerCase: number, tps: number | null} | null
     perCase: RankedCase[]
-    wrongCases: {key: string, count: number, pages: number[]}[]
-    pages: PageSummary[]
+    wrongCases: {key: string, count: number}[]
 }
 
 /**
@@ -198,33 +185,12 @@ export const summarizeFlow = (
         tps: tpsOf(covered.reduce((t, r) => t + r.moves, 0), refSeconds * 1000),
     } : null
 
-    const wrongMap = new Map<string, {key: string, count: number, pages: number[]}>()
+    const wrongMap = new Map<string, {key: string, count: number}>()
     for (const r of records) {
         if (!r.wrong) continue
-        const entry = wrongMap.get(r.key) || {key: r.key, count: 0, pages: []}
+        const entry = wrongMap.get(r.key) || {key: r.key, count: 0}
         entry.count++
-        if (!entry.pages.includes(r.page + 1)) entry.pages.push(r.page + 1)
         wrongMap.set(r.key, entry)
-    }
-
-    const pageMap = new Map<number, PageSummary>()
-    for (const r of records) {
-        const p = pageMap.get(r.page) || {
-            index: r.page, cases: 0, execMs: 0, pauseMs: 0, recoveryMs: 0,
-            totalMs: 0, moves: 0, wrong: 0, tps: null,
-        }
-        p.cases++
-        p.execMs += r.execMs
-        p.pauseMs += r.pauseMs
-        p.recoveryMs += r.recoveryMs
-        p.moves += r.moves
-        if (r.wrong) p.wrong++
-        pageMap.set(r.page, p)
-    }
-    const pages = [...pageMap.values()].sort((a, b) => a.index - b.index)
-    for (const p of pages) {
-        p.totalMs = p.execMs + p.pauseMs + p.recoveryMs
-        p.tps = tpsOf(p.moves, p.execMs)
     }
 
     return {
@@ -239,34 +205,28 @@ export const summarizeFlow = (
         reference,
         perCase,
         wrongCases: [...wrongMap.values()].sort((a, b) => b.count - a.count),
-        pages,
     }
 }
 
-export interface PagesSummary {
-    pages: number
+export interface ManualSummary {
     cases: number
     totalMs: number
     msPerCase: number
-    pageTimes: number[]
+    caseTimes: number[]
 }
 
 /**
- * Without a smart cube nothing inside a page is observable, so a page time
- * (page shown -> space pressed) is all there is.
+ * Without a smart cube nothing about a case is observable except when the user
+ * moved on from it, so the time from one space press to the next is all there
+ * is.
  */
-export const summarizePages = (
-    pageTimes: number[],
-    casesPerPage: number = CASES_PER_PAGE,
-): PagesSummary => {
-    const totalMs = pageTimes.reduce((t, ms) => t + ms, 0)
-    const cases = pageTimes.length * casesPerPage
+export const summarizeManual = (caseTimes: number[]): ManualSummary => {
+    const totalMs = caseTimes.reduce((t, ms) => t + ms, 0)
     return {
-        pages: pageTimes.length,
-        cases,
+        cases: caseTimes.length,
         totalMs,
-        msPerCase: cases > 0 ? totalMs / cases : 0,
-        pageTimes: [...pageTimes],
+        msPerCase: caseTimes.length > 0 ? totalMs / caseTimes.length : 0,
+        caseTimes: [...caseTimes],
     }
 }
 
@@ -275,7 +235,7 @@ export const summarizePages = (
  *
  * Two runs are only worth comparing when they drew from the same selection.
  * Drilling the UBL letter pairs and then the UBR ones is the same algset and
- * the same page count, but not the same practice, and an average over the two
+ * the same length, but not the same practice, and an average over the two
  * together describes neither of them.
  *
  * Order-independent, duplicate-proof and stable across sessions, so the same
@@ -306,7 +266,12 @@ export const selectionSignature = (keys: readonly string[]): string => {
 export interface FlowRun {
     /** when the run finished, epoch ms */
     at: number
-    pages: number
+    /**
+     * Runs used to be drilled in pages of five; runs stored back then carry
+     * the page count. Their `cases` is that times five, which is what they are
+     * compared by now, so they stay in the series.
+     */
+    pages?: number
     cases: number
     /**
      * `selectionSignature` of the cases this run drew from. Absent on runs
@@ -365,7 +330,7 @@ export interface RunStats {
 /**
  * Compare a series of runs the way a speedcuber compares solves. `runs` must be
  * oldest first and already narrowed to comparable ones (same algset, same
- * selection, same page count) — `aoN` reads the most recent n off the end.
+ * selection, same number of cases) — `aoN` reads the most recent n off the end.
  */
 export const summarizeRuns = (runs: FlowRun[]): RunStats => {
     const times = runs.map(r => r.ms)

@@ -2,24 +2,29 @@
 import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
-import FlowPage from "@/components/flow/FlowPage.vue";
+import FlowQueue from "@/components/flow/FlowQueue.vue";
 import FlowSummary from "@/components/flow/FlowSummary.vue";
 import AlgHint from "@/components/timer/AlgHint.vue";
-import {useFlowStore, PAGE_ADVANCE_MS} from "@/stores/FlowStore";
+import {useFlowStore} from "@/stores/FlowStore";
 import {useSessionStore} from "@/stores/SessionStore";
 import {useSettingsStore} from "@/stores/SettingsStore";
 import {useSelectedStore} from "@/stores/SelectedStore";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {useBluetoothCubeStore} from "@/stores/BluetoothCubeStore";
 import {useDisplayStore} from "@/stores/DisplayStore";
+import {useCustomAlgsStore} from "@/stores/CustomAlgsStore";
+import {usePreferredAlgStore} from "@/stores/PreferredAlgStore";
+import {splitCombined} from "@/helpers/cancellation";
 
-// Flow mode. Five cases at a time, back to back, nothing else on screen.
+// Flow mode. One case after another, the next four already in view, back to
+// back, nothing else on screen.
 //
 // Detection is the letter-pair mechanism the timer already uses: the virtual
 // cube is set to the case's scrambled state and the case is done the moment
 // the user's moves bring it back to solved. Because that tracks relative moves
 // only, the physical cube can be in any state and nothing has to be
-// re-scrambled between cases — which is exactly what makes a page possible.
+// re-scrambled between cases — which is exactly what makes back to back
+// possible.
 const {t} = useI18n()
 const router = useRouter()
 const flow = useFlowStore()
@@ -29,12 +34,15 @@ const selected = useSelectedStore()
 const algset = useAlgsetStore()
 const bt = useBluetoothCubeStore()
 const display = useDisplayStore()
+const customAlgs = useCustomAlgsStore()
+const prefs = usePreferredAlgStore()
 
 const showHint = ref(false)
 const wrongFeedback = ref(false)
 const clockMs = ref(0)
 let ticker = null
-let advanceTimer = null
+// Two cases are being booked in one go; the cube is armed once, afterwards.
+let bookingTwo = false
 
 const currentKey = computed(() => flow.currentCase?.key ?? null)
 
@@ -45,31 +53,33 @@ const beginRun = () => {
   }
   showHint.value = false
   wrongFeedback.value = false
-  flow.start({pages: settings.store.flowPages, tracked: bt.connected})
+  flow.start({cases: settings.store.flowCases, tracked: bt.connected})
 }
 
 // --- arming ---------------------------------------------------------------
 
 // Every arm (a new case, or a retry against the cube as it is now) re-inits
-// the virtual cube from the case's scramble.
+// the virtual cube from the case's scramble. The case after it goes along, so
+// a cancellation from this case into the next one is recognised.
 //
 // Sync flush: the cube has to be armed in the same task that puts the case on
 // screen. Waiting for the next tick leaves a window in which the user has
 // already seen the case and started turning, and those first moves are dropped
 // on the floor — which reads as the app being slow to catch up.
+const armCube = () => {
+  const item = flow.currentCase
+  if (bt.connected && item?.scramble) bt.startTracking(item.scramble, flow.nextCase?.scramble ?? null)
+}
 watch(() => flow.armSeq, () => {
   showHint.value = false
   wrongFeedback.value = false
-  const item = flow.currentCase
-  if (bt.connected && item?.scramble) bt.startTracking(item.scramble)
+  if (!bookingTwo) armCube()
 }, {flush: 'sync'})
 
 // The cube arriving mid-run does not change how the run is scored (that was
 // fixed at start), but the current case can still be armed against it.
 watch(() => bt.connected, (isConnected) => {
-  if (isConnected && flow.active && !flow.finished && flow.currentCase?.scramble) {
-    bt.startTracking(flow.currentCase.scramble)
-  }
+  if (isConnected && flow.active && !flow.finished) armCube()
 })
 
 // --- cube events ----------------------------------------------------------
@@ -95,18 +105,44 @@ watch(() => bt.phase, (phase, oldPhase) => {
 }, {flush: 'sync'})
 
 const finishCase = () => {
+  wrongFeedback.value = false
+  if (bt.lastSolveCombined) { finishTwo(); return }
   // Read the move count before recording: recording consumes the moves for
   // algorithm detection.
   const moves = (bt.lastSolveMoves || []).length
-  const pageDone = flow.completeCurrent(moves)
-  wrongFeedback.value = false
-  if (!pageDone) return
-  // Hold the fifth case green for a moment, then swap the whole page.
-  clearTimeout(advanceTimer)
-  advanceTimer = setTimeout(() => {
-    advanceTimer = null
-    flow.nextPage()
-  }, PAGE_ADVANCE_MS)
+  flow.completeCurrent(moves)
+}
+
+// One solve finished this case and the next: the moves between them
+// cancelled. Split them where this case's algorithm left off; this case is
+// timed up to its last move, the next one from the move after that.
+const finishTwo = () => {
+  const now = Date.now()
+  const moves = bt.lastSolveMoves || []
+  const times = bt.lastSolveTimes || []
+  const key = flow.currentCase?.key
+  const merged = key ? customAlgs.mergedAlgs(key) : []
+  const preferred = key ? prefs.resolvePreferred(key, merged) : null
+  const algs = preferred ? [preferred, ...merged.filter(a => a !== preferred)] : merged
+  const split = bt.lastSolveStart
+      ? splitCombined(bt.lastSolveStart, moves, algs)
+      : {k: moves.length, movesA: null, movesB: null}
+  const endA = times[split.k - 1] ?? now
+  const firstMoveB = times[split.k] ?? now
+
+  bookingTwo = true
+  try {
+    // Each recording consumes the moves it is handed for algorithm detection.
+    bt.lastSolveMoves = split.movesA
+    flow.completeCurrent(split.k, endA)
+    if (flow.active && !flow.finished) {
+      bt.lastSolveMoves = split.movesB
+      flow.completeCurrent(moves.length - split.k, now, firstMoveB)
+    }
+  } finally {
+    bookingTwo = false
+  }
+  if (flow.active && !flow.finished) armCube()
 }
 
 // D4 / U4: start this case over against the cube as it is now.
@@ -149,9 +185,9 @@ const onKeyDown = (e) => {
   if (e.key !== " " || flow.finished) return
   e.preventDefault()
   if (e.repeat) return
-  // Without a cube nothing inside a page can be measured, so space is the
-  // only control: it turns the page.
-  if (!flow.tracked) flow.advancePageManually()
+  // Without a cube nothing about a case can be measured, so space is the
+  // only control: it moves on to the next case.
+  if (!flow.tracked) flow.advanceManually()
 }
 
 onMounted(() => {
@@ -164,7 +200,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', onKeyDown)
-  clearTimeout(advanceTimer)
   if (ticker) clearInterval(ticker)
   bt.forceLetterPair = false
   if (bt.connected) bt.resetTracking()
@@ -175,13 +210,13 @@ onUnmounted(() => {
 <template>
   <div class="flow-view d-flex flex-column flex-grow-1">
     <FlowSummary v-if="flow.finished" @again="beginRun"/>
-    <FlowPage
+    <FlowQueue
         v-else
         :clockMs="clockMs"
         :wrongFeedback="wrongFeedback"
         @finish="flow.finish()">
       <AlgHint v-if="showHint && currentKey" :caseKey="currentKey"/>
-    </FlowPage>
+    </FlowQueue>
   </div>
 </template>
 

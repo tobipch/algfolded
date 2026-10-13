@@ -41,7 +41,8 @@ function sanitize(raw: unknown): RunInput | null {
   const r = raw as Record<string, unknown>;
   const at = int(r.at, MAX_AT);
   const ms = int(r.ms, MAX_MS);
-  const pages = int(r.pages, 1000);
+  // Runs used to be drilled in pages of five; runs since carry only `cases`.
+  const pages = int(r.pages ?? 0, 1000);
   const cases = int(r.cases, 10000);
   if (at === null || at === 0 || ms === null || pages === null || cases === null) return null;
   return {

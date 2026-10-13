@@ -40,6 +40,27 @@ describe('stores survive corrupt localStorage', () => {
     expect(s.store.bufferOrder).toBeDefined() // default merged in
   })
 
+  it('SettingsStore turns a flow length in pages into the same number of cases', async () => {
+    // Flow runs used to be set in pages of five; four pages are twenty cases.
+    localStorage.setItem('ltctTrainerSettings', JSON.stringify({ flowPages: 4, smartSelection: false }))
+    const { useSettingsStore } = await import('@/stores/SettingsStore')
+    const s = useSettingsStore()
+    expect(s.store.flowCases).toBe(20)
+    expect('flowPages' in s.store).toBe(false)
+    expect(s.store.smartSelection).toBe(false)
+  })
+
+  it('SettingsStore ignores a nonsense flow length in pages', async () => {
+    for (const pages of ['x', null, -2, 0]) {
+      vi.resetModules(); localStorage.clear(); freshPinia()
+      localStorage.setItem('ltctTrainerSettings', JSON.stringify({ flowPages: pages }))
+      const { useSettingsStore } = await import('@/stores/SettingsStore')
+      const s = useSettingsStore()
+      expect(s.store.flowCases).toBe(20) // the default
+      expect('flowPages' in s.store).toBe(false)
+    }
+  })
+
   it('LetterSchemeStore falls back to the default scheme', async () => {
     localStorage.setItem('ltctLetterScheme', '{kaputt')
     localStorage.setItem('ltctEdgeLetterScheme', 'auch kaputt')

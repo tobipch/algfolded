@@ -4,9 +4,13 @@ import {useFlowStore} from "@/stores/FlowStore";
 import {useAlgsetStore} from "@/stores/AlgsetStore";
 import {msToClock} from "@/helpers/time_formatter";
 
-// One page of five cases: the header, the labels, and the two lines of text
-// under them. No scramble, no timer display, no cube — the point of flow is
-// that there is nothing on screen but what to execute next.
+// The current case and the four after it: the header, the labels, and the two
+// lines of text under them. No scramble, no timer display, no cube — the point
+// of flow is that there is nothing on screen but what to execute next.
+//
+// The list scrolls rather than turning pages: a finished case slides out at the
+// top and everything moves up one, so the next case is always already in view
+// while the current one is being turned.
 const props = defineProps({
   clockMs: {type: Number, default: 0},
   wrongFeedback: {type: Boolean, default: false},
@@ -24,9 +28,6 @@ const clock = computed(() => msToClock(props.clockMs))
 <template>
   <div class="flow-page">
     <div class="flow-head d-flex align-items-center gap-3 flex-wrap mb-2">
-      <span class="badge text-bg-secondary">
-        {{ $t('flow.page_of', {page: flow.pageIndex + 1, total: flow.pageCount}) }}
-      </span>
       <span class="flow-clock">{{ clock }}</span>
       <button class="btn btn-outline-danger btn-sm ms-auto"
               type="button" tabindex="-1"
@@ -46,15 +47,18 @@ const clock = computed(() => msToClock(props.clockMs))
       </span>
     </div>
 
-    <div class="flow-cases">
+    <TransitionGroup tag="div" name="flow-scroll" class="flow-cases">
       <div
-          v-for="(item, i) in flow.currentPage"
-          :key="`${i}-${flow.caseStates[i] === 'wrong' ? flow.wrongFlash : 0}`"
+          v-for="item in flow.visibleCases"
+          :key="item.index"
           class="flow-case"
-          :class="'is-' + flow.caseStates[i]">
-        {{ label(item.key) }}
+          :class="'is-' + item.state">
+        <!-- re-keyed on every wrong flag, so the shake replays -->
+        <span :key="item.state === 'wrong' ? flow.wrongFlash : 0" class="flow-case-label">
+          {{ label(item.key) }}
+        </span>
       </div>
-    </div>
+    </TransitionGroup>
 
     <p class="flow-feedback mt-3 mb-0" :class="{invisible: !wrongFeedback}">
       {{ $t('flow.wrong_execution') }}
@@ -101,13 +105,22 @@ const clock = computed(() => msToClock(props.clockMs))
   transition: width 0.2s ease-in-out;
 }
 .flow-cases {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: clamp(0.4rem, 1.5vh, 1.25rem);
   flex: 1 1 auto;
   min-height: 0;
-  justify-content: center;
-  align-items: center;
+  /* the current case keeps its place at the top; the run's last cases just
+     leave the slots below empty */
+  justify-content: flex-start;
+  /* full-width rows, text centred: a finished row taken out of the flow for
+     its exit keeps exactly its box, so the scroll does not see it move
+     sideways */
+  align-items: stretch;
+  padding-top: clamp(0.5rem, 4vh, 2.5rem);
+  /* the finished case leaves through the top edge */
+  overflow: hidden;
 }
 .flow-case {
   font-size: clamp(1.75rem, min(10vw, 9vh), 5rem);
@@ -117,17 +130,40 @@ const clock = computed(() => msToClock(props.clockMs))
   opacity: 0.35;
   transition: opacity 0.15s ease-in-out, color 0.15s ease-in-out;
 }
+.flow-case-label {
+  display: inline-block;
+}
 .flow-case.is-current {
   opacity: 1;
-}
-.flow-case.is-done {
-  opacity: 0.85;
-  color: var(--bs-success);
 }
 .flow-case.is-wrong {
   opacity: 1;
   color: var(--bs-danger);
+}
+.flow-case.is-wrong .flow-case-label {
   animation: flow-case-shake 0.45s ease-in-out;
+}
+/* The scroll: everything moves up one slot, the finished case leaves at the
+   top in green, the newly visible one fades in at the bottom. */
+.flow-scroll-move {
+  transition: transform 0.2s ease-out;
+}
+.flow-scroll-leave-active {
+  position: absolute;
+  left: 0;
+  right: 0;
+  color: var(--bs-success);
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+.flow-scroll-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+.flow-scroll-enter-active {
+  transition: opacity 0.2s ease-out;
+}
+.flow-scroll-enter-from {
+  opacity: 0;
 }
 @keyframes flow-case-shake {
   0%, 100% { transform: translateX(0); }
@@ -138,7 +174,8 @@ const clock = computed(() => msToClock(props.clockMs))
   75% { transform: translateX(-4px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .flow-case.is-wrong { animation: none; }
+  .flow-case.is-wrong .flow-case-label { animation: none; }
+  .flow-scroll-move, .flow-scroll-leave-active, .flow-scroll-enter-active { transition: none; }
 }
 .flow-feedback {
   font-size: 1.1rem;

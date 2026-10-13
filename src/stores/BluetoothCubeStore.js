@@ -1,8 +1,10 @@
 import {defineStore} from 'pinia'
-import {ref} from 'vue'
+import {ref, shallowRef} from 'vue'
 import {invertMove, moveFace, moveAmount, amountToMove, buildMoveRemap} from '@/helpers/scramble_utils'
 import {useDisplayStore} from '@/stores/DisplayStore'
 import {useSettingsStore} from '@/stores/SettingsStore'
+import {createSpinDetector} from '@/helpers/spin_gesture'
+import {piecesOff as countPiecesOff} from '@/helpers/cancellation'
 
 let kpuzzlePromise = null
 async function getKPuzzle() {
@@ -57,9 +59,17 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // Moves of the finished solve, for algorithm detection. Set when the cube
     // reaches solved; consumed (and cleared) by the session store's stopTimer.
     const lastSolveMoves = ref(null)
+    // When each of those moves arrived (Date.now()), and whether the solve
+    // finished the next case as well (see "Cancellations" below). Together
+    // with the case's start state that is everything needed to tell where the
+    // first case ended.
+    const lastSolveTimes = ref(null)
+    const lastSolveCombined = ref(false)
+    const lastSolveStart = shallowRef(null)
 
     // Internal (not exposed)
     let solveMoves = []           // moves made since the solving phase began
+    let solveMoveTimes = []       // arrival time of each of solveMoves
     let cube = null               // underlying brand-specific connection object
     let cubeDisconnect = null     // brand-specific disconnect fn
     let gattDevice = null         // BluetoothDevice for gattserverdisconnected listener
@@ -87,12 +97,52 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     const startPattern = () =>
         expectedPatterns.length > 0 ? expectedPatterns[expectedPatterns.length - 1] : null
 
+    // --- Cancellations -------------------------------------------------------
+    // Flowing into the next case, the end of one algorithm and the start of
+    // the next can cancel, and the cube for the current case then never passes
+    // through solved. When the caller names the case after this one, a second
+    // virtual cube starts from both scrambles applied (the next case's, then
+    // this one's): the user's moves bring it to solved exactly when both cases
+    // are done, however the moves between them cancelled. Without a
+    // cancellation the current case reaches solved first and finishes as
+    // usual, so nothing changes for anyone who does not cancel.
+    let nextScramble = null
+    let comboStart = null
+    let comboPattern = null
+
+    const initCombo = (kpuzzle) => {
+        comboStart = null
+        if (nextScramble && letterPairArming() && scrambleMoves.value.length > 0) {
+            try {
+                comboStart = kpuzzle.defaultPattern()
+                    .applyAlg(nextScramble).applyAlg(scrambleMoves.value.join(' '))
+            } catch (_) { comboStart = null }
+            // The next case undoes this one (a case followed by its inverse):
+            // the combined cube starts solved and would go off on any
+            // net-identity wobble. Both still finish one after the other.
+            if (comboStart && comboStart.isIdentical(kpuzzle.defaultPattern())) comboStart = null
+        }
+        comboPattern = comboStart
+    }
+
     // Cube reached solved: freeze the executed moves for alg detection and
-    // finish the attempt.
-    const finishSolve = () => {
+    // finish the attempt. `combined`: the next case was finished with it.
+    const finishSolve = (combined = false) => {
         lastSolveMoves.value = solveMoves.slice()
+        lastSolveTimes.value = solveMoveTimes.slice()
+        lastSolveCombined.value = combined
+        lastSolveStart.value = startPattern()
         solveMoves = []
+        solveMoveTimes = []
         phase.value = 'idle'
+    }
+
+    // After a solving move: done, done together with the next case, or not yet.
+    const checkSolved = () => {
+        if (!cubePattern || !solvedPattern) return false
+        if (cubePattern.isIdentical(solvedPattern)) { finishSolve(); return true }
+        if (comboPattern && comboPattern.isIdentical(solvedPattern)) { finishSolve(true); return true }
+        return false
     }
 
     // Hand the executed moves of the last finished solve to the caller
@@ -109,16 +159,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
     // relative to solved. 0 = solved; a wrong LTCT alg leaves at least 3 off.
     const piecesOff = (pattern) => {
         try {
-            const a = pattern.patternData, b = solvedPattern.patternData
-            let off = 0
-            for (const orbit in a) {
-                if (/CENTER/i.test(orbit)) continue
-                const oa = a[orbit], ob = b[orbit]
-                for (let i = 0; i < oa.pieces.length; i++) {
-                    if (oa.pieces[i] !== ob.pieces[i] || (oa.orientation[i] ?? 0) !== (ob.orientation[i] ?? 0)) off++
-                }
-            }
-            return off
+            return countPiecesOff(pattern, solvedPattern)
         } catch (_) {
             return 99 // if we can't tell, assume far so the hint can still show
         }
@@ -144,42 +185,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }, FAR_IDLE_MS)
     }
 
-    // Detect a full 360° spin of the bottom (D) or top (U) layer used as a
-    // "reset this case" gesture: e.g. D D D D, D' D' D' D', D2 D2 (or the same
-    // with U). These are all net-identity, so they never appear in real algs.
-    // Returns true once a full spin completes. The buffer only ever holds moves
-    // of a single face — switching faces (D→U or vice versa) starts over.
-    let resetGestureMoves = []
-    const checkResetGesture = (move) => {
-        const face = moveFace(move)
-        if (face !== 'D' && face !== 'U') { resetGestureMoves = []; return false }
-        // Switching reset face starts the gesture over.
-        if (resetGestureMoves.length > 0 && moveFace(resetGestureMoves[0]) !== face) {
-            resetGestureMoves = []
-        }
-        resetGestureMoves.push(move)
-        if (resetGestureMoves.length > 4) resetGestureMoves = resetGestureMoves.slice(-4)
-        const last4 = resetGestureMoves.slice(-4)
-        if (last4.length === 4 && (last4.every(m => m === face) || last4.every(m => m === face + "'"))) return true
-        const last2 = resetGestureMoves.slice(-2)
-        if (last2.length === 2 && last2.every(m => m === face + '2')) return true
-        return false
-    }
-
-    // Detect a full 360° spin of the left (L) layer used as a "show me the
-    // algorithm" gesture: L L L L, L' L' L' L', or L2 L2. Net-identity, so it
-    // never appears in a real alg and leaves the cube state untouched.
-    let hintGestureMoves = []
-    const checkHintGesture = (move) => {
-        if (moveFace(move) !== 'L') { hintGestureMoves = []; return false }
-        hintGestureMoves.push(move)
-        if (hintGestureMoves.length > 4) hintGestureMoves = hintGestureMoves.slice(-4)
-        const last4 = hintGestureMoves.slice(-4)
-        if (last4.length === 4 && (last4.every(m => m === 'L') || last4.every(m => m === "L'"))) return true
-        const last2 = hintGestureMoves.slice(-2)
-        if (last2.length === 2 && last2.every(m => m === 'L2')) return true
-        return false
-    }
+    // "Reset this case": a full spin of the bottom (D) or top (U) layer, and
+    // "show me the algorithm": a full spin of the left (L) layer. Both are
+    // net-identity, so they never appear in real algs and leave the cube state
+    // untouched. The turns have to follow each other quickly (see
+    // spin_gesture.ts), so the last turn of a failed attempt is not counted
+    // into the spin that follows it.
+    const resetGesture = createSpinDetector(['D', 'U'])
+    const hintGesture = createSpinDetector(['L'])
 
     // After every physical move, check whether the cube now matches any expected
     // scramble state near the current position. If it does, snap position and
@@ -282,7 +295,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         cubeDisconnect = () => { try { c.commands.disconnect() } catch (_) {} }
         connected.value = true
         deviceName.value = c.device?.name || 'Smart Cube'
-        subscriptions.push(c.events.moves.subscribe(event => onMove(event.move)))
+        // QiYi cubes count time in ticks of 1/1.6 ms; MoYu reports ms.
+        const ticksPerMs = /^QY-/.test(c.device?.name || '') ? 1.6 : 1
+        subscriptions.push(c.events.moves.subscribe(event => onMove(
+            event.move,
+            event.cubeTimestamp != null ? event.cubeTimestamp / ticksPerMs : null,
+        )))
         subscriptions.push(c.events.info.subscribe(event => {
             if ('battery' in event) battery.value = event.battery
         }))
@@ -403,7 +421,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         gattDevice = conn.device || null
         subscriptions.push(conn.events$.subscribe(event => {
             if (event.type === 'MOVE') {
-                onMove(event.move)
+                onMove(event.move, event.cubeTimestamp)
             } else if (event.type === 'BATTERY') {
                 battery.value = event.batteryLevel
             } else if (event.type === 'DISCONNECT') {
@@ -564,11 +582,13 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         correctionMoves.value = []
         pendingFaceTurn.value = null
         tooFarFromSolved.value = false
-        resetGestureMoves = []
-        hintGestureMoves = []
+        resetGesture.clear()
+        hintGesture.clear()
         solveMoves = []
+        solveMoveTimes = []
         clearIdleTimer()
         computeExpectedPatterns(kpuzzle)
+        initCombo(kpuzzle)
 
         if (letterPairArming() && scrambleMoves.value.length > 0) {
             // Jump the virtual cube straight to the fully-scrambled state.
@@ -582,9 +602,13 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }
     }
 
-    const startTracking = async (scrambleString) => {
+    // `nextScrambleString`: the case that comes after this one, when the
+    // caller knows it, so a cancellation into it can be recognised.
+    /** @param {string} scrambleString @param {string | null} [nextScrambleString] */
+    const startTracking = async (scrambleString, nextScrambleString = null) => {
         if (!scrambleString) return
         scrambleMoves.value = scrambleString.split(' ').filter(m => m.length > 0)
+        nextScramble = nextScrambleString || null
         // Track physical cube state; solved detection triggers when the cube
         // returns to solved after scrambling + solving (normal mode) or after
         // executing the solution (letter-pair mode).
@@ -600,13 +624,17 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         pendingFaceTurn.value = null
         paused.value = false
         tooFarFromSolved.value = false
-        resetGestureMoves = []
-        hintGestureMoves = []
+        resetGesture.clear()
+        hintGesture.clear()
         solveMoves = []
+        solveMoveTimes = []
         clearIdleTimer()
         cubePattern = null
         solvedPattern = null
         expectedPatterns = []
+        nextScramble = null
+        comboStart = null
+        comboPattern = null
     }
 
     const pauseTracking = () => { paused.value = true }
@@ -630,7 +658,10 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         }
     }
 
-    const onMove = (rawMove) => {
+    // `cubeTime`: when the cube says the turn happened, in ms on its own clock,
+    // or null/undefined when it does not report one (see spin_gesture.ts).
+    /** @param {string} rawMove @param {number | null} [cubeTime] */
+    const onMove = (rawMove, cubeTime = null) => {
         if (paused.value) return
 
         // Remap move based on cube orientation setting
@@ -644,11 +675,14 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         if (cubePattern) {
             try { cubePattern = cubePattern.applyMove(move) } catch (_) {}
         }
+        if (comboPattern) {
+            try { comboPattern = comboPattern.applyMove(move) } catch (_) {}
+        }
 
         // Reset gesture: a full 360° spin of the bottom layer re-arms the case.
         // It's net-identity, so the cube state is unchanged before we re-init.
-        if (checkResetGesture(move)) {
-            resetGestureMoves = []
+        const time = {cube: cubeTime ?? null, local: performance.now()}
+        if (resetGesture.push(move, time)) {
             resetSignal.value++
             resetToSolved()
             return
@@ -657,10 +691,12 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         // Help gesture: a full 360° spin of the left layer reveals the alg.
         // Net-identity, so the cube state is unchanged; strip the gesture's
         // stray L moves from the solution recording so alg detection is intact.
-        if (checkHintGesture(move)) {
-            hintGestureMoves = []
+        if (hintGesture.push(move, time)) {
             if (phase.value === 'solving') {
-                while (solveMoves.length && moveFace(solveMoves[solveMoves.length - 1]) === 'L') solveMoves.pop()
+                while (solveMoves.length && moveFace(solveMoves[solveMoves.length - 1]) === 'L') {
+                    solveMoves.pop()
+                    solveMoveTimes.pop()
+                }
             }
             hintSignal.value++
             return
@@ -682,19 +718,20 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
             // one move already solves it.
             phase.value = 'solving'
             solveMoves = [move]
-            if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
-                finishSolve()
-            }
+            solveMoveTimes = [Date.now()]
+            checkSolved()
         } else if (phase.value === 'solving') {
             solveMoves.push(move)
-            if (cubePattern && solvedPattern && cubePattern.isIdentical(solvedPattern)) {
-                finishSolve()
+            solveMoveTimes.push(Date.now())
+            if (checkSolved()) {
+                // done (alone or together with the next case)
             } else if (startPattern() && cubePattern && cubePattern.isIdentical(startPattern())) {
                 // The user undid their mistakes all the way back to the case's
                 // start position: restart the measurement (and the executed-
                 // move recording) from scratch — the next move re-starts the
                 // timer.
                 solveMoves = []
+                solveMoveTimes = []
                 phase.value = 'awaiting_solve'
             }
         }
@@ -707,8 +744,8 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         // therefore requires a fresh full spin (D4/U4), while resetting *during*
         // the scramble keeps working.
         if (wasScrambling && phase.value === 'solving') {
-            resetGestureMoves = []
-            hintGestureMoves = []
+            resetGesture.clear()
+            hintGesture.clear()
         }
 
         // Refresh the "too far from solved" hint: any move clears it and re-arms
@@ -878,6 +915,7 @@ export const useBluetoothCubeStore = defineStore('bluetoothCube', () => {
         connected, connecting, deviceName, battery,
         phase, scrambleMoves, position, correctionMoves, pendingFaceTurn, paused,
         tooFarFromSolved, resetSignal, hintSignal, lastSolveMoves, consumeSolveMoves, warmupLibraries,
+        lastSolveTimes, lastSolveCombined, lastSolveStart,
         forceLetterPair,
         connect, disconnect, startTracking, resetTracking,
         pauseTracking, resumeTracking, resetToSolved, _getInternals

@@ -51,7 +51,7 @@ rest of the app reads case data from.
 | `AlgsetStore` | the active set, its cases, the hierarchy, case labels |
 | `SelectedStore` | which cases the user selected |
 | `SessionStore` | the run: case picking, the timer state machine, stats, SRS |
-| `FlowStore` | a flow run: pages of five cases, its own timing, the history of finished runs, and the bucket of cases that keep going wrong |
+| `FlowStore` | a flow run: a queue of cases with the next four in view, its own timing, the history of finished runs, and the bucket of cases that keep going wrong |
 | `BluetoothCubeStore` | **the** smart cube connection, the virtual cube, gestures |
 | `SolveSyncStore` | the cloud queue for solves |
 | `SettingsStore` | all user settings, one flat persisted object |
@@ -118,7 +118,8 @@ local `store.stats` entry instead.
   `tooFarFromSolved`; they never open a connection or restructure its lifecycle.
 - **Keep detection and timing logic pure.** `src/helpers/` holds the modules
   with no store or DOM dependency (`srs.js`, `alg_match.js`, `scramble_utils.js`,
-  `flow_timing.ts`), and they are tested directly.
+  `flow_timing.ts`, `spin_gesture.ts`, `cancellation.ts`), and they are tested
+  directly.
 - **Four languages.** Every user-visible string needs a key in
   `src/assets/i18n/{en,de,fr,it}.json`. There is no fallback worth shipping.
 - **Existing users see no change until they ask for one.** New behaviour goes
